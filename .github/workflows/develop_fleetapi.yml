@@ -54,6 +54,7 @@ jobs:
   
   pause_api:
     runs-on: windows-latest
+    needs: build
     steps:
       - name: Enviar POST request
         run: |
@@ -62,7 +63,7 @@ jobs:
       
   deploy:
     runs-on: windows-latest
-    needs: build
+    needs: pause_api
     environment:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
