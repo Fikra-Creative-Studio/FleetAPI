@@ -58,8 +58,7 @@ jobs:
     steps:
       - name: Enviar POST request
         run: |
-          curl -X POST ${{ secrets.POST_APICTRL }}" `
-          -H "chave: ${{ secrets.CHAVE_APICTRL }}"
+          curl -X POST ${{ secrets.POST_APICTRL }}" -H "chave: ${{ secrets.CHAVE_APICTRL }}"
       
   deploy:
     runs-on: windows-latest
