@@ -69,6 +69,12 @@ namespace Fleet.Repository
             return await _context.Usuarios.ToListAsync();
         }
 
+        public IQueryable<Usuario> Listar(Expression<Func<Usuario, bool>> exp)
+        {
+            return _context.Usuarios.AsQueryable();
+        }
+
+
         public async Task AtualizarSenha(Usuario novaSenha)
         {
             var usuario = await _context.Usuarios.FirstOrDefaultAsync(x => x.Token == novaSenha.Token);

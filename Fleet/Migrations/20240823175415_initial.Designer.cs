@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Fleet.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240817155946_inicial")]
-    partial class inicial
+    [Migration("20240823175415_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -428,6 +428,35 @@ namespace Fleet.Migrations
                     b.ToTable("Usuarios");
                 });
 
+            modelBuilder.Entity("Fleet.Models.UsuarioWorkspace", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Ativo")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int>("Papel")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("WorkspaceId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.HasIndex("WorkspaceId");
+
+                    b.ToTable("usuarioworkspace", (string)null);
+                });
+
             modelBuilder.Entity("Fleet.Models.Veiculos", b =>
                 {
                     b.Property<int>("Id")
@@ -626,9 +655,14 @@ namespace Fleet.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
+                    b.Property<string>("UrlImagem")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar(1000)");
+
                     b.HasKey("Id");
 
-                    b.ToTable("Workspace");
+                    b.ToTable("Workspaces");
                 });
 
             modelBuilder.Entity("Fleet.Models.Checklist", b =>
@@ -759,6 +793,25 @@ namespace Fleet.Migrations
                     b.Navigation("Manutencao");
                 });
 
+            modelBuilder.Entity("Fleet.Models.UsuarioWorkspace", b =>
+                {
+                    b.HasOne("Fleet.Models.Usuario", "Usuario")
+                        .WithMany("UsuarioWorkspaces")
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Fleet.Models.Workspace", "Workspace")
+                        .WithMany("UsuarioWorkspaces")
+                        .HasForeignKey("WorkspaceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Usuario");
+
+                    b.Navigation("Workspace");
+                });
+
             modelBuilder.Entity("Fleet.Models.Veiculos", b =>
                 {
                     b.HasOne("Fleet.Models.Workspace", "Workspace")
@@ -825,6 +878,16 @@ namespace Fleet.Migrations
                     b.Navigation("Veiculos");
 
                     b.Navigation("Workspace");
+                });
+
+            modelBuilder.Entity("Fleet.Models.Usuario", b =>
+                {
+                    b.Navigation("UsuarioWorkspaces");
+                });
+
+            modelBuilder.Entity("Fleet.Models.Workspace", b =>
+                {
+                    b.Navigation("UsuarioWorkspaces");
                 });
 #pragma warning restore 612, 618
         }

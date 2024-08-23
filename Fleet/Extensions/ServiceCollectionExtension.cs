@@ -38,6 +38,7 @@ namespace Fleet.Extensions
         /// <param name="services"></param>
         private static void AdicionarDependenciasServicos(this IServiceCollection services)
         {
+            services.AddScoped<ILoggedUser, LoggedUser>();
             services.AddScoped<IUsuarioService, UsuarioService>();
 
             services.AddScoped<ITokenService, TokenService>();
@@ -47,6 +48,7 @@ namespace Fleet.Extensions
             services.AddScoped<IEmailService, EmailService>();
 
             services.AddScoped<IBucketService, FileStorageService>();
+            services.AddScoped<IWorskpaceService, WorkspaceService>();
         }
 
         /// <summary>
@@ -55,8 +57,8 @@ namespace Fleet.Extensions
         /// <param name="services"></param>
         private static void AdicionarDependenciasRepositorio(this IServiceCollection services)
         {
-
             services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+            services.AddScoped<IWorkspaceRepository, WorkspaceRepository>();
         }
 
         private static void AdicionarMySQL(this IServiceCollection services, IConfiguration configuration)

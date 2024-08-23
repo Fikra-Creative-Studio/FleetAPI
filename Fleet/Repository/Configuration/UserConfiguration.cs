@@ -1,6 +1,7 @@
 ﻿using Fleet.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Reflection.Emit;
 
 namespace Fleet.Repository.Configuration
 {
@@ -21,6 +22,7 @@ namespace Fleet.Repository.Configuration
 
             //builder.Property(x => x.Papel).HasDefaultValue(PapelEnum.Usuario)
             //                              .IsRequired();
+
         }
 
     }

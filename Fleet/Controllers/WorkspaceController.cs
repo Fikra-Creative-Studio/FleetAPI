@@ -15,9 +15,7 @@ namespace Fleet.Controllers
         [Authorize]
         public async Task<IActionResult> Criar([FromBody] WorkspaceRequest request)
         {
-            var id = HttpContext.Items["user"] as string;
-            
-            await worskpaceService.Criar(id, request);
+            await worskpaceService.Criar(request);
 
             return Created();
         }

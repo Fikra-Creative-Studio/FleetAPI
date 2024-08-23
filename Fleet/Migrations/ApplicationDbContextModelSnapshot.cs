@@ -451,7 +451,7 @@ namespace Fleet.Migrations
 
                     b.HasIndex("WorkspaceId");
 
-                    b.ToTable("UsuarioWorkspace");
+                    b.ToTable("usuarioworkspace", (string)null);
                 });
 
             modelBuilder.Entity("Fleet.Models.Veiculos", b =>
@@ -659,7 +659,7 @@ namespace Fleet.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Workspace");
+                    b.ToTable("Workspaces");
                 });
 
             modelBuilder.Entity("Fleet.Models.Checklist", b =>
@@ -793,13 +793,13 @@ namespace Fleet.Migrations
             modelBuilder.Entity("Fleet.Models.UsuarioWorkspace", b =>
                 {
                     b.HasOne("Fleet.Models.Usuario", "Usuario")
-                        .WithMany()
+                        .WithMany("UsuarioWorkspaces")
                         .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Fleet.Models.Workspace", "Workspace")
-                        .WithMany()
+                        .WithMany("UsuarioWorkspaces")
                         .HasForeignKey("WorkspaceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -875,6 +875,16 @@ namespace Fleet.Migrations
                     b.Navigation("Veiculos");
 
                     b.Navigation("Workspace");
+                });
+
+            modelBuilder.Entity("Fleet.Models.Usuario", b =>
+                {
+                    b.Navigation("UsuarioWorkspaces");
+                });
+
+            modelBuilder.Entity("Fleet.Models.Workspace", b =>
+                {
+                    b.Navigation("UsuarioWorkspaces");
                 });
 #pragma warning restore 612, 618
         }

@@ -15,9 +15,9 @@ namespace Fleet.Service
     public class UsuarioService(IUsuarioRepository usuarioRepository,
                                 IConfiguration configuration,
                                 IMapper mapper,
-                                IBucketService bucketService) : IUsuarioService
+                                IBucketService bucketService,
+                                ILoggedUser loggedUser) : IUsuarioService
     {
-
         private string Secret { get => configuration.GetValue<string>("Crypto:Secret"); }
 
         public async Task Criar(UsuarioRequest user)
@@ -28,45 +28,17 @@ namespace Fleet.Service
             await usuarioRepository.Criar(usuario);
         }
 
-         public async Task Atualizar(string id, UsurioPutRequest user)
+        public async Task Atualizar(UsurioPutRequest user)
         {
-            var usuarioId = int.Parse(CriptografiaHelper.DescriptografarAes(id, Secret));
-            var usuario = await usuarioRepository.Buscar(x => x.Id == usuarioId);
+            var usuario = await usuarioRepository.Buscar(x => x.Id == loggedUser.UserId);
 
-            if(usuario == null) throw new BussinessException("Não foi possivel atualizar o usuário");
+            if (usuario == null) throw new BussinessException("Não foi possivel atualizar o usuário");
             //Validar o objeto que vindo da request
 
             usuario.Nome = user.Nome;
             usuario.Email = user.Email;
 
             await usuarioRepository.Atualizar(usuario);
-        }
-
-        public async Task Deletar(string id)
-        {
-            var usuario = new Usuario {
-                Id = int.Parse(CriptografiaHelper.DescriptografarAes(id, Secret))
-            };
-            await Validar(usuario, UsuarioRequestEnum.Deletar);
-
-            await usuarioRepository.Deletar(usuario.Id);
-        }
-
-        public async Task<List<UsuarioResponse>> Listar()
-        {
-            var usuarios =  await usuarioRepository.Listar();
-
-            List<UsuarioResponse> usuariosResponse = [];
-
-            foreach(var usuario in usuarios) {
-                usuariosResponse.Add(new UsuarioResponse(
-                                    CriptografiaHelper.CriptografarAes(usuario.Id.ToString(), Secret), 
-                                    usuario.Nome, 
-                                    usuario.CPF, 
-                                    usuario.Email, 
-                                    usuario.UrlImagem));
-            }
-            return usuariosResponse;
         }
 
         private async Task Validar(Usuario usuario, UsuarioRequestEnum request)
@@ -88,7 +60,7 @@ namespace Fleet.Service
         {
             if (stream.Length > 0)
             {
-                using(var file = stream)
+                using (var file = stream)
                 {
                     var secretCrypto = configuration.GetValue<string>("Crypto:Secret") ?? throw new BussinessException("falha em criptografia");
                     var userId = CriptografiaHelper.DescriptografarAes(id, secretCrypto) ?? throw new BussinessException("falha para obter o usuario");

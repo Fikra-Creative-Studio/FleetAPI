@@ -3,6 +3,7 @@ using Fleet.Controllers.Model.Request;
 using Fleet.Controllers.Model.Request.Auth;
 using Fleet.Controllers.Model.Response.Auth;
 using Fleet.Controllers.Model.Response.Usuario;
+using Fleet.Controllers.Model.Response.Workspace;
 using Fleet.Enums;
 using Fleet.Helpers;
 using Fleet.Interfaces.Repository;
@@ -10,6 +11,7 @@ using Fleet.Interfaces.Service;
 using Fleet.Models;
 using Fleet.Resources;
 using Fleet.Validators;
+using Microsoft.EntityFrameworkCore;
 
 namespace Fleet.Service;
 
@@ -33,20 +35,29 @@ public class AuthService : IAuthService
     }
     public async Task<LoginResponse> Logar(LoginRequest login)
     {
-        var usuario =  await _usuarioRepository.Buscar(x => x.Email == login.Email) ?? 
-                                throw new UnauthorizedAccessException(Resource.usuario_emailSenhaInvalido);
+        var usuario =  _usuarioRepository.Listar(x => x.Email == login.Email)
+                                         .Include(x => x.UsuarioWorkspaces)
+                                         .ThenInclude(x => x.Workspace).FirstOrDefault() ??  throw new UnauthorizedAccessException(Resource.usuario_emailSenhaInvalido);
                                 
-        if(!(usuario.Email == login.Email) || !(CriptografiaHelper.DescriptografarAes(usuario.Senha, Secret) == login.Senha))
+        if(CriptografiaHelper.DescriptografarAes(usuario.Senha, Secret) != login.Senha)
             throw new UnauthorizedAccessException(Resource.usuario_emailSenhaInvalido);
             
         var token =  _tokenService.GenerateToken(usuario);
 
-        var usuarioResponse = new UsuarioResponse(
-                                    CriptografiaHelper.CriptografarAes(usuario.Id.ToString(), Secret), 
-                                    usuario.Nome, 
-                                    usuario.CPF, 
-                                    usuario.Email, 
-                                    usuario.UrlImagem);
+        var usuarioResponse = new UsuarioResponse
+        {
+            Id = CriptografiaHelper.CriptografarAes(usuario.Id.ToString(), Secret),
+            Nome = usuario.Nome,
+            CPF = usuario.CPF,
+            Email = usuario.Email,
+            UrlImagem = usuario.UrlImagem,
+            Workspaces = usuario.UsuarioWorkspaces.Select(x => new WorkspaceGetResponse { 
+                Id = CriptografiaHelper.CriptografarAes(x.Workspace?.Id.ToString(), Secret),
+                Cnpj = x.Workspace.Cnpj,
+                Fantasia = x.Workspace.Fantasia,
+                UrlImage = x.Workspace.UrlImagem,
+            }).ToList(),
+        };
         
         return new LoginResponse(usuarioResponse, token);
     }

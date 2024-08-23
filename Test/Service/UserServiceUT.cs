@@ -1,4 +1,5 @@
 using AutoMapper;
+using Bogus;
 using Fleet.Controllers.Model.Request.Usuario;
 using Fleet.Helpers;
 using Fleet.Interfaces.Repository;
@@ -16,6 +17,7 @@ public class UserServiceUT
 {
     private Mock<IUsuarioRepository> _usuarioRepository;
     private Mock<IBucketService> _bucketService;
+    private Mock<ILoggedUser> _loggedUser;
     private IUsuarioService _service;
     private IConfiguration _configuration;
     private IMapper _mapper;
@@ -33,7 +35,9 @@ public class UserServiceUT
 
 
         _bucketService = new Mock<IBucketService>();
-        _service = new UsuarioService(_usuarioRepository.Object, _configuration, _mapper, _bucketService.Object);
+        _service = new UsuarioService(_usuarioRepository.Object, _configuration, _mapper, _bucketService.Object, _loggedUser.Object);
+
+        _loggedUser.Setup(x => x.UserId).Returns(Faker.Number.RandomNumber());
     }
 
     [Fact]

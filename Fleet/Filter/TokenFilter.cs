@@ -1,10 +1,18 @@
+using Fleet.Helpers;
+using Fleet.Interfaces.Service;
+using Fleet.Models;
+using Fleet.Service;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Configuration;
 using System.IdentityModel.Tokens.Jwt;
 
 namespace Fleet.Filters;
 
-public class TokenFilter : IAsyncActionFilter
+public class TokenFilter(ILoggedUser loggedUser, IConfiguration configuration) : IAsyncActionFilter
 {
+    private string Secret { get => configuration.GetValue<string>("Crypto:Secret"); }
+
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
         var request = context.HttpContext.Request;
@@ -20,10 +28,9 @@ public class TokenFilter : IAsyncActionFilter
                 {
                     var handler = new JwtSecurityTokenHandler();
                     var jwtToken = handler.ReadJwtToken(token);
-
                     var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "user")?.Value;
 
-                    context.HttpContext.Items["user"] = userIdClaim;
+                    loggedUser.UserId = int.Parse(CriptografiaHelper.DescriptografarAes(userIdClaim, Secret));
                 }
                 catch
                 {

@@ -25,9 +25,7 @@ namespace Fleet.Controllers
         [Authorize]
         public async Task<IActionResult> Atualizar([FromBody] UsurioPutRequest usuarioRequest)
         {
-            var id = HttpContext.Items["user"] as string;
-
-            await usuarioService.Atualizar(id, usuarioRequest);
+            await usuarioService.Atualizar(usuarioRequest);
 
             return Ok();
         }
