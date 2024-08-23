@@ -1,0 +1,80 @@
+name: Build and deploy ASP.Net Core app 
+
+on:
+  push:
+    branches:
+      - Develop
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.x'
+              
+      - name: Edit connection string in appsettings.json
+        uses: benday-inc/edit-dbconnstr-in-appsettings@main
+        with:
+          pathtosettingsfile: './Fleet/appsettings.json'
+          name: "DB_MySQL"
+          connectionstring: ${{ secrets.BANCO_HOST }};${{ secrets.BANCO_DATABASE }};${{ secrets.BANCO_USER }};${{ secrets.BANCO_SENHA }}
+        
+      - name: Edit appsettings.json
+        run: |
+          $appSettingsPath = './Fleet/appsettings.json'
+          $json = Get-Content $appSettingsPath | ConvertFrom-Json
+          $json.Authorization.Secret = ${{ secrets.AUTHORIZATION }}
+          $json.Crypto.Secret = ${{ secrets.CRYPTO }}
+          $json.Credentials.Email_Envio = ${{ secrets.EMAIL_ENVIO }}
+          $json.Credentials.Email_Servidor = ${{ secrets.EMAIL_SERVIDOR }}
+          $json.Credentials.Email_Porta = ${{ secrets.EMAIL_PORTA }}
+          $json.Credentials.Email_Senha = ${{ secrets.EMAIL_SENHA }}
+          $json.AzureBlobStorage.ConnectionString = ${{ secrets.BLOBSTORAGE }}
+          $json.AzureBlobStorage.UserContainerName = ${{ secrets.AZUREBLOBSTORAGEUSER }}
+          $json | ConvertTo-Json -Compress | Set-Content $appSettingsPath
+          
+      #- name: Display content of appsettings.json
+      # run: type .\Fleet\appsettings.json
+     
+      - name: Build with dotnet
+        run: dotnet build --configuration Release
+
+      - name: dotnet publish
+        run: dotnet publish -c Release -o ${{github.workspace}}
+
+      - name: Upload artifact for deployment job
+        uses: actions/upload-artifact@v4
+        with:
+          name: .net-app
+          path: ${{github.workspace}}
+
+  deploy:
+    runs-on: windows-latest
+    needs: build
+    environment:
+      name: 'Production'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v4
+        with:
+          name: .net-app
+          path: ${{github.workspace}} 
+
+      - name: 📂 Sync files
+        uses: SamKirkland/FTP-Deploy-Action@4.3.3
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: ${{ secrets.FTP_PORT }}
+      
