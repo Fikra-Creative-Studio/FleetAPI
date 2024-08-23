@@ -52,19 +52,19 @@ jobs:
           name: .net-app
           path: ${{github.workspace}}
   
-  pause_api:
+  stop_api:
     runs-on: windows-latest
-    #needs: build
+    needs: build
     steps:
       - name: Enviar POST request
         run: |
-          $url = "${{ secrets.APICTRL_POST }}"
+          $url = "${{ secrets.APICTRL_STOP }}"
           $chave = "${{ secrets.APICTRL_CHAVE }}"
           curl -X POST $url -H "chave: $chave" -d ""
       
   deploy:
     runs-on: windows-latest
-    needs: build
+    needs: stop_api
     environment:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
@@ -85,4 +85,13 @@ jobs:
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASSWORD }}
           port: ${{ secrets.FTP_PORT }}
-      
+     
+  start_api:
+    runs-on: windows-latest
+    needs: deploy
+    steps:
+      - name: Enviar POST request
+        run: |
+          $url = "${{ secrets.APICTRL_START }}"
+          $chave = "${{ secrets.APICTRL_CHAVE }}"
+          curl -X POST $url -H "chave: $chave" -d ""
