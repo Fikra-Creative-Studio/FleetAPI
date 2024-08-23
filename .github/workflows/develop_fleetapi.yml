@@ -3,7 +3,7 @@ name: Build and deploy ASP.Net Core app
 on:
   push:
     branches:
-      - Develop
+      - develop
   workflow_dispatch:
 
 jobs:
