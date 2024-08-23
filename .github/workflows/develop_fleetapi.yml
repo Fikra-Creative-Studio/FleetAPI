@@ -35,8 +35,6 @@ jobs:
           $json.Credentials.Email_Servidor = ${{ secrets.EMAIL_SERVIDOR }}
           $json.Credentials.Email_Porta = ${{ secrets.EMAIL_PORTA }}
           $json.Credentials.Email_Senha = ${{ secrets.EMAIL_SENHA }}
-          $json.AzureBlobStorage.ConnectionString = ${{ secrets.BLOBSTORAGE }}
-          $json.AzureBlobStorage.UserContainerName = ${{ secrets.AZUREBLOBSTORAGEUSER }}
           $json | ConvertTo-Json -Compress | Set-Content $appSettingsPath
           
       #- name: Display content of appsettings.json
