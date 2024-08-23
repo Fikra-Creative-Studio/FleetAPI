@@ -51,7 +51,15 @@ jobs:
         with:
           name: .net-app
           path: ${{github.workspace}}
-
+  
+  pause_api:
+    runs-on: windows-latest
+    steps:
+      - name: Enviar POST request
+        run: |
+          curl -X POST ${{ secrets.POST_APICTRL }}" `
+          -H "chave: ${{ secrets.CHAVE_APICTRL }}"
+      
   deploy:
     runs-on: windows-latest
     needs: build
