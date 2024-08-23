@@ -21,14 +21,14 @@ public class AuthServiceUT
 {
     private Mock<IUsuarioRepository> _usuarioRepository;
     private IAuthService _service;
-    private ITokenService _tokenService;
+    private Mock<ITokenService> _tokenService;
     private IConfiguration _configuration;
     private Mock<IEmailService> _emailService;
     public AuthServiceUT()
     {
         _usuarioRepository = new Mock<IUsuarioRepository>();
 
-        var inMemorySettings = new Dictionary<string, string> {{ "Crypto:Secret", "fikra!123" }, 
+         var inMemorySettings = new Dictionary<string, string> {{ "Crypto:Secret", "fikra!123" }, 
                                                                 { "Authorization:Secret", "bG9uZzBzZWNyZXQ4Zm9ySmN0U0czNDU2cG9zdA==" },
                                                                 { "Credentials:Email_Envio", "contato@fikra.com.br" },
                                                                 { "Credentials:Email_Servidor", "mail.fikra.com.br" },
@@ -38,10 +38,12 @@ public class AuthServiceUT
         _configuration = new ConfigurationBuilder()
                             .AddInMemoryCollection(inMemorySettings)
                             .Build();
+    
         var mappingConfig = new MapperConfiguration( mc => mc.AddProfile(new Mapping()));
         _emailService = new Mock<IEmailService>();
-        _tokenService = new TokenService(_configuration);
-        _service = new AuthService(_usuarioRepository.Object, _tokenService, _configuration, _emailService.Object);
+        _tokenService = new Mock<ITokenService>();
+
+        _service = new AuthService(_usuarioRepository.Object, _tokenService.Object, _configuration, _emailService.Object);
     }
 
     [Fact]
@@ -57,16 +59,19 @@ public class AuthServiceUT
             Senha = password
         };
 
-        var usuario = new Usuario{
-            Id= Faker.Number.RandomNumber(1,int.MaxValue),
-            CPF= cpf,
-            Email= email,
-            Nome= name,
-            Senha = CriptografiaHelper.CriptografarAes(password, _configuration.GetValue<string>("Crypto:Secret")) ?? string.Empty
-        };
+        var usuarios = new List<Usuario>
+        {
+            new() {
+                Id= Faker.Number.RandomNumber(1,int.MaxValue),
+                CPF= cpf,
+                Email= email,
+                Nome= name,
+                Senha = CriptografiaHelper.CriptografarAes(password, _configuration.GetValue<string>("Crypto:Secret")) ?? string.Empty
+            }
+        }.AsQueryable();
 
-        _usuarioRepository.Setup(x => x.Buscar(It.IsAny<Expression<Func<Usuario,bool>>>()))
-                                .ReturnsAsync(usuario);
+        _usuarioRepository.Setup(x => x.Listar(It.IsAny<Expression<Func<Usuario, bool>>>()))
+                                .Returns((Expression<Func<Usuario, bool>> exp) => usuarios.Where(x => x.Email == email));
 
         LoginResponse response = await _service.Logar(login);                        
 

@@ -4,13 +4,11 @@ using Fleet.Controllers.Model.Request.Auth;
 using Fleet.Controllers.Model.Response.Auth;
 using Fleet.Controllers.Model.Response.Usuario;
 using Fleet.Controllers.Model.Response.Workspace;
-using Fleet.Enums;
 using Fleet.Helpers;
 using Fleet.Interfaces.Repository;
 using Fleet.Interfaces.Service;
 using Fleet.Models;
 using Fleet.Resources;
-using Fleet.Validators;
 using Microsoft.EntityFrameworkCore;
 
 namespace Fleet.Service;

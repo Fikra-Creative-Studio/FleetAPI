@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Fleet.Controllers.Model.Request.Usuario;
-using Fleet.Controllers.Model.Response.Usuario;
 using Fleet.Enums;
 using Fleet.Helpers;
 using Fleet.Interfaces.Repository;
@@ -8,7 +7,6 @@ using Fleet.Interfaces.Service;
 using Fleet.Models;
 using Fleet.Resources;
 using Fleet.Validators;
-using Microsoft.Extensions.Configuration;
 
 namespace Fleet.Service
 {
