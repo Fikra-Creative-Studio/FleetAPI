@@ -17,7 +17,7 @@ namespace Fleet.Controllers
             _authService = authService;
         }
 
-        [HttpPost("")]
+        [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> Logar([FromBody] LoginRequest loginRequest)
         {

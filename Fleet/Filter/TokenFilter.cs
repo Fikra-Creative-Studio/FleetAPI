@@ -23,7 +23,7 @@ public class TokenFilter : IAsyncActionFilter
 
                     var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "user")?.Value;
 
-                    context.HttpContext.Items["userId"] = userIdClaim;
+                    context.HttpContext.Items["user"] = userIdClaim;
                 }
                 catch
                 {
@@ -39,12 +39,13 @@ public class TokenFilter : IAsyncActionFilter
                 return;
             }
         }
-        else
+        else if(!context.ActionDescriptor.EndpointMetadata.Any(m => m.GetType() == typeof(Microsoft.AspNetCore.Authorization.AllowAnonymousAttribute))) // se não contem autorização e o endpoint nao é anonimo
         {
             context.HttpContext.Response.StatusCode = 401; // Unauthorized
             await context.HttpContext.Response.WriteAsync("Authorization header is missing.");
             return;
         }
+
         await next();
     }
 }
