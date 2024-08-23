@@ -54,17 +54,17 @@ jobs:
   
   pause_api:
     runs-on: windows-latest
-    needs: build
+    #needs: build
     steps:
       - name: Enviar POST request
         run: |
           $url = "${{ secrets.APICTRL_POST }}"
           $chave = "${{ secrets.APICTRL_CHAVE }}"
-          curl -X POST $url -H "chave: $chave"
+          curl -X POST $url -H "chave: $chave" -d ""
       
   deploy:
     runs-on: windows-latest
-    needs: pause_api
+    needs: build
     environment:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
