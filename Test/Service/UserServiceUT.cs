@@ -35,6 +35,8 @@ public class UserServiceUT
 
 
         _bucketService = new Mock<IBucketService>();
+        _loggedUser = new Mock<ILoggedUser>();
+
         _service = new UsuarioService(_usuarioRepository.Object, _configuration, _mapper, _bucketService.Object, _loggedUser.Object);
 
         _loggedUser.Setup(x => x.UserId).Returns(Faker.Number.RandomNumber());
