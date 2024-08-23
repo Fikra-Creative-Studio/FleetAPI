@@ -23,7 +23,6 @@ namespace Fleet.Controllers
 
         [HttpPut]
         [Authorize]
-        [ServiceFilter(typeof(TokenFilter))]
         public async Task<IActionResult> Atualizar([FromBody] UsurioPutRequest usuarioRequest)
         {
             var id = HttpContext.Items["user"] as string;
@@ -36,7 +35,6 @@ namespace Fleet.Controllers
 
         [HttpPost("[Action]")]
         [Authorize]
-        [ServiceFilter(typeof(TokenFilter))]
         public async Task<IActionResult> Imagem(IFormFile file)
         {
             var id = HttpContext.Items["user"] as string;

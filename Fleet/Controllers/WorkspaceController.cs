@@ -13,7 +13,6 @@ namespace Fleet.Controllers
     {
         [HttpPost]
         [Authorize]
-        [ServiceFilter(typeof(TokenFilter))]
         public async Task<IActionResult> Criar([FromBody] WorkspaceRequest request)
         {
             var id = HttpContext.Items["user"] as string;
