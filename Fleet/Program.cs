@@ -2,10 +2,13 @@ using Microsoft.OpenApi.Models;
 using Fleet.Extensions;
 using Fleet.Middlewares;
 using System.Text.Json.Serialization;
+using Fleet.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers().AddJsonOptions(x =>
+builder.Services.AddControllers( options => {
+    options.Filters.Add<TokenFilter>();
+}).AddJsonOptions(x =>
 {
     // serialize enums as strings in api responses (e.g. Role)
     x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());

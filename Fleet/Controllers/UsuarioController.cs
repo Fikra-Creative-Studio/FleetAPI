@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Fleet.Interfaces.Service;
 using Fleet.Controllers.Model.Request.Usuario;
 using Fleet.Service;
+using Fleet.Filters;
 
 namespace Fleet.Controllers
 {
@@ -22,13 +23,12 @@ namespace Fleet.Controllers
 
         [HttpPut]
         [Authorize]
+        [ServiceFilter(typeof(TokenFilter))]
         public async Task<IActionResult> Atualizar([FromBody] UsurioPutRequest usuarioRequest)
         {
-            var clain = User.Claims.FirstOrDefault(x => x.Type == "user");
-            if (clain == null ||  string.IsNullOrEmpty(clain.Value))
-                return Unauthorized();
+            var id = HttpContext.Items["user"] as string;
 
-            await usuarioService.Atualizar(clain.Value, usuarioRequest);
+            await usuarioService.Atualizar(id, usuarioRequest);
 
             return Ok();
         }
@@ -36,11 +36,10 @@ namespace Fleet.Controllers
 
         [HttpPost("[Action]")]
         [Authorize]
+        [ServiceFilter(typeof(TokenFilter))]
         public async Task<IActionResult> Imagem(IFormFile file)
         {
-            var clain = User.Claims.FirstOrDefault(x => x.Type == "user");
-            if (clain == null || string.IsNullOrEmpty(clain.Value))
-                return Unauthorized();
+            var id = HttpContext.Items["user"] as string;
 
             if (file.Length > 0)
             {
@@ -49,7 +48,7 @@ namespace Fleet.Controllers
                 {
                     await file.CopyToAsync(stream);
                     stream.Position = 0;
-                    await usuarioService.UploadAsync(clain.Value, stream, extension);
+                    await usuarioService.UploadAsync(id, stream, extension);
                 }
                 return Ok("Arquivo enviado com sucesso!");
             }

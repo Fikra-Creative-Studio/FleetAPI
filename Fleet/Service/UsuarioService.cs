@@ -88,16 +88,19 @@ namespace Fleet.Service
         {
             if (stream.Length > 0)
             {
-                var secretCrypto = configuration.GetValue<string>("Crypto:Secret") ?? throw new BussinessException("falha em criptografia");
-                var userId = CriptografiaHelper.DescriptografarAes(id, secretCrypto) ?? throw new BussinessException("falha para obter o usuario");
+                using(var file = stream)
+                {
+                    var secretCrypto = configuration.GetValue<string>("Crypto:Secret") ?? throw new BussinessException("falha em criptografia");
+                    var userId = CriptografiaHelper.DescriptografarAes(id, secretCrypto) ?? throw new BussinessException("falha para obter o usuario");
 
-                var filename = await bucketService.UploadAsync(stream, fileExtension) ?? throw new BussinessException("não foi possivel salvar a imagem");
+                    var filename = await bucketService.UploadAsync(stream, fileExtension) ?? throw new BussinessException("não foi possivel salvar a imagem");
 
-                var user = await usuarioRepository.Buscar(x => x.Id == int.Parse(userId)) ?? throw new BussinessException("falha para obter o usuario");
-                if(user != null &&! string.IsNullOrEmpty(user.UrlImagem)) await bucketService.DeleteAsync(user.UrlImagem);
+                    var user = await usuarioRepository.Buscar(x => x.Id == int.Parse(userId)) ?? throw new BussinessException("falha para obter o usuario");
+                    if (user != null && !string.IsNullOrEmpty(user.UrlImagem)) await bucketService.DeleteAsync(user.UrlImagem);
 
-                user.UrlImagem = filename;
-                await usuarioRepository.Atualizar(user);
+                    user.UrlImagem = filename;
+                    await usuarioRepository.Atualizar(user);
+                }
             }
         }
     }

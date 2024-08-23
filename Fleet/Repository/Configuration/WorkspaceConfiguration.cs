@@ -10,6 +10,7 @@ namespace Fleet.Repository.Configuration
         {
             builder.Property(x => x.Cnpj).HasMaxLength(255);
             builder.Property(x => x.Fantasia).HasMaxLength(255);
+            builder.Property(x => x.UrlImagem).HasMaxLength(1000).IsRequired();
         }
     }
 }

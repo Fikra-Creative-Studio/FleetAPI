@@ -46,7 +46,7 @@ namespace Fleet.Extensions
 
             services.AddScoped<IEmailService, EmailService>();
 
-            services.AddScoped<IBucketService, BlobService>();
+            services.AddScoped<IBucketService, FileStorageService>();
         }
 
         /// <summary>
@@ -97,7 +97,6 @@ namespace Fleet.Extensions
                 options.AddPolicy("admin", policy => policy.RequireClaim("papel", PapelEnum.Administrador.ToString()));
             });
         }
-
 
         private static void AdicionarMapper(this IServiceCollection services)
         {
