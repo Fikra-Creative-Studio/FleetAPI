@@ -23,14 +23,14 @@ public class WorkspaceService(ILoggedUser loggedUser,
 
     public async Task Criar(WorkspaceRequest request)
     {
-        var usuario = await usuarioRepository.Buscar(x => x.Id == loggedUser.UserId) ?? throw new BussinessException("Usuario não inálido");
+        var usuario = await usuarioRepository.Buscar(x => x.Id == loggedUser.UserId) ?? throw new BussinessException("Usuario invalido");
         var workspace = mapper.Map<Workspace>(request);
 
         await Validar(workspace, WorkspaceRequestEnum.Criar);
 
         var workspaceCriado = await workspaceRepository.Criar(workspace);
 
-        var usuarioWorkspace = new UsuarioWorkspace {
+        UsuarioWorkspace usuarioWorkspace = new() {
             Usuario = usuario,
             UsuarioId = usuario.Id,
             Workspace = workspaceCriado,
