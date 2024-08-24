@@ -13,6 +13,7 @@ namespace Fleet.Interfaces.Repository
         Task Atualizar(Usuario usuarioAtualizado);
         Task<bool> Existe(int id);
         Task<List<Usuario>> Listar();
+        IQueryable<Usuario> Listar(Expression<Func<Usuario, bool>> exp);
         Task AtualizarSenha(Usuario novaSenha);
         Task<Usuario?> Buscar(Expression<Func<Usuario, bool>> exp);
     }

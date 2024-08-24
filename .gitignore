@@ -360,4 +360,5 @@ MigrationBackup/
 .ionide/
 
 # Fody - auto-generated XML schema
-/Fleet/appsettings.Development.json
+
+/Fleet/appsettings.development.json

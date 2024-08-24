@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Fleet.Migrations
 {
     /// <inheritdoc />
-    public partial class inicial : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -42,7 +42,7 @@ namespace Fleet.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Workspace",
+                name: "Workspaces",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -51,11 +51,13 @@ namespace Fleet.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Fantasia = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
+                    UrlImagem = table.Column<string>(type: "varchar(1000)", maxLength: 1000, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     Ativo = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Workspace", x => x.Id);
+                    table.PrimaryKey("PK_Workspaces", x => x.Id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -95,9 +97,9 @@ namespace Fleet.Migrations
                 {
                     table.PrimaryKey("PK_Estabelecimentos", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Estabelecimentos_Workspace_WorkspaceId",
+                        name: "FK_Estabelecimentos_Workspaces_WorkspaceId",
                         column: x => x.WorkspaceId,
-                        principalTable: "Workspace",
+                        principalTable: "Workspaces",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -119,9 +121,38 @@ namespace Fleet.Migrations
                 {
                     table.PrimaryKey("PK_Listas", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Listas_Workspace_WorkspaceId",
+                        name: "FK_Listas_Workspaces_WorkspaceId",
                         column: x => x.WorkspaceId,
-                        principalTable: "Workspace",
+                        principalTable: "Workspaces",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "usuarioworkspace",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Papel = table.Column<int>(type: "int", nullable: false),
+                    UsuarioId = table.Column<int>(type: "int", nullable: false),
+                    WorkspaceId = table.Column<int>(type: "int", nullable: false),
+                    Ativo = table.Column<bool>(type: "tinyint(1)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_usuarioworkspace", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_usuarioworkspace_Usuarios_UsuarioId",
+                        column: x => x.UsuarioId,
+                        principalTable: "Usuarios",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_usuarioworkspace_Workspaces_WorkspaceId",
+                        column: x => x.WorkspaceId,
+                        principalTable: "Workspaces",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -153,9 +184,9 @@ namespace Fleet.Migrations
                 {
                     table.PrimaryKey("PK_Veiculos", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Veiculos_Workspace_WorkspaceId",
+                        name: "FK_Veiculos_Workspaces_WorkspaceId",
                         column: x => x.WorkspaceId,
-                        principalTable: "Workspace",
+                        principalTable: "Workspaces",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -228,9 +259,9 @@ namespace Fleet.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Checklist_Workspace_WorkspaceId",
+                        name: "FK_Checklist_Workspaces_WorkspaceId",
                         column: x => x.WorkspaceId,
-                        principalTable: "Workspace",
+                        principalTable: "Workspaces",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -280,9 +311,9 @@ namespace Fleet.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Manutencao_Workspace_WorkspaceId",
+                        name: "FK_Manutencao_Workspaces_WorkspaceId",
                         column: x => x.WorkspaceId,
-                        principalTable: "Workspace",
+                        principalTable: "Workspaces",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -329,9 +360,9 @@ namespace Fleet.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Visitas_Workspace_WorkspaceId",
+                        name: "FK_Visitas_Workspaces_WorkspaceId",
                         column: x => x.WorkspaceId,
-                        principalTable: "Workspace",
+                        principalTable: "Workspaces",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -528,6 +559,16 @@ namespace Fleet.Migrations
                 column: "ManutencaoId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_usuarioworkspace_UsuarioId",
+                table: "usuarioworkspace",
+                column: "UsuarioId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_usuarioworkspace_WorkspaceId",
+                table: "usuarioworkspace",
+                column: "WorkspaceId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Veiculos_WorkspaceId",
                 table: "Veiculos",
                 column: "WorkspaceId");
@@ -579,6 +620,9 @@ namespace Fleet.Migrations
                 name: "ManutencaoImagens");
 
             migrationBuilder.DropTable(
+                name: "usuarioworkspace");
+
+            migrationBuilder.DropTable(
                 name: "VisitaImagens");
 
             migrationBuilder.DropTable(
@@ -606,7 +650,7 @@ namespace Fleet.Migrations
                 name: "Veiculos");
 
             migrationBuilder.DropTable(
-                name: "Workspace");
+                name: "Workspaces");
         }
     }
 }

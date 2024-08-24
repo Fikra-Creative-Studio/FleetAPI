@@ -10,27 +10,33 @@ using Fleet.Validators;
 
 namespace Fleet.Service;
 
-public class WorkspaceService(IWorkspaceRepository workspaceRepository, IUsuarioWorkspaceRepository usuarioWorkspaceRepository, IUsuarioRepository usuarioRepository ,IMapper mapper, IConfiguration configuration) : IWorskpaceService
+public class WorkspaceService(ILoggedUser loggedUser,
+    IWorkspaceRepository workspaceRepository, 
+    IUsuarioWorkspaceRepository usuarioWorkspaceRepository, 
+    IUsuarioRepository usuarioRepository, 
+    IMapper mapper) : IWorskpaceService
 {
-    private string Secret { get => configuration.GetValue<string>("Crypto:Secret"); }
     public Task Atualizar(string id)
     {
         throw new NotImplementedException();
     }
 
-    public async Task Criar(string usuarioId, WorkspaceRequest request)
+    public async Task Criar(WorkspaceRequest request)
     {
-        var userId = int.Parse(CriptografiaHelper.DescriptografarAes(usuarioId, Secret));
-        var usuario = await usuarioRepository.Buscar(x => x.Id == userId) ?? throw new BussinessException("Usuario não inálido");
+        var usuario = await usuarioRepository.Buscar(x => x.Id == loggedUser.UserId) ?? throw new BussinessException("Usuario invalido");
         var workspace = mapper.Map<Workspace>(request);
+
         await Validar(workspace, WorkspaceRequestEnum.Criar);
+
         var workspaceCriado = await workspaceRepository.Criar(workspace);
-        var usuarioWorkspace = new UsuarioWorkspace {
+
+        UsuarioWorkspace usuarioWorkspace = new() {
             Usuario = usuario,
             UsuarioId = usuario.Id,
             Workspace = workspaceCriado,
             WorkspaceId = workspaceCriado.Id,
-            Ativo = true
+            Ativo = true,
+            Papel = PapelEnum.Administrador
         };
         await usuarioWorkspaceRepository.Criar(usuarioWorkspace);
     }
