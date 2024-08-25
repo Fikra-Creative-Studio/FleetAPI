@@ -4,6 +4,6 @@ namespace Fleet.Interfaces.Service;
 
 public interface IWorskpaceService
 {
-    Task Criar(WorkspaceRequest request);
+    Task Criar(IFormFile file,WorkspaceRequest request);
     Task Atualizar(string id);
 }

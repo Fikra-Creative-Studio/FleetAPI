@@ -33,13 +33,10 @@ public class AuthService : IAuthService
     }
     public async Task<LoginResponse> Logar(LoginRequest login)
     {
-        var usuario =  _usuarioRepository.Listar(x => x.Email == login.Email)
+        var usuario =  _usuarioRepository.Listar(x => x.Email == login.Email && x.Senha == CriptografiaHelper.CriptografarAes(login.Senha,Secret))
                                          .Include(x => x.UsuarioWorkspaces)
                                          .ThenInclude(x => x.Workspace).FirstOrDefault() ??  throw new UnauthorizedAccessException(Resource.usuario_emailSenhaInvalido);
                                 
-        if(CriptografiaHelper.DescriptografarAes(usuario.Senha, Secret) != login.Senha)
-            throw new UnauthorizedAccessException(Resource.usuario_emailSenhaInvalido);
-            
         var token =  _tokenService.GenerateToken(usuario);
 
         var usuarioResponse = new UsuarioResponse

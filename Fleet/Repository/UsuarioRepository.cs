@@ -1,5 +1,4 @@
 ﻿using Fleet.Interfaces.Repository;
-using Fleet.Repository;
 using Fleet.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -71,7 +70,7 @@ namespace Fleet.Repository
 
         public IQueryable<Usuario> Listar(Expression<Func<Usuario, bool>> exp)
         {
-            return _context.Usuarios.AsQueryable();
+            return _context.Usuarios.Where(exp).AsQueryable();
         }
 
 

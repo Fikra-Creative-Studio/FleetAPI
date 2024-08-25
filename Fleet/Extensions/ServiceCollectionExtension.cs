@@ -59,6 +59,7 @@ namespace Fleet.Extensions
         {
             services.AddScoped<IUsuarioRepository, UsuarioRepository>();
             services.AddScoped<IWorkspaceRepository, WorkspaceRepository>();
+            services.AddScoped<IUsuarioWorkspaceRepository, UsuarioWorkspaceRepository>();
         }
 
         private static void AdicionarMySQL(this IServiceCollection services, IConfiguration configuration)

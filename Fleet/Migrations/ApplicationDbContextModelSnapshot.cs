@@ -793,13 +793,13 @@ namespace Fleet.Migrations
             modelBuilder.Entity("Fleet.Models.UsuarioWorkspace", b =>
                 {
                     b.HasOne("Fleet.Models.Usuario", "Usuario")
-                        .WithMany("UsuarioWorkspaces")
+                        .WithMany("UsuarioWorkspace")
                         .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Fleet.Models.Workspace", "Workspace")
-                        .WithMany("UsuarioWorkspaces")
+                        .WithMany("UsuarioWorkspace")
                         .HasForeignKey("WorkspaceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -879,12 +879,12 @@ namespace Fleet.Migrations
 
             modelBuilder.Entity("Fleet.Models.Usuario", b =>
                 {
-                    b.Navigation("UsuarioWorkspaces");
+                    b.Navigation("UsuarioWorkspace");
                 });
 
             modelBuilder.Entity("Fleet.Models.Workspace", b =>
                 {
-                    b.Navigation("UsuarioWorkspaces");
+                    b.Navigation("UsuarioWorkspace");
                 });
 #pragma warning restore 612, 618
         }

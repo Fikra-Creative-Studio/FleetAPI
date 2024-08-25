@@ -35,7 +35,6 @@ namespace Fleet.Controllers
         [Authorize]
         public async Task<IActionResult> Imagem(IFormFile file)
         {
-            var id = HttpContext.Items["user"] as string;
 
             if (file.Length > 0)
             {
@@ -44,7 +43,7 @@ namespace Fleet.Controllers
                 {
                     await file.CopyToAsync(stream);
                     stream.Position = 0;
-                    await usuarioService.UploadAsync(id, stream, extension);
+                    await usuarioService.UploadAsync(stream, extension);
                 }
                 return Ok("Arquivo enviado com sucesso!");
             }

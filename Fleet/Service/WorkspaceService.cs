@@ -14,19 +14,33 @@ public class WorkspaceService(ILoggedUser loggedUser,
     IWorkspaceRepository workspaceRepository, 
     IUsuarioWorkspaceRepository usuarioWorkspaceRepository, 
     IUsuarioRepository usuarioRepository, 
-    IMapper mapper) : IWorskpaceService
+    IMapper mapper,
+    IBucketService bucketService) : IWorskpaceService
 {
     public Task Atualizar(string id)
     {
         throw new NotImplementedException();
     }
 
-    public async Task Criar(WorkspaceRequest request)
+    public async Task Criar(IFormFile? file, WorkspaceRequest request)
     {
         var usuario = await usuarioRepository.Buscar(x => x.Id == loggedUser.UserId) ?? throw new BussinessException("Usuario invalido");
         var workspace = mapper.Map<Workspace>(request);
 
         await Validar(workspace, WorkspaceRequestEnum.Criar);
+
+        if (file != null && file.Length > 0)
+        {
+            var extension = file.FileName.Split(".").Last();
+            using (var stream = new MemoryStream())
+            {
+                Stream fileStream = stream;
+                await file.CopyToAsync(fileStream);
+                stream.Position = 0;
+                var filename = await bucketService.UploadAsync(fileStream, extension) ?? throw new BussinessException("não foi possivel salvar a imagem");
+                workspace.UrlImagem = filename;
+            }
+        }
 
         var workspaceCriado = await workspaceRepository.Criar(workspace);
 
