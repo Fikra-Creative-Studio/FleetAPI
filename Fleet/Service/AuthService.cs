@@ -33,7 +33,7 @@ public class AuthService : IAuthService
     }
     public async Task<LoginResponse> Logar(LoginRequest login)
     {
-        var usuario =  _usuarioRepository.Listar(x => x.Email == login.Email && CriptografiaHelper.DescriptografarAes(x.Senha, Secret) == login.Senha)
+        var usuario =  _usuarioRepository.Listar(x => x.Email == login.Email && x.Senha == CriptografiaHelper.CriptografarAes(login.Senha,Secret))
                                          .Include(x => x.UsuarioWorkspaces)
                                          .ThenInclude(x => x.Workspace).FirstOrDefault() ??  throw new UnauthorizedAccessException(Resource.usuario_emailSenhaInvalido);
                                 
