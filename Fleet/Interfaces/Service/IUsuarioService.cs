@@ -7,6 +7,6 @@ namespace Fleet.Interfaces.Service
     {
         Task Criar(UsuarioRequest user);
         Task Atualizar(UsurioPutRequest user);
-        Task UploadAsync(string id, Stream stream, string fileExtension);
+        Task UploadAsync(Stream stream, string fileExtension);
     }
 }
