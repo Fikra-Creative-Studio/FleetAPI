@@ -33,9 +33,10 @@ public class AuthService : IAuthService
     }
     public async Task<LoginResponse> Logar(LoginRequest login)
     {
-        var usuario =  _usuarioRepository.Listar(x => x.Email == login.Email && x.Senha == CriptografiaHelper.CriptografarAes(login.Senha,Secret))
-                                         .Include(x => x.UsuarioWorkspaces)
-                                         .ThenInclude(x => x.Workspace).FirstOrDefault() ??  throw new UnauthorizedAccessException(Resource.usuario_emailSenhaInvalido);
+        var usuario = _usuarioRepository.Listar(x => x.Email == login.Email && x.Senha == CriptografiaHelper.CriptografarAes(login.Senha, Secret))
+                                .Include(x => x.UsuarioWorkspaces.Where(uw => uw.Ativo && uw.Workspace.Ativo))
+                                .ThenInclude(uw => uw.Workspace)
+                                .FirstOrDefault() ??  throw new UnauthorizedAccessException(Resource.usuario_emailSenhaInvalido);
                                 
         var token =  _tokenService.GenerateToken(usuario);
 
@@ -51,6 +52,7 @@ public class AuthService : IAuthService
                 Cnpj = x.Workspace.Cnpj,
                 Fantasia = x.Workspace.Fantasia,
                 UrlImage = x.Workspace.UrlImagem,
+                Papel = x.Papel
             }).ToList(),
         };
         

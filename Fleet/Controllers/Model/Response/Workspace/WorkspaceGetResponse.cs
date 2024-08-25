@@ -1,4 +1,6 @@
-﻿namespace Fleet.Controllers.Model.Response.Workspace
+﻿using Fleet.Enums;
+
+namespace Fleet.Controllers.Model.Response.Workspace
 {
     public class WorkspaceGetResponse
     {
@@ -6,5 +8,6 @@
         public string Cnpj { get; set; } = string.Empty;
         public string Fantasia { get; set; } = string.Empty;
         public string UrlImage { get; set; } = string.Empty;
+        public PapelEnum Papel { get; set;}
     }
 }
