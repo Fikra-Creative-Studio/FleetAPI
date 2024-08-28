@@ -6,10 +6,9 @@ using Fleet.Models;
 using Fleet.Resources;
 using Fleet.Validators;
 using FluentAssertions;
-using Microsoft.VisualStudio.TestPlatform.CrossPlatEngine;
 using Moq;
 
-namespace Fleet.Test.Validator;
+namespace Test.Validator;
 
 public class UsuarioValidatorUT
 {

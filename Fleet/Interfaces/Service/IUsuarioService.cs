@@ -8,5 +8,6 @@ namespace Fleet.Interfaces.Service
         Task Criar(UsuarioRequest user);
         Task Atualizar(UsurioPutRequest user);
         Task UploadAsync(Stream stream, string fileExtension);
+        Task<List<UsuarioBuscarWorkspaceResponse>> BuscarPorWorkspace(string workspaceId);
     }
 }

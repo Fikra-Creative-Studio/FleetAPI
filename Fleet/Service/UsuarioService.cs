@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Fleet.Controllers.Model.Request.Usuario;
+using Fleet.Controllers.Model.Response.Usuario;
 using Fleet.Enums;
 using Fleet.Helpers;
 using Fleet.Interfaces.Repository;
@@ -14,7 +15,8 @@ namespace Fleet.Service
                                 IConfiguration configuration,
                                 IMapper mapper,
                                 IBucketService bucketService,
-                                ILoggedUser loggedUser) : IUsuarioService
+                                ILoggedUser loggedUser,
+                                IUsuarioWorkspaceRepository usuarioWorkspaceRepository) : IUsuarioService
     {
         private string Secret { get => configuration.GetValue<string>("Crypto:Secret"); }
 
@@ -28,9 +30,7 @@ namespace Fleet.Service
 
         public async Task Atualizar(UsurioPutRequest user)
         {
-            var usuario = await usuarioRepository.Buscar(x => x.Id == loggedUser.UserId);
-
-            if (usuario == null) throw new BussinessException("Não foi possivel atualizar o usuário");
+            var usuario = await usuarioRepository.Buscar(x => x.Id == loggedUser.UserId) ?? throw new BussinessException("Não foi possivel atualizar o usuário");
             //Validar o objeto que vindo da request
 
             usuario.Nome = user.Nome;
@@ -69,6 +69,32 @@ namespace Fleet.Service
                     await usuarioRepository.Atualizar(user);
                 }
             }
+        }
+
+        public async Task<List<UsuarioBuscarWorkspaceResponse>> BuscarPorWorkspace(string workspaceId)
+        {
+            int decryptId;
+            Console.WriteLine(workspaceId);
+
+            decryptId = int.Parse(CriptografiaHelper.DescriptografarAes(workspaceId, Secret));
+
+            if (!await usuarioWorkspaceRepository.UsuarioWorkspaceAdmin(loggedUser.UserId, decryptId)) throw new BussinessException("Usuario nao tem permissao para essa operacao"); 
+
+            if (decryptId == null) throw new BussinessException("Workspace inválido");
+      
+
+            var usuarios = await usuarioRepository.BuscarPorWorkspace(decryptId);
+
+            return usuarios.Select( x =>
+                new UsuarioBuscarWorkspaceResponse {
+                    Id = CriptografiaHelper.CriptografarAes(x.Id.ToString(), Secret),
+                    CPF = x.CPF,
+                    Email = x.Email,
+                    Convidado = x.Convidado,
+                    Nome = x.Nome,
+                    UrlImagem = x.UrlImagem
+                }
+            ).ToList();
         }
     }
 }

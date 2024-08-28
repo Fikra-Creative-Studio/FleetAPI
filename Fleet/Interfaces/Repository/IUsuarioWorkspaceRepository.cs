@@ -6,4 +6,4 @@ public interface IUsuarioWorkspaceRepository
 {
     Task Criar(UsuarioWorkspace usuarioWorkspace);
     Task<bool> Existe(int usuarioId, int workspaceId);
-}
+    Task<bool> UsuarioWorkspaceAdmin(int usuarioId, int workspaceId);}
