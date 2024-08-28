@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Fleet.Controllers.Model.Request.Usuario;
-using Fleet.Controllers.Model.Response.Usuario;
 using Fleet.Enums;
 using Fleet.Helpers;
 using Fleet.Interfaces.Repository;
@@ -15,8 +14,7 @@ namespace Fleet.Service
                                 IConfiguration configuration,
                                 IMapper mapper,
                                 IBucketService bucketService,
-                                ILoggedUser loggedUser,
-                                IUsuarioWorkspaceRepository usuarioWorkspaceRepository) : IUsuarioService
+                                ILoggedUser loggedUser) : IUsuarioService
     {
         private string Secret { get => configuration.GetValue<string>("Crypto:Secret"); }
 
@@ -54,50 +52,6 @@ namespace Fleet.Service
                     await usuarioRepository.Atualizar(user);
                 }
             }
-        }
-
-        public async Task<List<UsuarioBuscarWorkspaceResponse>> BuscarPorWorkspace(string workspaceId)
-        {
-            var decryptId = DecryptId(workspaceId, "Workspace inválido");
-
-            ValidarWorkspaceAdmin(loggedUser.UserId, decryptId);
-
-            var usuarios = await usuarioRepository.BuscarPorWorkspace(decryptId);
-
-            return usuarios.Select( x =>
-                new UsuarioBuscarWorkspaceResponse {
-                    Id = CriptografiaHelper.CriptografarAes(x.Id.ToString(), Secret),
-                    CPF = x.CPF,
-                    Email = x.Email,
-                    Convidado = x.Convidado,
-                    Nome = x.Nome,
-                    UrlImagem = x.UrlImagem
-                }
-            ).ToList();
-        }
-
-        public async Task AtualizarPapel(UsuarioAtualizarPapelRequest request)
-        {
-            var decryptUsuarioId = DecryptId(request.UsuarioId, "Usuario inválido");
-            var decryptWorkspaceId = DecryptId(request.WorkspaceId, "Workspace inválido");
-            ValidarWorkspaceAdmin(loggedUser.UserId, decryptWorkspaceId);
-
-            if (!await usuarioWorkspaceRepository.Existe(decryptUsuarioId, decryptWorkspaceId))
-                throw new BussinessException("Usuario não está vinculado a esse workspace");
-
-            await usuarioWorkspaceRepository.AtualizarPapel(decryptUsuarioId, decryptWorkspaceId, request.Papel); 
-        }
-
-        private async void ValidarWorkspaceAdmin(int usuarioId, int workspaceId)
-        {
-               if (!await usuarioWorkspaceRepository.UsuarioWorkspaceAdmin(usuarioId, workspaceId)) 
-                    throw new BussinessException("Usuario nao tem permissao para essa operacao"); 
-        }
-
-        private int DecryptId(string encrypt, string errorMessage)
-        {
-                var decrypt = CriptografiaHelper.DescriptografarAes(encrypt, Secret) ?? throw new BussinessException(errorMessage);
-                return int.Parse(decrypt);
         }
 
         private async Task Validar(Usuario usuario, UsuarioRequestEnum request)

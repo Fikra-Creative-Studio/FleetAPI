@@ -8,12 +8,12 @@ namespace Fleet.Repository
     public class UsuarioRepository(ApplicationDbContext context) : IUsuarioRepository
     {
 
-    public async Task<List<Usuario>> BuscarPorWorkspace(int workspaceId)
+    public async Task<List<Usuario>> BuscarPorWorkspace(int workspaceId, int loggedUserId)
     {
         return await context.Usuarios
                         .Include(u => u.UsuarioWorkspaces)
                             .ThenInclude(uw => uw.Workspace)
-                        .Where(u => u.UsuarioWorkspaces.Any(uw => uw.WorkspaceId == workspaceId))
+                        .Where(u => u.UsuarioWorkspaces.Any(uw => uw.WorkspaceId == workspaceId) && u.Id != loggedUserId)
                         .ToListAsync();
     }
         public async Task Criar(Usuario user)

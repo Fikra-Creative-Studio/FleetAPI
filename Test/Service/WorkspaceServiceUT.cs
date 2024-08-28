@@ -1,7 +1,6 @@
 using System;
 using System.Linq.Expressions;
 using AutoMapper;
-using Castle.Core.Configuration;
 using Fleet.Controllers.Model.Request.Workspace;
 using Fleet.Interfaces.Repository;
 using Fleet.Interfaces.Service;
@@ -9,6 +8,7 @@ using Fleet.Mapper;
 using Fleet.Models;
 using Fleet.Service;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Moq;
 
 namespace Test.Service;
@@ -21,6 +21,7 @@ public class WorkspaceServiceUT
     private Mock<ILoggedUser> _loggedUser;
     private Mock<IMapper> _mapper;
     private Mock<IBucketService> _bucketService;
+    private IConfiguration _configuration;
     IWorskpaceService _worskpaceService;
     public WorkspaceServiceUT()
     {
@@ -30,12 +31,18 @@ public class WorkspaceServiceUT
         _bucketService = new Mock<IBucketService>();
         _mapper = new Mock<IMapper>();
         _loggedUser = new Mock<ILoggedUser>();
+        var inMemorySettings = new Dictionary<string, string> {{ "Crypto:Secret", "fleet123!@#" } };
+
+        _configuration = new ConfigurationBuilder()
+                            .AddInMemoryCollection(inMemorySettings)
+                            .Build();
         _worskpaceService = new WorkspaceService(_loggedUser.Object,
                                                 _workspaceRepository.Object,
                                                 _usuarioWorkspaceRepository.Object,
                                                 _usuarioRepository.Object,
                                                 _mapper.Object,
-                                                _bucketService.Object);
+                                                _bucketService.Object, 
+                                                _configuration);
         _loggedUser.Setup(x => x.UserId).Returns(Faker.Number.RandomNumber());
     }
 

@@ -1,5 +1,4 @@
 ﻿using Fleet.Controllers.Model.Request.Usuario;
-using Fleet.Controllers.Model.Response.Usuario;
 
 namespace Fleet.Interfaces.Service
 {
@@ -8,7 +7,5 @@ namespace Fleet.Interfaces.Service
         Task Criar(UsuarioRequest user);
         Task Atualizar(UsurioPutRequest user);
         Task UploadAsync(Stream stream, string fileExtension);
-        Task<List<UsuarioBuscarWorkspaceResponse>> BuscarPorWorkspace(string workspaceId);
-        Task AtualizarPapel(UsuarioAtualizarPapelRequest request);
     }
 }

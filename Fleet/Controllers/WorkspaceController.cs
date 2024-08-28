@@ -19,5 +19,23 @@ namespace Fleet.Controllers
 
             return Created();
         }
+
+        [HttpGet("{WorkspaceId}/Usuarios")]
+        [Authorize]
+        public async Task<IActionResult> BuscarUsuario([FromRoute] string WorkspaceId)
+        {
+            await worskpaceService.BuscarUsuarios(WorkspaceId);
+
+            return Created();
+        }
+
+        [HttpPatch("{WorkspaceId}/Permissao")]
+        [Authorize]
+        public async Task<IActionResult> AtualizarPermissao([FromRoute] string WorkspaceId ,[FromBody] WorkspaceAtualizarPermissaoRequest request)
+        {
+            await worskpaceService.AtualizarPapel(WorkspaceId ,request);
+
+            return Created();
+        }
     }
 }
