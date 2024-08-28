@@ -57,5 +57,15 @@ namespace Fleet.Controllers
             var usuarios = await usuarioService.BuscarPorWorkspace(workspaceId);
             return Ok(usuarios);
         }
+
+        [HttpPatch("[Action]")]
+        [Authorize]
+        public async Task<IActionResult> AtualizarPapel([FromBody] UsuarioAtualizarPapelRequest request)
+        {
+            await usuarioService.AtualizarPapel(request);
+
+            return Ok($"Papel do usuario atualizado para {request.Papel}");
+        }
+
     }
 }

@@ -9,5 +9,6 @@ namespace Fleet.Interfaces.Service
         Task Atualizar(UsurioPutRequest user);
         Task UploadAsync(Stream stream, string fileExtension);
         Task<List<UsuarioBuscarWorkspaceResponse>> BuscarPorWorkspace(string workspaceId);
+        Task AtualizarPapel(UsuarioAtualizarPapelRequest request);
     }
 }

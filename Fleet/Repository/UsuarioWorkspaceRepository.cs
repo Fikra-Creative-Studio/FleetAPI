@@ -8,6 +8,15 @@ namespace Fleet.Repository;
 
 public class UsuarioWorkspaceRepository(ApplicationDbContext context)  : IUsuarioWorkspaceRepository
 {
+    public async Task AtualizarPapel(int usuarioId, int workspaceId, PapelEnum papel)
+    {
+        var usuarioWorkspace = await context.UsuarioWorkspaces
+                                            .FirstOrDefaultAsync(x => x.UsuarioId == usuarioId 
+                                                                && x.WorkspaceId == workspaceId);
+        usuarioWorkspace.Papel = papel;
+        await context.SaveChangesAsync();
+    }
+
     public async Task Criar(UsuarioWorkspace usuarioWorkspace)
     {
         await context.UsuarioWorkspaces.AddAsync(usuarioWorkspace);
