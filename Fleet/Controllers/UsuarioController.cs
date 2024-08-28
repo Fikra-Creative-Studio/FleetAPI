@@ -30,7 +30,6 @@ namespace Fleet.Controllers
             return Ok();
         }
 
-
         [HttpPost("[Action]")]
         [Authorize]
         public async Task<IActionResult> Imagem(IFormFile file)
@@ -49,23 +48,5 @@ namespace Fleet.Controllers
             }
             return BadRequest("Arquivo inválido.");
         }
-
-        [HttpGet("[Action]/{workspaceId}")]
-        [Authorize]
-        public async Task<IActionResult> BuscarPorWorkspace([FromRoute] string workspaceId)
-        {
-            var usuarios = await usuarioService.BuscarPorWorkspace(workspaceId);
-            return Ok(usuarios);
-        }
-
-        [HttpPatch("[Action]")]
-        [Authorize]
-        public async Task<IActionResult> AtualizarPapel([FromBody] UsuarioAtualizarPapelRequest request)
-        {
-            await usuarioService.AtualizarPapel(request);
-
-            return Ok($"Papel do usuario atualizado para {request.Papel}");
-        }
-
     }
 }
