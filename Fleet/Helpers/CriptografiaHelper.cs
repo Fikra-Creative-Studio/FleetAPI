@@ -103,7 +103,7 @@ namespace Fleet.Helpers
         {
             try
             {
-                var base64Bytes = Convert.FromBase64String(encryptedString);
+                var base64Bytes = Convert.FromBase64String(encryptedString.Replace("-", "+").Replace("_", "/"));
                 var saltBytes = base64Bytes[8..16];
                 var cipherTextBytes = base64Bytes[16..];
                 var passphraseBytes = Encoding.UTF8.GetBytes(passphrase);
@@ -164,7 +164,7 @@ namespace Fleet.Helpers
                 Buffer.BlockCopy(Encoding.ASCII.GetBytes("Salted__"), 0, encryptedBytesWithSalt, 0, 8);
                 Buffer.BlockCopy(salt, 0, encryptedBytesWithSalt, 8, salt.Length);
                 Buffer.BlockCopy(encryptedBytes, 0, encryptedBytesWithSalt, salt.Length + 8, encryptedBytes.Length);
-                return Convert.ToBase64String(encryptedBytesWithSalt);
+                return Convert.ToBase64String(encryptedBytesWithSalt).Replace("+", "-").Replace("/", "_");  
             }
             catch
             {

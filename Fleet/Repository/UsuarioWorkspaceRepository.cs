@@ -1,4 +1,5 @@
 using System;
+using Fleet.Enums;
 using Fleet.Interfaces.Repository;
 using Fleet.Models;
 using Microsoft.EntityFrameworkCore;
@@ -16,5 +17,13 @@ public class UsuarioWorkspaceRepository(ApplicationDbContext context)  : IUsuari
     public async Task<bool> Existe(int usuarioId, int workspaceId)
     {
         return await context.UsuarioWorkspaces.AnyAsync(x => x.UsuarioId == usuarioId && x.WorkspaceId == workspaceId);
+    }
+
+    public async Task<bool> UsuarioWorkspaceAdmin(int usuarioId, int workspaceId)
+    {
+        return await context.UsuarioWorkspaces.AnyAsync(
+                                            uw => uw.UsuarioId == usuarioId && 
+                                            uw.WorkspaceId == workspaceId && 
+                                            uw.Papel == PapelEnum.Administrador);
     }
 }

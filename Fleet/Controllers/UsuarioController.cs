@@ -49,5 +49,13 @@ namespace Fleet.Controllers
             }
             return BadRequest("Arquivo inválido.");
         }
+
+        [HttpGet("[Action]/{workspaceId}")]
+        [Authorize]
+        public async Task<IActionResult> BuscarPorWorkspace([FromRoute] string workspaceId)
+        {
+            var usuarios = await usuarioService.BuscarPorWorkspace(workspaceId);
+            return Ok(usuarios);
+        }
     }
 }

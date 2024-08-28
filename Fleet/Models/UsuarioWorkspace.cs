@@ -1,7 +1,9 @@
-﻿using Fleet.Enums;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using Fleet.Enums;
 
 namespace Fleet.Models
 {
+    [Table("usuarioworkspace")]
     public class UsuarioWorkspace : DbEntity
     {
         public PapelEnum Papel { get; set; }

@@ -20,7 +20,7 @@ public class AuthService : IAuthService
     private readonly IConfiguration _configuration;
     private string Secret { get => _configuration.GetValue<string>("Crypto:Secret"); }
     private readonly IEmailService _emailService;
-
+    
     public AuthService(IUsuarioRepository usuarioRepository,
                         ITokenService tokenService,
                         IConfiguration configuration,
@@ -47,8 +47,9 @@ public class AuthService : IAuthService
             CPF = usuario.CPF,
             Email = usuario.Email,
             UrlImagem = usuario.UrlImagem,
+            Convidado = usuario.Convidado,
             Workspaces = usuario.UsuarioWorkspaces.Select(x => new WorkspaceGetResponse { 
-                Id = CriptografiaHelper.CriptografarAes(x.Workspace?.Id.ToString(), Secret),
+                Id = CriptografiaHelper.CriptografarAes(x.Workspace.Id.ToString(), Secret),
                 Cnpj = x.Workspace.Cnpj,
                 Fantasia = x.Workspace.Fantasia,
                 UrlImage = x.Workspace.UrlImagem,

@@ -1,8 +1,8 @@
-using Fleet.Controllers.Model.Response.Workspace;
+using System;
 
 namespace Fleet.Controllers.Model.Response.Usuario;
 
-public class UsuarioResponse
+public class UsuarioBuscarWorkspaceResponse
 {
     public string Id { get; set;} = string.Empty;
     public string Nome { get; set; } = string.Empty;
@@ -10,6 +10,4 @@ public class UsuarioResponse
     public string Email { get; set; } = string.Empty;
     public string UrlImagem { get; set; } = string.Empty;
     public bool Convidado { get; set; }
-    public List<WorkspaceGetResponse> Workspaces { get; set; } = [];
-    
 }
