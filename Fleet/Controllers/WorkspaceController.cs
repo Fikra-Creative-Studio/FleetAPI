@@ -35,7 +35,7 @@ namespace Fleet.Controllers
         {
             await worskpaceService.AtualizarPapel(WorkspaceId ,request);
 
-            return Created();
+            return Ok($"Permissão do usuário alterada para {request.Papel}");
         }
     }
 }
