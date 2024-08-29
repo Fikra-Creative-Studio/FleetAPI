@@ -63,10 +63,11 @@ public class WorkspaceService(ILoggedUser loggedUser,
     {
         var decryptId = DecryptId(workspaceId, "Workspace inválido");
 
+        Console.WriteLine(decryptId);
         await ValidarWorkspaceAdmin(loggedUser.UserId, decryptId);
 
         var usuarios = await usuarioRepository.BuscarPorWorkspace(decryptId, loggedUser.UserId);
-
+        Console.WriteLine(usuarios.ToString());
         return usuarios.Select( x =>
             new UsuarioBuscarWorkspaceResponse {
                 Id = CriptografiaHelper.CriptografarAes(x.Id.ToString(), Secret),

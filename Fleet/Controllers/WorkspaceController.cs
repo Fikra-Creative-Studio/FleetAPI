@@ -24,9 +24,9 @@ namespace Fleet.Controllers
         [Authorize]
         public async Task<IActionResult> BuscarUsuario([FromRoute] string WorkspaceId)
         {
-            await worskpaceService.BuscarUsuarios(WorkspaceId);
+            var usuarios = await worskpaceService.BuscarUsuarios(WorkspaceId);
 
-            return Created();
+            return Ok(usuarios);
         }
 
         [HttpPatch("{WorkspaceId}/Permissao")]
@@ -35,7 +35,7 @@ namespace Fleet.Controllers
         {
             await worskpaceService.AtualizarPapel(WorkspaceId ,request);
 
-            return Created();
+            return Ok($"Permissão do usuário alterada para {request.Papel}");
         }
     }
 }
