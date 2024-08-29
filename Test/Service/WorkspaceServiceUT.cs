@@ -2,6 +2,8 @@ using System;
 using System.Linq.Expressions;
 using AutoMapper;
 using Fleet.Controllers.Model.Request.Workspace;
+using Fleet.Controllers.Model.Response.Usuario;
+using Fleet.Helpers;
 using Fleet.Interfaces.Repository;
 using Fleet.Interfaces.Service;
 using Fleet.Mapper;
@@ -141,5 +143,39 @@ public class WorkspaceServiceUT
         _bucketService.Verify(x => x.UploadAsync(It.IsAny<Stream>(), It.IsAny<string>()), Times.Once);
         _workspaceRepository.Verify(x => x.Criar(It.IsAny<Workspace>()), Times.Once);
         _usuarioWorkspaceRepository.Verify(x => x.Criar(It.IsAny<UsuarioWorkspace>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Buscar_Usuarios_Sucesso()
+    {
+        var id = Faker.Number.RandomNumber(1,int.MaxValue);
+        var encryptId = CriptografiaHelper.CriptografarAes(id.ToString(), "fleet123!@#");
+        
+        var usuarios = new List<Usuario>
+        {
+            new() {
+                Id= Faker.Number.RandomNumber(1,int.MaxValue),
+                CPF= "111.111.111-02",
+                Email= Faker.User.Email(),
+                Nome= Faker.User.Username(),
+                Senha = CriptografiaHelper.CriptografarAes(Faker.User.Password(), _configuration.GetValue<string>("Crypto:Secret")) ?? string.Empty
+            }
+        };
+
+        _usuarioWorkspaceRepository.Setup(x => x.UsuarioWorkspaceAdmin(It.IsAny<int>(), It.IsAny<int>()))
+                                    .ReturnsAsync(true);
+        
+        _usuarioRepository.Setup(x => x.BuscarPorWorkspace(It.IsAny<int>(), It.IsAny<int>()))
+                            .ReturnsAsync(usuarios);
+
+        var response = await _worskpaceService.BuscarUsuarios(encryptId);
+
+        Assert.IsType<List<UsuarioBuscarWorkspaceResponse>>(response);
+    }
+
+    [Fact]
+    public async Task Atualizar_Papel_Sucesso()
+    {
+        
     }
 }

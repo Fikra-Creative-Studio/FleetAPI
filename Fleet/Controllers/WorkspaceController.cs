@@ -24,9 +24,9 @@ namespace Fleet.Controllers
         [Authorize]
         public async Task<IActionResult> BuscarUsuario([FromRoute] string WorkspaceId)
         {
-            await worskpaceService.BuscarUsuarios(WorkspaceId);
+            var usuarios = await worskpaceService.BuscarUsuarios(WorkspaceId);
 
-            return Created();
+            return Ok(usuarios);
         }
 
         [HttpPatch("{WorkspaceId}/Permissao")]
