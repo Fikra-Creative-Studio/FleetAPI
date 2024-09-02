@@ -16,6 +16,5 @@ namespace Fleet.Interfaces.Repository
         IQueryable<Usuario> Listar(Expression<Func<Usuario, bool>> exp);
         Task AtualizarSenha(Usuario novaSenha);
         Task<Usuario?> Buscar(Expression<Func<Usuario, bool>> exp);
-        Task<List<Usuario>> BuscarPorWorkspace(int workspaceId, int loggedUserId);
     }
 }

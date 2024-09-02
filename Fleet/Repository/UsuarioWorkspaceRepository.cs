@@ -1,4 +1,5 @@
 using System;
+using System.Linq.Expressions;
 using Fleet.Enums;
 using Fleet.Interfaces.Repository;
 using Fleet.Models;
@@ -17,15 +18,23 @@ public class UsuarioWorkspaceRepository(ApplicationDbContext context)  : IUsuari
         await context.SaveChangesAsync();
     }
 
+
     public async Task Criar(UsuarioWorkspace usuarioWorkspace)
     {
         await context.UsuarioWorkspaces.AddAsync(usuarioWorkspace);
         await context.SaveChangesAsync();
     }
 
-    public async Task<bool> Existe(int usuarioId, int workspaceId)
+    public async Task<bool> Existe(Expression<Func<UsuarioWorkspace,bool>> exp)
     {
-        return await context.UsuarioWorkspaces.AnyAsync(x => x.UsuarioId == usuarioId && x.WorkspaceId == workspaceId);
+        return await context.UsuarioWorkspaces.AnyAsync(exp);
+    }
+
+    public async Task Remover(int usuarioId, int workspaceId)
+    {
+        var usuarioWorkspace = await context.UsuarioWorkspaces.FirstOrDefaultAsync(x => x.UsuarioId == usuarioId && x.WorkspaceId == workspaceId);
+        usuarioWorkspace.Ativo = false;
+        await context.SaveChangesAsync();
     }
 
     public async Task<bool> UsuarioWorkspaceAdmin(int usuarioId, int workspaceId)
