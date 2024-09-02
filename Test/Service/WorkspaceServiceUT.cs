@@ -1,4 +1,3 @@
-using System;
 using System.Linq.Expressions;
 using AutoMapper;
 using Fleet.Controllers.Model.Request.Workspace;
@@ -6,12 +5,12 @@ using Fleet.Controllers.Model.Response.Usuario;
 using Fleet.Helpers;
 using Fleet.Interfaces.Repository;
 using Fleet.Interfaces.Service;
-using Fleet.Mapper;
 using Fleet.Models;
 using Fleet.Service;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Moq;
+using Fleet.Enums;
 
 namespace Test.Service;
 
@@ -25,6 +24,7 @@ public class WorkspaceServiceUT
     private Mock<IBucketService> _bucketService;
     private IConfiguration _configuration;
     IWorskpaceService _worskpaceService;
+    private Mock<IEmailService> _emailService;
     public WorkspaceServiceUT()
     {
         _usuarioRepository = new Mock<IUsuarioRepository>();
@@ -33,6 +33,7 @@ public class WorkspaceServiceUT
         _bucketService = new Mock<IBucketService>();
         _mapper = new Mock<IMapper>();
         _loggedUser = new Mock<ILoggedUser>();
+        _emailService = new Mock<IEmailService>();
         var inMemorySettings = new Dictionary<string, string> {{ "Crypto:Secret", "fleet123!@#" } };
 
         _configuration = new ConfigurationBuilder()
@@ -44,7 +45,8 @@ public class WorkspaceServiceUT
                                                 _usuarioRepository.Object,
                                                 _mapper.Object,
                                                 _bucketService.Object, 
-                                                _configuration);
+                                                _configuration,
+                                                _emailService.Object);
         _loggedUser.Setup(x => x.UserId).Returns(Faker.Number.RandomNumber());
     }
 
@@ -160,13 +162,13 @@ public class WorkspaceServiceUT
                 Nome= Faker.User.Username(),
                 Senha = CriptografiaHelper.CriptografarAes(Faker.User.Password(), _configuration.GetValue<string>("Crypto:Secret")) ?? string.Empty
             }
-        };
+        }.AsQueryable();
 
         _usuarioWorkspaceRepository.Setup(x => x.UsuarioWorkspaceAdmin(It.IsAny<int>(), It.IsAny<int>()))
                                     .ReturnsAsync(true);
         
-        _usuarioRepository.Setup(x => x.BuscarPorWorkspace(It.IsAny<int>(), It.IsAny<int>()))
-                            .ReturnsAsync(usuarios);
+        _usuarioRepository.Setup(x => x.Listar(It.IsAny<Expression<Func<Usuario, bool>>>()))
+                                .Returns((Expression<Func<Usuario, bool>> exp) => usuarios);
 
         var response = await _worskpaceService.BuscarUsuarios(encryptId);
 
@@ -176,6 +178,68 @@ public class WorkspaceServiceUT
     [Fact]
     public async Task Atualizar_Papel_Sucesso()
     {
+        var usuarioId = Faker.Number.RandomNumber(1,int.MaxValue);
+        var workspaceId = Faker.Number.RandomNumber(1,int.MaxValue);
+        WorkspaceAtualizarPermissaoRequest request = new(){
+            UsuarioId =  CriptografiaHelper.CriptografarAes(usuarioId.ToString(), "fleet123!@#"),
+            Papel = PapelEnum.Administrador
+        };
+
+        Usuario usuario = new() {
+            Id= Faker.Number.RandomNumber(1,int.MaxValue),
+            CPF= "111.111.111-02",
+            Email= Faker.User.Email(),
+            Nome= Faker.User.Username(),
+            Senha = CriptografiaHelper.CriptografarAes(Faker.User.Password(), _configuration.GetValue<string>("Crypto:Secret")) ?? string.Empty
+        };
+
+        Workspace workspace = new() {
+            Id= workspaceId,
+            Fantasia = "Teste"
+        };
+
+        _usuarioWorkspaceRepository.Setup(x => x.UsuarioWorkspaceAdmin(It.IsAny<int>(), It.IsAny<int>()))
+                                    .ReturnsAsync(true);
         
+        _usuarioWorkspaceRepository.Setup(x => x.Existe(It.IsAny<Expression<Func<UsuarioWorkspace, bool>>>()))
+                                    .ReturnsAsync(true);
+        
+        await _worskpaceService.AtualizarPapel(CriptografiaHelper.CriptografarAes(workspaceId.ToString(), "fleet123!@#"), request);
+
+        _usuarioWorkspaceRepository.Verify(x => x.AtualizarPapel(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<PapelEnum>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Convidar_Usuario_Existente_Sucesso()
+    {
+        var usuarioId = Faker.Number.RandomNumber(1,int.MaxValue);
+        var workspaceId = Faker.Number.RandomNumber(1,int.MaxValue);
+
+        Usuario usuario = new() {
+            Id= Faker.Number.RandomNumber(1,int.MaxValue),
+            CPF= "111.111.111-02",
+            Email= Faker.User.Email(),
+            Nome= Faker.User.Username(),
+            Senha = CriptografiaHelper.CriptografarAes(Faker.User.Password(), _configuration.GetValue<string>("Crypto:Secret")) ?? string.Empty
+        };
+
+        Workspace workspace = new() {
+            Id= workspaceId,
+            Fantasia = "Teste"
+        };
+
+        _usuarioWorkspaceRepository.Setup(x => x.UsuarioWorkspaceAdmin(It.IsAny<int>(), It.IsAny<int>()))
+                                    .ReturnsAsync(true);
+        
+        _usuarioRepository.Setup(x => x.Buscar(It.IsAny<Expression<Func<Usuario, bool>>>()))
+                            .ReturnsAsync(usuario);
+        
+        _workspaceRepository.Setup(x => x.Buscar(It.IsAny<Expression<Func<Workspace, bool>>>()))
+                                .ReturnsAsync(workspace);
+        
+        await _worskpaceService.ConvidarUsuario(CriptografiaHelper.CriptografarAes(workspaceId.ToString(), "fleet123!@#"), usuario.Email);
+
+        _usuarioWorkspaceRepository.Verify(x => x.Criar(It.IsAny<UsuarioWorkspace>()), Times.Once);
+        _emailService.Verify(x => x.EnviarEmail(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
     }
 }

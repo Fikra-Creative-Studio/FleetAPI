@@ -4,5 +4,6 @@
     {
         Usuario,
         Administrador,
+        Convidado
     }
 }

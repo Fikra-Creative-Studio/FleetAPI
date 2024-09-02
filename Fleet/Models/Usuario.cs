@@ -8,7 +8,6 @@
         public string Senha { get; set; } = string.Empty;
         public string UrlImagem { get; set; } = string.Empty;
         public string Token { get; set; } = string.Empty;
-        public bool Convidado { get; set; }
         public virtual ICollection<UsuarioWorkspace> UsuarioWorkspaces { get; set; } = [];
     }
 }

@@ -47,7 +47,6 @@ public class AuthService : IAuthService
             CPF = usuario.CPF,
             Email = usuario.Email,
             UrlImagem = usuario.UrlImagem,
-            Convidado = usuario.Convidado,
             Workspaces = usuario.UsuarioWorkspaces.Select(x => new WorkspaceGetResponse { 
                 Id = CriptografiaHelper.CriptografarAes(x.Workspace.Id.ToString(), Secret),
                 Cnpj = x.Workspace.Cnpj,

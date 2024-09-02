@@ -37,5 +37,23 @@ namespace Fleet.Controllers
 
             return Ok($"Permissão do usuário alterada para {request.Papel}");
         }
+
+        [HttpPatch("{WorkspaceId}/Convidar")]
+        [Authorize]
+        public async Task<IActionResult> ConvidarUsuario([FromRoute] string WorkspaceId ,[FromBody] string Email)
+        {
+            await worskpaceService.ConvidarUsuario(WorkspaceId ,Email);
+
+            return Ok();
+        }
+
+        [HttpDelete("{WorkspaceId}/Remover/{UsuarioId}")]
+        [Authorize]
+        public async Task<IActionResult> RemoverUsuario([FromRoute] string WorkspaceId , string UsuarioId)
+        {
+            await worskpaceService.RemoverUsuario(WorkspaceId , UsuarioId);
+
+            return Ok();
+        }
     }
 }

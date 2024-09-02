@@ -1,4 +1,5 @@
 using System;
+using System.Linq.Expressions;
 using Fleet.Interfaces.Repository;
 using Fleet.Models;
 using Microsoft.EntityFrameworkCore;
@@ -41,4 +42,10 @@ public class WorkspaceRepository(ApplicationDbContext context) : IWorkspaceRepos
         workspace.UrlImagem = workspace.UrlImagem;
         await context.SaveChangesAsync();
     }
+
+    public async Task<Workspace?> Buscar(Expression<Func<Workspace,bool>> exp)
+    {
+        return await context.Workspaces.FirstOrDefaultAsync(exp);
+    }
+
 }

@@ -19,8 +19,6 @@ namespace Fleet.Repository.Configuration
             builder.Property(x => x.Token).HasMaxLength(255);
 
             builder.Property(x => x.Nome).HasMaxLength(255).IsRequired();
-
-            builder.Property(x => x.Convidado).HasDefaultValue(false);
         }
 
     }
