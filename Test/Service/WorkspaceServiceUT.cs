@@ -242,4 +242,46 @@ public class WorkspaceServiceUT
         _usuarioWorkspaceRepository.Verify(x => x.Criar(It.IsAny<UsuarioWorkspace>()), Times.Once);
         _emailService.Verify(x => x.EnviarEmail(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
     }
+
+    [Fact]
+    public async Task Convidar_Usuario_Inexistente_Sucesso()
+    {
+        var usuarioId = Faker.Number.RandomNumber(1,int.MaxValue);
+        var workspaceId = Faker.Number.RandomNumber(1,int.MaxValue);
+
+        Workspace workspace = new() {
+            Id= workspaceId,
+            Fantasia = "Teste"
+        };
+
+        _usuarioWorkspaceRepository.Setup(x => x.UsuarioWorkspaceAdmin(It.IsAny<int>(), It.IsAny<int>()))
+                                    .ReturnsAsync(true);
+    
+        
+        _workspaceRepository.Setup(x => x.Buscar(It.IsAny<Expression<Func<Workspace, bool>>>()))
+                                .ReturnsAsync(workspace);
+        
+        await _worskpaceService.ConvidarUsuario(CriptografiaHelper.CriptografarAes(workspaceId.ToString(), "fleet123!@#"), "teste@teste.com.br");
+
+        _usuarioWorkspaceRepository.Verify(x => x.Criar(It.IsAny<UsuarioWorkspace>()), Times.Once);
+        _emailService.Verify(x => x.EnviarEmail(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Remover_Usuario_Sucesso()
+    {
+        var usuarioId = Faker.Number.RandomNumber(1,int.MaxValue);
+        var workspaceId = Faker.Number.RandomNumber(1,int.MaxValue);
+
+        _usuarioWorkspaceRepository.Setup(x => x.UsuarioWorkspaceAdmin(It.IsAny<int>(), It.IsAny<int>()))
+                                    .ReturnsAsync(true);
+        
+        _usuarioWorkspaceRepository.Setup(x => x.Existe(It.IsAny<Expression<Func<UsuarioWorkspace, bool>>>()))
+                                    .ReturnsAsync(true);
+
+        await _worskpaceService.RemoverUsuario(CriptografiaHelper.CriptografarAes(workspaceId.ToString(), "fleet123!@#"), CriptografiaHelper.CriptografarAes(usuarioId.ToString(), "fleet123!@#"));
+
+        _usuarioWorkspaceRepository.Verify(x => x.Remover(It.IsAny<int>(), It.IsAny<int>()), Times.Once);
+
+    }
 }
