@@ -33,7 +33,7 @@ public class UsuarioWorkspaceRepository(ApplicationDbContext context)  : IUsuari
     public async Task Remover(int usuarioId, int workspaceId)
     {
         var usuarioWorkspace = await context.UsuarioWorkspaces.FirstOrDefaultAsync(x => x.UsuarioId == usuarioId && x.WorkspaceId == workspaceId);
-        usuarioWorkspace.Ativo = false;
+        context.UsuarioWorkspaces.Remove(usuarioWorkspace);
         await context.SaveChangesAsync();
     }
 
