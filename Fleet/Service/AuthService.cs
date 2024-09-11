@@ -10,6 +10,7 @@ using Fleet.Interfaces.Service;
 using Fleet.Models;
 using Fleet.Resources;
 using Microsoft.EntityFrameworkCore;
+using System.Text;
 
 namespace Fleet.Service;
 
@@ -62,16 +63,23 @@ public class AuthService : IAuthService
     public async Task<EsqueceuSenhaResponse> EsqueceuSenha(EsqueceuSenhaRequest request)
     {
         //busa o usuario se não existir devolve resposta sem codigo e sem token
-        var usuario = await _usuarioRepository.Buscar(x => x.Email == request.Email);
+        var usuario = await _usuarioRepository.Buscar(x => x.Email == request.Email && x.Ativo);
         if (usuario == null) return new();
 
         //se o email do usuario existe gera um codigo e um token
-        string codigo = new Random().Next(0, 10000).ToString("D4");
+        string codigo = new Random().Next(0, 100000).ToString("D5");
         usuario.Token = Guid.NewGuid().ToString();
 
         //salva o token na base e envia o email para o usuario
         await _usuarioRepository.Atualizar(usuario.Id, usuario);
-        await _emailService.EnviarEmail(usuario.Email, usuario.Nome, "Recuperação de senha", codigo);
+
+        string codigoTemplate = string.Empty;
+        codigo.ToList().ForEach(x => { codigoTemplate += $"<td>{x}</td>"; });
+
+        string mailPath = $"{AppDomain.CurrentDomain.BaseDirectory}Service\\TemplateMail\\forgot-password.html";
+        string fileContent = await File.ReadAllTextAsync(mailPath, Encoding.UTF8);
+        fileContent = fileContent.Replace("{{senha}}", codigoTemplate);
+        await _emailService.EnviarEmail(usuario.Email, usuario.Nome, "Recuperação de senha", fileContent);
 
         return new EsqueceuSenhaResponse { Codigo = codigo, Token = usuario.Token };
     }
@@ -83,6 +91,11 @@ public class AuthService : IAuthService
 
         usuario.Senha = CriptografiaHelper.CriptografarAes(senha, Secret)!;
         await _usuarioRepository.AtualizarSenha(usuario);
+
+        string mailPath = $"{AppDomain.CurrentDomain.BaseDirectory}Service\\TemplateMail\\reset-password.html";
+        string fileContent = await File.ReadAllTextAsync(mailPath, Encoding.UTF8);
+        fileContent = fileContent.Replace("{{name}}", usuario.Nome);
+        await _emailService.EnviarEmail(usuario.Email, usuario.Nome, "Sua senha foi alterada", fileContent);
     }
 
 }

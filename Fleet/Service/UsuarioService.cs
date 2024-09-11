@@ -7,6 +7,7 @@ using Fleet.Interfaces.Service;
 using Fleet.Models;
 using Fleet.Resources;
 using Fleet.Validators;
+using System.Text;
 
 namespace Fleet.Service
 {
@@ -14,16 +15,24 @@ namespace Fleet.Service
                                 IConfiguration configuration,
                                 IMapper mapper,
                                 IBucketService bucketService,
-                                ILoggedUser loggedUser) : IUsuarioService
+                                ILoggedUser loggedUser,
+                                IEmailService emailService) : IUsuarioService
     {
-        private string Secret { get => configuration.GetValue<string>("Crypto:Secret"); }
+        private string Secret { get => configuration.GetValue<string>("Crypto:Secret") ?? string.Empty; }
 
         public async Task Criar(UsuarioRequest user)
         {
             Usuario usuario = mapper.Map<Usuario>(user);
             await Validar(usuario, UsuarioRequestEnum.Criar);
 
-            await usuarioRepository.Criar(usuario);
+            var usuarioCriado = await usuarioRepository.Criar(usuario);
+            usuarioCriado.Ativo = false;
+
+            string mailPath = $"{AppDomain.CurrentDomain.BaseDirectory}Service\\TemplateMail\\create-account.html";
+            string fileContent = await File.ReadAllTextAsync(mailPath, Encoding.UTF8);
+            fileContent = fileContent.Replace("{{name}}", usuarioCriado.Nome)
+                                     .Replace("{{link}}",$"https://juriseg.ddns.net:3307/api/Usuario/Confirmar/{CriptografiaHelper.CriptografarAes(usuarioCriado.Id.ToString(), Secret)}");
+            await emailService.EnviarEmail(usuarioCriado.Email, usuarioCriado.Nome, "Bem-vindo ao MyFleet", fileContent);
         }
 
         public async Task Atualizar(UsurioPutRequest user)
@@ -45,7 +54,7 @@ namespace Fleet.Service
                 {
                     var filename = await bucketService.UploadAsync(stream, fileExtension) ?? throw new BussinessException("não foi possivel salvar a imagem");
 
-                    var user = await usuarioRepository.Buscar(x => x.Id == loggedUser.UserId    ) ?? throw new BussinessException("falha para obter o usuario");
+                    var user = await usuarioRepository.Buscar(x => x.Id == loggedUser.UserId) ?? throw new BussinessException("falha para obter o usuario");
                     if (user != null && !string.IsNullOrEmpty(user.UrlImagem)) await bucketService.DeleteAsync(user.UrlImagem);
 
                     user.UrlImagem = filename;
@@ -67,6 +76,14 @@ namespace Fleet.Service
                 var errors = string.Join(";", validationResult.Errors.Select(x => x.ErrorMessage));
                 throw new BussinessException(errors);
             }
+        }
+
+        public async Task ConfirmarAsync(string id)
+        {
+            var idDescriptografado = int.Parse(CriptografiaHelper.DescriptografarAes(id, Secret) ?? throw new BussinessException("Não foi possivel realizar a sua operação"));
+            var user = await usuarioRepository.Buscar(x => x.Id == idDescriptografado && !x.Ativo ) ?? throw new BussinessException("falha para obter o usuario");
+            user.Ativo = true;
+            await usuarioRepository.Atualizar(user);
         }
     }
 }

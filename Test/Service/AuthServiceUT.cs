@@ -92,7 +92,7 @@ public class AuthServiceUT
         _usuarioRepository.Setup(x => x.ExisteEmail(esqueceuSenhaRequest.Email, null))
                                 .ReturnsAsync(true);
 
-        _usuarioRepository.Setup(x => x.Buscar(x => x.Email == esqueceuSenhaRequest.Email))
+        _usuarioRepository.Setup(x => x.Buscar(x => x.Email == esqueceuSenhaRequest.Email && x.Ativo))
                                 .ReturnsAsync(usuario);
 
         _emailService.Setup(x => x.EnviarEmail(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()));

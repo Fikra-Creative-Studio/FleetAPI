@@ -4,6 +4,7 @@ using Fleet.Interfaces.Service;
 using Fleet.Controllers.Model.Request.Usuario;
 using Fleet.Service;
 using Fleet.Filters;
+using System.IO;
 
 namespace Fleet.Controllers
 {
@@ -47,6 +48,15 @@ namespace Fleet.Controllers
                 return Ok("Arquivo enviado com sucesso!");
             }
             return BadRequest("Arquivo inválido.");
+        }
+
+
+        [HttpGet("[Action]/{id}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Confirmar([FromRoute] string id)
+        {
+            await usuarioService.ConfirmarAsync(id);
+            return RedirectPermanent("http://fikra.com.br");
         }
     }
 }
