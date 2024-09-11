@@ -20,7 +20,7 @@ public class EmailService : IEmailService
     {
 
         // Configuração do e-mail
-        var fromAddress = new MailAddress(Email_Emissor, "No Reply Fleet");
+        var fromAddress = new MailAddress(Email_Emissor, "No Reply My-Fleet");
         var toAddress = new MailAddress(email, nome);
 
         // Cria o objeto SMTP
@@ -38,6 +38,7 @@ public class EmailService : IEmailService
         using var m = new MailMessage(fromAddress, toAddress)
         {
             Subject = assunto,
+            IsBodyHtml = true,
             Body = message
         };
         await smtp.SendMailAsync(m); // Envia o e-mail

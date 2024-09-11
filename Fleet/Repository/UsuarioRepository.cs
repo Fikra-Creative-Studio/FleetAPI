@@ -7,10 +7,12 @@ namespace Fleet.Repository
 {
     public class UsuarioRepository(ApplicationDbContext context) : IUsuarioRepository
     {
-        public async Task Criar(Usuario user)
+        public async Task<Usuario> Criar(Usuario user)
         {
             await context.Usuarios.AddAsync(user);
             await context.SaveChangesAsync();
+
+            return user;
         }
 
         public async Task Deletar(int id)
