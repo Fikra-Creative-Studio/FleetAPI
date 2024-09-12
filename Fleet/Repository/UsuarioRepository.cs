@@ -37,19 +37,19 @@ namespace Fleet.Repository
 
         public async Task<bool> ExisteEmail(string email, int? id = null)
         {
-            if(id == null)
+            if (id == null)
                 return await context.Usuarios.AnyAsync(x => x.Email == email);
-            return  await context.Usuarios.AnyAsync(x => x.Email == email && x.Id != id);
+            return await context.Usuarios.AnyAsync(x => x.Email == email && x.Id != id);
         }
 
         public async Task<bool> ExisteCpf(string cpf, int? id = null)
         {
-            if(id == null)
-                return await  context.Usuarios.AnyAsync(x => x.CPF == cpf);
-            return  await context.Usuarios.AnyAsync(x => x.CPF == cpf && x.Id != id);
+            if (id == null)
+                return await context.Usuarios.AnyAsync(x => x.CPF.Replace(".", string.Empty).Replace("-", string.Empty) == cpf.Replace(".", string.Empty).Replace("-", string.Empty));
+            return await context.Usuarios.AnyAsync(x => x.CPF == cpf && x.Id != id);
         }
 
-        public async Task<Usuario?> Buscar(Expression<Func<Usuario,bool>> exp)
+        public async Task<Usuario?> Buscar(Expression<Func<Usuario, bool>> exp)
         {
             return await context.Usuarios.FirstOrDefaultAsync(exp);
         }
@@ -73,7 +73,7 @@ namespace Fleet.Repository
         public async Task AtualizarSenha(Usuario novaSenha)
         {
             var usuario = await context.Usuarios.FirstOrDefaultAsync(x => x.Token == novaSenha.Token);
-            if(usuario != null)
+            if (usuario != null)
             {
                 usuario.Token = string.Empty;
                 usuario.Senha = novaSenha.Senha;

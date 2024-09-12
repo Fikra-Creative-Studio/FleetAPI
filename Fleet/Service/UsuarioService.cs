@@ -8,6 +8,7 @@ using Fleet.Models;
 using Fleet.Resources;
 using Fleet.Validators;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Fleet.Service
 {
@@ -23,10 +24,10 @@ namespace Fleet.Service
         public async Task Criar(UsuarioRequest user)
         {
             Usuario usuario = mapper.Map<Usuario>(user);
+            usuario.Ativo = false;
             await Validar(usuario, UsuarioRequestEnum.Criar);
 
             var usuarioCriado = await usuarioRepository.Criar(usuario);
-            usuarioCriado.Ativo = false;
 
             string mailPath = $"{AppDomain.CurrentDomain.BaseDirectory}Service\\TemplateMail\\create-account.html";
             string fileContent = await File.ReadAllTextAsync(mailPath, Encoding.UTF8);
