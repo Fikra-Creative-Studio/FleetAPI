@@ -13,10 +13,9 @@ namespace Fleet.Controllers
     {
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> Criar(IFormFile? file ,[FromBody] WorkspaceRequest request)
+        public async Task<IActionResult> Criar([FromBody] WorkspaceRequest request)
         {
-            await worskpaceService.Criar(file ,request);
-
+            await worskpaceService.Criar(request);
             return Created();
         }
 

@@ -8,6 +8,7 @@ using Fleet.Interfaces.Service;
 using Fleet.Models;
 using Fleet.Validators;
 using Microsoft.EntityFrameworkCore;
+using System.IO;
 
 namespace Fleet.Service;
 
@@ -26,37 +27,42 @@ public class WorkspaceService(ILoggedUser loggedUser,
         throw new NotImplementedException();
     }
 
-    public async Task Criar(IFormFile? file, WorkspaceRequest request)
+    public async Task<Workspace> Criar(WorkspaceRequest request)
     {
-        var usuario = await usuarioRepository.Buscar(x => x.Id == loggedUser.UserId) ?? throw new BussinessException("Usuario invalido");
-        var workspace = mapper.Map<Workspace>(request);
+        if(await workspaceRepository.ExisteCnpj(request.CNPJ)) throw new BussinessException("CNPJ já cadastrado");
 
-        await Validar(workspace, WorkspaceRequestEnum.Criar);
-
-        if (file != null && file.Length > 0)
+        string NomeFoto = string.Empty;
+        if (!string.IsNullOrEmpty(request.ImagemBase64))
         {
-            var extension = file.FileName.Split(".").Last();
-            using (var stream = new MemoryStream())
+            try
             {
-                Stream fileStream = stream;
-                await file.CopyToAsync(fileStream);
-                stream.Position = 0;
-                var filename = await bucketService.UploadAsync(fileStream, extension) ?? throw new BussinessException("não foi possivel salvar a imagem");
-                workspace.UrlImagem = filename;
+                var bytes = Convert.FromBase64String(request.ImagemBase64);
+                NomeFoto = await bucketService.UploadAsync(new MemoryStream(bytes), request.ExtensaoImagem, "workspace") ?? throw new BussinessException("não foi possivel salvar a imagem");
+            }
+            catch (Exception)
+            {
+                NomeFoto = string.Empty;
             }
         }
 
-        var workspaceCriado = await workspaceRepository.Criar(workspace);
-
-        UsuarioWorkspace usuarioWorkspace = new() {
-            Usuario = usuario,
-            UsuarioId = usuario.Id,
-            Workspace = workspaceCriado,
-            WorkspaceId = workspaceCriado.Id,
+        var workspace = new Workspace
+        {
             Ativo = true,
-            Papel = PapelEnum.Administrador
+            Cnpj = request.CNPJ,
+            Fantasia = request.Fantasia,
+            UrlImagem = NomeFoto,
+            UsuarioWorkspaces = new List<UsuarioWorkspace>()
+            {
+                new UsuarioWorkspace
+                {
+                    Ativo= true,
+                    Papel = PapelEnum.Administrador,
+                    UsuarioId = loggedUser.UserId,
+                }
+            }
         };
-        await usuarioWorkspaceRepository.Criar(usuarioWorkspace);
+
+        return await workspaceRepository.Criar(workspace);
     }
 
     public async Task<List<UsuarioBuscarWorkspaceResponse>> BuscarUsuarios(string workspaceId)
@@ -169,4 +175,6 @@ public class WorkspaceService(ILoggedUser loggedUser,
             throw new BussinessException(errors);
         }
     }
+
+
 }

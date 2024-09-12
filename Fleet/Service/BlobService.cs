@@ -19,7 +19,7 @@ namespace Fleet.Service
             _containerClient.CreateIfNotExists();
         }
 
-        public async Task<string> UploadAsync(Stream stream, string fileExtension)
+        public async Task<string> UploadAsync(Stream stream, string fileExtension, string folder)
         {
             var filename = $"{Guid.NewGuid().ToString()}.{fileExtension}";
             BlobClient blobClient = _containerClient.GetBlobClient(filename);
@@ -28,7 +28,7 @@ namespace Fleet.Service
             return filename;
         }
 
-        public async Task DeleteAsync(string filename)
+        public async Task DeleteAsync(string filename, string folder)
         {
             BlobClient blobClient = _containerClient.GetBlobClient(filename);
 
