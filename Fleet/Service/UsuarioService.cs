@@ -53,10 +53,10 @@ namespace Fleet.Service
             {
                 using (var file = stream)
                 {
-                    var filename = await bucketService.UploadAsync(stream, fileExtension) ?? throw new BussinessException("não foi possivel salvar a imagem");
+                    var filename = await bucketService.UploadAsync(stream, fileExtension, "profile") ?? throw new BussinessException("não foi possivel salvar a imagem");
 
                     var user = await usuarioRepository.Buscar(x => x.Id == loggedUser.UserId) ?? throw new BussinessException("falha para obter o usuario");
-                    if (user != null && !string.IsNullOrEmpty(user.UrlImagem)) await bucketService.DeleteAsync(user.UrlImagem);
+                    if (user != null && !string.IsNullOrEmpty(user.UrlImagem)) await bucketService.DeleteAsync(user.UrlImagem, "profile");
 
                     user.UrlImagem = filename;
                     await usuarioRepository.Atualizar(user);
