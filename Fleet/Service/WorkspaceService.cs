@@ -142,15 +142,33 @@ public class WorkspaceService(ILoggedUser loggedUser,
         var decryptUsuarioId = DecryptId(usuarioId, "Usuario inválido");
 
         if(!await usuarioWorkspaceRepository.Existe(x => x.UsuarioId == decryptUsuarioId && x.WorkspaceId == decryptWorkspaceId)) 
-            throw new BussinessException("Usuário ou workspace inválido");
+            throw new BussinessException("Usuário não encontrado nesse workspace");
+
+        if (await UsuarioUnicoAdmin(decryptUsuarioId, decryptWorkspaceId))
+            throw new BussinessException("Usuario não pode ser removido pois é o único administrador desse workspace");
         
         await usuarioWorkspaceRepository.Remover(decryptUsuarioId, decryptWorkspaceId);
     }
 
     private async Task ValidarWorkspaceAdmin(int usuarioId, int workspaceId)
     {
-        if (!await usuarioWorkspaceRepository.UsuarioWorkspaceAdmin(usuarioId, workspaceId)) 
+        if (!await UsuarioAdmin(usuarioId, workspaceId)) 
             throw new BussinessException("Usuario nao tem permissao para essa operacao"); 
+    }
+
+    private async Task<bool> UsuarioUnicoAdmin(int usuarioId, int workspaceId)
+    {
+        if (!await UsuarioAdmin(usuarioId, workspaceId)) return false;
+        return !await usuarioWorkspaceRepository.Existe(uw => uw.UsuarioId != usuarioId && 
+                                            uw.WorkspaceId == workspaceId && 
+                                            uw.Papel == PapelEnum.Administrador);
+    }
+
+    private async Task<bool> UsuarioAdmin(int usuarioId, int workspaceId)
+    {
+        return await usuarioWorkspaceRepository.Existe(uw => uw.UsuarioId == usuarioId && 
+                                            uw.WorkspaceId == workspaceId && 
+                                            uw.Papel == PapelEnum.Administrador);
     }
 
     private int DecryptId(string encrypt, string errorMessage)
