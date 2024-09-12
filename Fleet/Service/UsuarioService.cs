@@ -5,8 +5,10 @@ using Fleet.Helpers;
 using Fleet.Interfaces.Repository;
 using Fleet.Interfaces.Service;
 using Fleet.Models;
+using Fleet.Repository;
 using Fleet.Resources;
 using Fleet.Validators;
+using Microsoft.EntityFrameworkCore;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -27,13 +29,38 @@ namespace Fleet.Service
             usuario.Ativo = false;
             await Validar(usuario, UsuarioRequestEnum.Criar);
 
-            var usuarioCriado = await usuarioRepository.Criar(usuario);
+
+            var novoUsuario = usuarioRepository.Listar(x => !x.Ativo && x.Email == user.Email)
+                                               .Include(x => x.UsuarioWorkspaces.Where(uw => uw.Workspace.Ativo))
+                                               .ThenInclude(uw => uw.Workspace)
+                                               .FirstOrDefault();
+            if (novoUsuario == null)
+            {
+                novoUsuario = await usuarioRepository.Criar(usuario);
+            }
+            else
+            {
+                //criando a conta de um usuário inativado.
+                novoUsuario.Ativo = true;
+                novoUsuario.Nome = usuario.Nome;
+                novoUsuario.Email = usuario.Email;
+                novoUsuario.CPF = usuario.CPF;
+                novoUsuario.Senha = usuario.Senha;
+
+                foreach (var item in novoUsuario.UsuarioWorkspaces)
+                {
+                    item.Papel = PapelEnum.Usuario;
+                }
+
+                await usuarioRepository.Atualizar(novoUsuario);
+            }
+
 
             string mailPath = $"{AppDomain.CurrentDomain.BaseDirectory}Service\\TemplateMail\\create-account.html";
             string fileContent = await File.ReadAllTextAsync(mailPath, Encoding.UTF8);
-            fileContent = fileContent.Replace("{{name}}", usuarioCriado.Nome)
-                                     .Replace("{{link}}",$"https://juriseg.ddns.net:3307/api/Usuario/Confirmar/{CriptografiaHelper.CriptografarAes(usuarioCriado.Id.ToString(), Secret)}");
-            await emailService.EnviarEmail(usuarioCriado.Email, usuarioCriado.Nome, "Bem-vindo ao MyFleet", fileContent);
+            fileContent = fileContent.Replace("{{name}}", novoUsuario.Nome)
+                                     .Replace("{{link}}", $"https://juriseg.ddns.net:3307/api/Usuario/Confirmar/{CriptografiaHelper.CriptografarAes(novoUsuario.Id.ToString(), Secret)}");
+            await emailService.EnviarEmail(novoUsuario.Email, novoUsuario.Nome, "Bem-vindo ao MyFleet", fileContent);
         }
 
         public async Task Atualizar(UsurioPutRequest user)
@@ -82,7 +109,7 @@ namespace Fleet.Service
         public async Task ConfirmarAsync(string id)
         {
             var idDescriptografado = int.Parse(CriptografiaHelper.DescriptografarAes(id, Secret) ?? throw new BussinessException("Não foi possivel realizar a sua operação"));
-            var user = await usuarioRepository.Buscar(x => x.Id == idDescriptografado && !x.Ativo ) ?? throw new BussinessException("falha para obter o usuario");
+            var user = await usuarioRepository.Buscar(x => x.Id == idDescriptografado && !x.Ativo) ?? throw new BussinessException("falha para obter o usuario");
             user.Ativo = true;
             await usuarioRepository.Atualizar(user);
         }

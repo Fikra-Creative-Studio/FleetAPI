@@ -9,13 +9,14 @@ using Fleet.Models;
 using Fleet.Validators;
 using Microsoft.EntityFrameworkCore;
 using System.IO;
+using System.Text;
 
 namespace Fleet.Service;
 
 public class WorkspaceService(ILoggedUser loggedUser,
-    IWorkspaceRepository workspaceRepository, 
-    IUsuarioWorkspaceRepository usuarioWorkspaceRepository, 
-    IUsuarioRepository usuarioRepository, 
+    IWorkspaceRepository workspaceRepository,
+    IUsuarioWorkspaceRepository usuarioWorkspaceRepository,
+    IUsuarioRepository usuarioRepository,
     IMapper mapper,
     IBucketService bucketService,
     IConfiguration configuration,
@@ -29,7 +30,7 @@ public class WorkspaceService(ILoggedUser loggedUser,
 
     public async Task<Workspace> Criar(WorkspaceRequest request)
     {
-        if(await workspaceRepository.ExisteCnpj(request.CNPJ)) throw new BussinessException("CNPJ já cadastrado");
+        if (await workspaceRepository.ExisteCnpj(request.CNPJ)) throw new BussinessException("CNPJ já cadastrado");
 
         string NomeFoto = string.Empty;
         if (!string.IsNullOrEmpty(request.ImagemBase64))
@@ -76,8 +77,9 @@ public class WorkspaceService(ILoggedUser loggedUser,
                                             .ThenInclude(uw => uw.Workspace)
                                         .ToList();
 
-        return usuarios.Select( x =>
-            new UsuarioBuscarWorkspaceResponse {
+        return usuarios.Select(x =>
+            new UsuarioBuscarWorkspaceResponse
+            {
                 Id = CriptografiaHelper.CriptografarAes(x.Id.ToString(), Secret),
                 CPF = x.CPF,
                 Email = x.Email,
@@ -90,7 +92,7 @@ public class WorkspaceService(ILoggedUser loggedUser,
         ).ToList();
     }
 
-    public async Task AtualizarPapel(string workspaceId ,WorkspaceAtualizarPermissaoRequest request)
+    public async Task AtualizarPapel(string workspaceId, WorkspaceAtualizarPermissaoRequest request)
     {
         var decryptUsuarioId = DecryptId(request.UsuarioId, "Usuario inválido");
         var decryptWorkspaceId = DecryptId(workspaceId, "Workspace inválido");
@@ -99,7 +101,7 @@ public class WorkspaceService(ILoggedUser loggedUser,
         if (!await usuarioWorkspaceRepository.Existe(x => x.UsuarioId == decryptUsuarioId && x.WorkspaceId == decryptWorkspaceId))
             throw new BussinessException("Usuario não está vinculado a esse workspace");
 
-        await usuarioWorkspaceRepository.AtualizarPapel(decryptUsuarioId, decryptWorkspaceId, request.Papel); 
+        await usuarioWorkspaceRepository.AtualizarPapel(decryptUsuarioId, decryptWorkspaceId, request.Papel);
     }
 
     public async Task ConvidarUsuario(string workspaceId, string email)
@@ -110,33 +112,30 @@ public class WorkspaceService(ILoggedUser loggedUser,
         await ValidarWorkspaceAdmin(loggedUser.UserId, decryptWorkspaceId);
 
         var usuario = await usuarioRepository.Buscar(x => x.Email == email);
-       
-        string message = $"Você foi chamado para o ambiente do {workspace.Fantasia}";
-        
-        if (usuario == null) {
-            var password = PasswordGeneratorHelper.GenerateRandomPassword();
-            Usuario novoUsuario = new() {
-                Email = email,
-                Senha = CriptografiaHelper.CriptografarAes(password, Secret)
-            };
-
-            await usuarioRepository.Criar(novoUsuario);
-            usuario = novoUsuario;
-            message += $"\nPara seu primeiro acesso use seu e-mail e a senha {password}";
+        var papel = PapelEnum.Usuario;
+        if (usuario == null)
+        {
+            usuario = await usuarioRepository.Criar(new() { Email = email, Ativo = false });
+            papel = PapelEnum.Convidado;
         }
 
-        UsuarioWorkspace usuarioWorkspace = new() {
+        UsuarioWorkspace usuarioWorkspace = new()
+        {
             UsuarioId = usuario.Id,
-            Usuario = usuario,
             WorkspaceId = workspace.Id,
-            Workspace = workspace,
             Ativo = true,
-            Papel = PapelEnum.Convidado
+            Papel = papel
         };
 
         await usuarioWorkspaceRepository.Criar(usuarioWorkspace);
 
-        await emailService.EnviarEmail(usuario.Email, usuario.Nome != null && usuario.Nome != "" ? usuario.Nome : "Convidado", "Convite para ambiente", message);
+
+        var usuarioLogado = await usuarioRepository.Buscar(x => x.Id == loggedUser.UserId) ?? throw new BussinessException("houve um erro na sua solicitação");
+        string mailPath = $"{AppDomain.CurrentDomain.BaseDirectory}Service\\TemplateMail\\invited-workspace.html";
+        string fileContent = await File.ReadAllTextAsync(mailPath, Encoding.UTF8);
+        fileContent = fileContent.Replace("{{name}}", usuarioLogado.Nome)
+                                 .Replace("{{workspace}}", workspace.Fantasia);
+        await emailService.EnviarEmail(email, usuario.Nome, "Convite MyFleet", fileContent);
     }
 
     public async Task RemoverUsuario(string workspaceId, string usuarioId)
