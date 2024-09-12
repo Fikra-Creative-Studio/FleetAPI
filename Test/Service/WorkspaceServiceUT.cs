@@ -67,7 +67,7 @@ public class WorkspaceServiceUT
             }
         }.AsQueryable();
 
-        _usuarioWorkspaceRepository.Setup(x => x.UsuarioWorkspaceAdmin(It.IsAny<int>(), It.IsAny<int>()))
+        _usuarioWorkspaceRepository.SetupSequence(x => x.Existe(It.IsAny<Expression<Func<UsuarioWorkspace, bool>>>()))
                                     .ReturnsAsync(true);
         
         _usuarioRepository.Setup(x => x.Listar(It.IsAny<Expression<Func<Usuario, bool>>>()))
@@ -101,10 +101,8 @@ public class WorkspaceServiceUT
             Fantasia = "Teste"
         };
 
-        _usuarioWorkspaceRepository.Setup(x => x.UsuarioWorkspaceAdmin(It.IsAny<int>(), It.IsAny<int>()))
-                                    .ReturnsAsync(true);
-        
-        _usuarioWorkspaceRepository.Setup(x => x.Existe(It.IsAny<Expression<Func<UsuarioWorkspace, bool>>>()))
+        _usuarioWorkspaceRepository.SetupSequence(x => x.Existe(It.IsAny<Expression<Func<UsuarioWorkspace, bool>>>()))
+                                    .ReturnsAsync(true)
                                     .ReturnsAsync(true);
         
         await _worskpaceService.AtualizarPapel(CriptografiaHelper.CriptografarAes(workspaceId.ToString(), "fleet123!@#"), request);
@@ -131,7 +129,7 @@ public class WorkspaceServiceUT
             Fantasia = "Teste"
         };
 
-        _usuarioWorkspaceRepository.Setup(x => x.UsuarioWorkspaceAdmin(It.IsAny<int>(), It.IsAny<int>()))
+         _usuarioWorkspaceRepository.Setup(x => x.Existe(It.IsAny<Expression<Func<UsuarioWorkspace, bool>>>()))
                                     .ReturnsAsync(true);
         
         _usuarioRepository.Setup(x => x.Buscar(It.IsAny<Expression<Func<Usuario, bool>>>()))
@@ -157,9 +155,9 @@ public class WorkspaceServiceUT
             Fantasia = "Teste"
         };
 
-        _usuarioWorkspaceRepository.Setup(x => x.UsuarioWorkspaceAdmin(It.IsAny<int>(), It.IsAny<int>()))
+        _usuarioWorkspaceRepository.Setup(x => x.Existe(It.IsAny<Expression<Func<UsuarioWorkspace, bool>>>()))
                                     .ReturnsAsync(true);
-    
+        
         
         _workspaceRepository.Setup(x => x.Buscar(It.IsAny<Expression<Func<Workspace, bool>>>()))
                                 .ReturnsAsync(workspace);
@@ -171,20 +169,77 @@ public class WorkspaceServiceUT
     }
 
     [Fact]
-    public async Task Remover_Usuario_Sucesso()
+    public async Task Remover_Usuario_Sucesso_Usuario_Admin()
     {
         var usuarioId = Faker.Number.RandomNumber(1,int.MaxValue);
         var workspaceId = Faker.Number.RandomNumber(1,int.MaxValue);
 
-        _usuarioWorkspaceRepository.Setup(x => x.UsuarioWorkspaceAdmin(It.IsAny<int>(), It.IsAny<int>()))
-                                    .ReturnsAsync(true);
-        
-        _usuarioWorkspaceRepository.Setup(x => x.Existe(It.IsAny<Expression<Func<UsuarioWorkspace, bool>>>()))
+        _usuarioWorkspaceRepository.SetupSequence(x => x.Existe(It.IsAny<Expression<Func<UsuarioWorkspace, bool>>>()))
+                                    .ReturnsAsync(true)
+                                    .ReturnsAsync(true)
+                                    .ReturnsAsync(true)
                                     .ReturnsAsync(true);
 
         await _worskpaceService.RemoverUsuario(CriptografiaHelper.CriptografarAes(workspaceId.ToString(), "fleet123!@#"), CriptografiaHelper.CriptografarAes(usuarioId.ToString(), "fleet123!@#"));
 
         _usuarioWorkspaceRepository.Verify(x => x.Remover(It.IsAny<int>(), It.IsAny<int>()), Times.Once);
 
+    }
+
+    [Fact]
+    public async Task Remover_Usuario_Sucesso_Usuario_Nao_Admin()
+    {
+        var usuarioId = Faker.Number.RandomNumber(1,int.MaxValue);
+        var workspaceId = Faker.Number.RandomNumber(1,int.MaxValue);
+
+        _usuarioWorkspaceRepository.SetupSequence(x => x.Existe(It.IsAny<Expression<Func<UsuarioWorkspace, bool>>>()))
+                                    .ReturnsAsync(true)
+                                    .ReturnsAsync(true)
+                                    .ReturnsAsync(false)
+                                    .ReturnsAsync(true);
+
+        await _worskpaceService.RemoverUsuario(CriptografiaHelper.CriptografarAes(workspaceId.ToString(), "fleet123!@#"), CriptografiaHelper.CriptografarAes(usuarioId.ToString(), "fleet123!@#"));
+
+        _usuarioWorkspaceRepository.Verify(x => x.Remover(It.IsAny<int>(), It.IsAny<int>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Remover_Usuario_Erro_Usuario_Unico_Admin()
+    {
+          var usuarioId = Faker.Number.RandomNumber(1,int.MaxValue);
+        var workspaceId = Faker.Number.RandomNumber(1,int.MaxValue);
+
+        _usuarioWorkspaceRepository.SetupSequence(x => x.Existe(It.IsAny<Expression<Func<UsuarioWorkspace, bool>>>()))
+                                    .ReturnsAsync(true)
+                                    .ReturnsAsync(true)
+                                    .ReturnsAsync(true)
+                                    .ReturnsAsync(false);
+
+        var exception = await Assert.ThrowsAsync<BussinessException>(async () =>
+        {
+             await _worskpaceService.RemoverUsuario(CriptografiaHelper.CriptografarAes(workspaceId.ToString(), "fleet123!@#"), CriptografiaHelper.CriptografarAes(usuarioId.ToString(), "fleet123!@#"));
+        });
+
+        Assert.Equal("Usuario não pode ser removido pois é o único administrador desse workspace", exception.Message);
+    }
+
+    [Fact]
+    public async Task Remover_Usuario_Erro_Usuario_Nao_Existe_No_Workspace()
+    {
+          var usuarioId = Faker.Number.RandomNumber(1,int.MaxValue);
+        var workspaceId = Faker.Number.RandomNumber(1,int.MaxValue);
+
+        _usuarioWorkspaceRepository.SetupSequence(x => x.Existe(It.IsAny<Expression<Func<UsuarioWorkspace, bool>>>()))
+                                    .ReturnsAsync(true)
+                                    .ReturnsAsync(false)
+                                    .ReturnsAsync(true)
+                                    .ReturnsAsync(true);
+
+        var exception = await Assert.ThrowsAsync<BussinessException>(async () =>
+        {
+             await _worskpaceService.RemoverUsuario(CriptografiaHelper.CriptografarAes(workspaceId.ToString(), "fleet123!@#"), CriptografiaHelper.CriptografarAes(usuarioId.ToString(), "fleet123!@#"));
+        });
+
+        Assert.Equal("Usuário não encontrado nesse workspace", exception.Message);
     }
 }
