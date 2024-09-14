@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0px;
+      padding: 0px;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      background-color: #1E1E1E;
+      color: #FFF;
+      min-height: 100vh;
+      min-width: 100vw;
+      padding: 40px 0;
+    }
+
+    .container {
+      width: 600px;
+      margin: 0px auto;
+    }
+
+    .logo {
+      text-align: center;
+    }
+
+    .content {
+      background: #FFF;
+      color: #1E1E1E;
+      padding: 40px;
+      border: 20px;
+      margin: 40px 0 20px;
+      border-radius: 20px;
+
+    }
+
+
+    .content__header h1 {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 16px;
+    }
+
+    .content__header hr {
+      border: 0px none;
+      width: 80px;
+      height: 5px;
+      background-color: #3AD9A9;
+      border-radius: 5px;
+      margin: 0px 0px 40px;
+    }
+
+    .content__wrapper p {
+      font-size: 16px;
+      line-height: 24px;
+      margin-bottom: 20px;
+    }
+
+    .content__wrapper h3 {
+      margin-bottom: 8px;
+    }
+
+    .content__wrapper ol {
+      margin-left: 20px;
+    }
+
+    .content__wrapper ol li:not(:last-child) {
+      margin-bottom: 8px;
+    }
+
+    .content__wrapper ol li a {
+      color: #1E1E1E;
+      font-weight: bold;
+    }
+
+    .content__wrapper p a {
+      background: #B8E88F;
+      color: #1E1E1E;
+      text-decoration: none;
+      text-transform: uppercase;
+      font-weight: bold;
+      padding: 8px 24px;
+      display: inline-block;
+      border-radius: 10px;
+    }
+
+    .text p {
+      color: #CBCBCB;
+      font-size: 15px;
+      line-height: 150%;
+      margin-bottom: 20px;
+    }
+
+    .text p strong {
+      color: #B8E88F;
+    }
+
+    .text p a {
+      color: #B8E88F;
+    }
+
+    .text h2 {
+      color: #3AD9A9;
+      text-transform: uppercase;
+      text-align: center;
+      font-size: 20px;
+      letter-spacing: 2px;
+      margin: 40px 0;
+    }
+
+    table.download {
+      width: 340px;
+      margin: 0px auto;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="logo">
+      <img src="https://fikra.com.br/myfleet/email/assets/logo.svg" alt="Logo MyFleet" />
+    </div>
+    <div class="content">
+      <div class="content__header">
+        <h1>{{name}} convidou você para fazer parte da {{workspace}}</h1>
+        <hr>
+      </div>
+      <div class="content__wrapper">
+        <p style="font-size: 20px; line-height: 150%;">Acesse o MyFleet e junte-se a essa pessoa para acompanhar e
+          gerenciar todos os
+          detalhes da frota de forma
+          eficiente e
+          prática.</p>
+        <p>Ainda não possui um conta? Não tem problema!</p>
+        <h3>Para começar:</h3>
+        <ol>
+          <li>Baixe o App do MyFleet, disponível em: <a href="" target="_blank" class="btn">AppleStore</a>
+            ou <a href="" target="_blank" class="btn">GooglePlay</a></li>
+          <li>Crie sua conta e configure seu perfil</li>
+          <li>Uma vez logado(a), você terá acesso ao gerenciamento completo da frota e outras funcionalidades.</li>
+        </ol>
+      </div>
+    </div>
+    <div class="text">
+      <p><strong>O que é o MyFleet?</strong> Imagine uma plataforma que permite gerenciar toda a sua frota em um único
+        lugar, como um painel com listas organizadas
+        de veículos, tarefas e manutenções. Cada item pode conter informações detalhadas, como fotos, relatórios,
+        documentos,
+        datas de serviço e muito mais. Agora, imagine acessar e controlar tudo isso em um único aplicativo. O
+        MyFleet é exatamente isso!</p>
+      <h2>sua frota em movimento</h2>
+    </div>
+    <table class="download">
+      <tr>
+        <td><a href="" target="_blank"><img src="https://fikra.com.br/myfleet/email/assets/apple.png"
+              alt="Baixar o MyFleet na AppStore"></a></td>
+        <td><a href="" target="_blank"><img src="https://fikra.com.br/myfleet/email/assets/google.png"
+              alt="Baixar o MyFleet no Google Play"></a></td>
+      </tr>
+    </table>
+  </div>
+</body>
+
+</html>

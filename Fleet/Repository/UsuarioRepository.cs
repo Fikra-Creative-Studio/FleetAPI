@@ -38,7 +38,7 @@ namespace Fleet.Repository
         public async Task<bool> ExisteEmail(string email, int? id = null)
         {
             if (id == null)
-                return await context.Usuarios.AnyAsync(x => x.Email == email);
+                return await context.Usuarios.AnyAsync(x => x.Email == email && x.Ativo);
             return await context.Usuarios.AnyAsync(x => x.Email == email && x.Id != id);
         }
 

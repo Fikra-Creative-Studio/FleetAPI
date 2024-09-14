@@ -37,11 +37,11 @@ namespace Fleet.Controllers
             return Ok($"Permissão do usuário alterada para {request.Papel}");
         }
 
-        [HttpPatch("{WorkspaceId}/Convidar")]
+        [HttpPost("{WorkspaceId}/Convidar")]
         [Authorize]
-        public async Task<IActionResult> ConvidarUsuario([FromRoute] string WorkspaceId ,[FromBody] string Email)
+        public async Task<IActionResult> ConvidarUsuario([FromRoute] string WorkspaceId ,[FromBody] WorkspaceConvidarRequest request)
         {
-            await worskpaceService.ConvidarUsuario(WorkspaceId ,Email);
+            await worskpaceService.ConvidarUsuario(WorkspaceId ,request.Email);
 
             return Ok();
         }

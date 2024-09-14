@@ -36,6 +36,9 @@
     <None Update="Service\TemplateMail\forgot-password.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Service\TemplateMail\invited-workspace.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Service\TemplateMail\reset-password.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
