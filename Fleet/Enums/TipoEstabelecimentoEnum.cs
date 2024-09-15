@@ -3,7 +3,7 @@
     public enum TipoEstabelecimentoEnum
     {
         Posto,
-        Clienbte,
+        Cliente,
         Oficina
     }
 }
