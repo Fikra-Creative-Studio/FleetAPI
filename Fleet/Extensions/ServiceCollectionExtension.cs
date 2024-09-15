@@ -49,7 +49,7 @@ namespace Fleet.Extensions
 
             services.AddScoped<IBucketService, FileStorageService>();
             services.AddScoped<IWorskpaceService, WorkspaceService>();
-
+            services.AddScoped<IListaService, ListaService>();
             services.AddScoped<IVeiculoService, VeiculoService>();
         }
 
@@ -63,6 +63,7 @@ namespace Fleet.Extensions
             services.AddScoped<IWorkspaceRepository, WorkspaceRepository>();
             services.AddScoped<IUsuarioWorkspaceRepository, UsuarioWorkspaceRepository>();
             services.AddScoped<IVeiculoRepository, VeiculoRepository>();
+            services.AddScoped<IListaRepository, ListaRepository>();
         }
 
         private static void AdicionarMySQL(this IServiceCollection services, IConfiguration configuration)
