@@ -1,8 +1,8 @@
 ﻿using Fleet.Enums;
 
-namespace Fleet.Models
+namespace Fleet.Controllers.Model.Request.Veiculo
 {
-    public class Veiculos : DbEntity 
+    public class VeiculoRequest
     {
         public string Marca { get; set; } = string.Empty;
         public string Modelo { get; set; } = string.Empty;
@@ -10,11 +10,7 @@ namespace Fleet.Models
         public string Placa { get; set; } = string.Empty;
         public string Combustivel { get; set; } = string.Empty;
         public string Odometro { get; set; } = string.Empty;
-        public string Foto {  get; set; } = string.Empty;
-        public bool Manutencao { get; set; }   
-        public bool Status { get; set; }   //0 - Livre  1 - Uso
-        public int WorkspaceId { get; set; }
-        public virtual Workspace Workspace { get; set; }
+        public string ImagemBase64 { get; set; } = string.Empty;
+        public string ExtensaoImagem { get; set; } = string.Empty;
     }
 }
-    

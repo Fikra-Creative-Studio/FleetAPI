@@ -1,0 +1,28 @@
+﻿using Fleet.Controllers.Model.Request.Veiculo;
+using Fleet.Interfaces.Service;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Fleet.Controllers
+{
+    [ApiController]
+    public class VeiculoController(IVeiculoService veiculoService) : ControllerBase
+    {
+        [HttpPost("api/Workspace/{WorkspaceId}/[Controller]")]
+        [Authorize]
+        public async Task<IActionResult> Cadastrar([FromRoute] string WorkspaceId, [FromBody] VeiculoRequest request)
+        {
+            await veiculoService.Cadastrar(request, WorkspaceId);
+            return Created();
+        }
+
+        [HttpGet("api/Workspace/{WorkspaceId}/[Controller]")]
+        [Authorize]
+        public async Task<IActionResult> Listar([FromRoute] string WorkspaceId)
+        {
+            var veiculos = await veiculoService.Listar(WorkspaceId);
+
+            return Ok(veiculos);
+        }
+    }
+}
