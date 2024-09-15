@@ -10,7 +10,7 @@ namespace Fleet.Repository
             var listaAtual = Buscar(workspaceId, listaId);
             if (listaAtual != null)
             {
-                var listaAntiga = applicationDbContext.Listas.Where(x => x.Padrao == true && x.WorkspaceId == workspaceId).First();
+                var listaAntiga = applicationDbContext.Listas.First(x => x.Padrao == true && x.WorkspaceId == workspaceId);
 
                 listaAntiga.Padrao = false;
                 listaAtual.Padrao = true;
