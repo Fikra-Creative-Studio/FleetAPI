@@ -49,8 +49,8 @@ namespace Fleet.Extensions
 
             services.AddScoped<IBucketService, FileStorageService>();
             services.AddScoped<IWorskpaceService, WorkspaceService>();
-            services.AddScoped<IListaService, ListaService>();
             services.AddScoped<IVeiculoService, VeiculoService>();
+            services.AddScoped<IListaService, ListaService>();
         }
 
         /// <summary>

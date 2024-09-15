@@ -1,4 +1,5 @@
-﻿using Fleet.Controllers.Model.Request.Lista;
+﻿using Azure.Core;
+using Fleet.Controllers.Model.Request.Lista;
 using Fleet.Controllers.Model.Response.Lista;
 using Fleet.Helpers;
 using Fleet.Interfaces.Service;
@@ -43,34 +44,32 @@ namespace Fleet.Controllers
             }));
         }
 
-        [HttpGet("api/Workspace/{WorkspaceId}/[Controller]/{ListaId}/Items")]
-        public async Task<IActionResult> BuscarItem([FromRoute] string WorkspaceId, [FromRoute] string ListaId)
-        {
-            //await worskpaceService.Criar(request);
-            return Ok();
-        }
-
         [Authorize]
         [HttpPut("api/Workspace/{WorkspaceId}/[Controller]/{ListaId}")]
-        public async Task<IActionResult> Atualizar([FromRoute] string WorkspaceId, [FromRoute] string ListaId, [FromBody] CriarListaRequest request)
+        public IActionResult Atualizar([FromRoute] string WorkspaceId, [FromRoute] string ListaId, [FromBody] AtualizarListaRequest request)
         {
-            //await worskpaceService.Criar(request);
+            listaService.Atualizar(new Listas
+            {
+                Id = int.Parse(CriptografiaHelper.DescriptografarAes(ListaId, Secret) ?? throw new BussinessException("houve uma falha na atualizacao da listagem")),
+                WorkspaceId = int.Parse(CriptografiaHelper.DescriptografarAes(WorkspaceId, Secret) ?? throw new BussinessException("houve uma falha na atualizacao da listagem")),
+                Nome = request.Nome,
+            });
             return Ok();
         }
 
         [Authorize]
         [HttpPatch("api/Workspace/{WorkspaceId}/[Controller]/{ListaId}/[Action]")]
-        public async Task<IActionResult> Padrao([FromRoute] string WorkspaceId, [FromRoute] string ListaId)
+        public IActionResult Padrao([FromRoute] string WorkspaceId, [FromRoute] string ListaId)
         {
-            //await worskpaceService.Criar(request);
+            listaService.TornarPadrao(WorkspaceId, ListaId);
             return Ok();
         }
 
         [Authorize]
         [HttpDelete("api/Workspace/{WorkspaceId}/[Controller]/{ListaId}")]
-        public async Task<IActionResult> Deletar([FromRoute] string WorkspaceId, [FromRoute] string ListaId)
+        public IActionResult Deletar([FromRoute] string WorkspaceId, [FromRoute] string ListaId)
         {
-            //await worskpaceService.Criar(request);
+            listaService.Deletar(WorkspaceId, ListaId);
             return Ok();
         }
 

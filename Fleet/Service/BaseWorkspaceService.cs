@@ -7,39 +7,38 @@ namespace Fleet.Service
 {
     public class BaseWorkspaceService<T>(IBaseWorkspaceRepository<T> baseRepository, ILoggedUser loggedUser, IUsuarioWorkspaceRepository usuarioWorkspaceRepository, IConfiguration configuration) where T : DBWorkspaceEntity, new()
     {
-
         private string Secret { get => configuration.GetValue<string>("Crypto:Secret") ?? string.Empty; }
-
-        public void Inserir(string workspaceId, T objeto)
+        public int getCryptoId(string workspaceId)
         {
             var idWorkspace = CriptografiaHelper.DescriptografarAes(workspaceId, Secret) ?? throw new BussinessException("O Workspace apresentou uma falha.");
-            objeto.WorkspaceId = int.Parse(idWorkspace);
+            return int.Parse(idWorkspace);
+        }
+
+
+        public virtual void Inserir(string workspaceId, T objeto)
+        {
+            objeto.WorkspaceId = getCryptoId(workspaceId);
 
             if (Validar(objeto))
                 baseRepository.Inserir(objeto);
         }
-
-        public void Atualizar(T objeto)
+        public virtual void Atualizar(T objeto)
         {
             if (Validar(objeto))
                 baseRepository.Atualizar(objeto);
         }
-        public void Deletar(string workspaceId, int id)
+        public virtual void Deletar(string workspaceId, string id)
         {
-            var idWorkspace = CriptografiaHelper.DescriptografarAes(workspaceId, Secret) ?? throw new BussinessException("O Workspace apresentou uma falha.");
             if (Buscar(workspaceId, id) != null)
-                baseRepository.Deletar(int.Parse(idWorkspace), id);
+                baseRepository.Deletar(getCryptoId(workspaceId), getCryptoId(id));
         }
-        public List<T> Buscar(string workspaceId)
-        {
-            var idWorkspace = CriptografiaHelper.DescriptografarAes(workspaceId, Secret) ?? throw new BussinessException("O Workspace apresentou uma falha.");
-            return baseRepository.Buscar(int.Parse(idWorkspace));
-        }
+        public virtual List<T> Buscar(string workspaceId) 
+            => baseRepository.Buscar(getCryptoId(workspaceId));
 
-        public T? Buscar(string workspaceId, int id)
+
+        public virtual T? Buscar(string workspaceId, string id)
         {
-            var idWorkspace = CriptografiaHelper.DescriptografarAes(workspaceId, Secret) ?? throw new BussinessException("O Workspace apresentou uma falha.");
-            return baseRepository.Buscar(int.Parse(idWorkspace), id);
+            return baseRepository.Buscar(getCryptoId(workspaceId), getCryptoId(id));
         }
 
         public virtual bool Validar(T objeto) //Cada método sobrescreve seu validar
