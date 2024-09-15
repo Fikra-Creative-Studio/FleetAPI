@@ -10,5 +10,7 @@ namespace Fleet.Controllers.Model.Request.Veiculo
         public string Placa { get; set; } = string.Empty;
         public string Combustivel { get; set; } = string.Empty;
         public string Odometro { get; set; } = string.Empty;
+        public string ImagemBase64 { get; set; } = string.Empty;
+        public string ExtensaoImagem { get; set; } = string.Empty;
     }
 }

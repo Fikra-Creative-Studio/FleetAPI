@@ -10,7 +10,9 @@ namespace Fleet.Controllers.Model.Response.Veiculo
             public string Placa { get; set; } = string.Empty;
             public string Combustivel { get; set; } = string.Empty;
             public string Odometro { get; set; } = string.Empty;
-            public VeiculoSituacaoEnum SituacaoEnum { get; set; }
-        
+            public bool Manutencao { get; set; }
+            public bool Status { get; set; }   //0 - Livre  1 - Uso
+            public string Foto { get; set; } = string.Empty;
+
     }
 }

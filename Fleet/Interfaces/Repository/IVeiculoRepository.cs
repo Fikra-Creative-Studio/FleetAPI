@@ -1,4 +1,5 @@
 ﻿using Fleet.Models;
+using System.Linq.Expressions;
 
 namespace Fleet.Interfaces.Repository
 {
@@ -6,5 +7,6 @@ namespace Fleet.Interfaces.Repository
     {
         Task<bool> Cadastrar(Veiculos veiculo);
         Task<List<Veiculos>> Listar(int workspaceId);
+        Task<Veiculos?> Buscar(Expression<Func<Veiculos, bool>> exp);
     }
 }

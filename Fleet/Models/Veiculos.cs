@@ -10,7 +10,9 @@ namespace Fleet.Models
         public string Placa { get; set; } = string.Empty;
         public string Combustivel { get; set; } = string.Empty;
         public string Odometro { get; set; } = string.Empty;
-        public VeiculoSituacaoEnum Situacao { get; set; } //Manutenção, Livre e Em_uso
+        public string Foto {  get; set; } = string.Empty;
+        public bool Manutencao { get; set; }   
+        public bool Status { get; set; }   //0 - Livre  1 - Uso
         public int WorkspaceId { get; set; }
         public virtual Workspace Workspace { get; set; }
     }
