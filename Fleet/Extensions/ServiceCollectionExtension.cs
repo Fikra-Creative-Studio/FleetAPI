@@ -50,6 +50,7 @@ namespace Fleet.Extensions
             services.AddScoped<IBucketService, FileStorageService>();
             services.AddScoped<IWorskpaceService, WorkspaceService>();
             services.AddScoped<IVeiculoService, VeiculoService>();
+            services.AddScoped<IEstabelecimentoService, EstabelecimentoService>();
             services.AddScoped<IListaService, ListaService>();
         }
 
@@ -63,6 +64,7 @@ namespace Fleet.Extensions
             services.AddScoped<IWorkspaceRepository, WorkspaceRepository>();
             services.AddScoped<IUsuarioWorkspaceRepository, UsuarioWorkspaceRepository>();
             services.AddScoped<IVeiculoRepository, VeiculoRepository>();
+            services.AddScoped<IEstabelecimentoRepository, EstabelecimentoRepository>();
             services.AddScoped<IListaRepository, ListaRepository>();
         }
 
