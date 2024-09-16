@@ -1,7 +1,5 @@
 ﻿using Fleet.Controllers.Model.Request.Abastecimento;
-using Fleet.Controllers.Model.Request.Veiculo;
 using Fleet.Interfaces.Service;
-using Fleet.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
