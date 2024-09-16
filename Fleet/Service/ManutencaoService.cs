@@ -45,7 +45,9 @@ namespace Fleet.Service
 
         public async Task Cadastrar(ManutencaoRequest request, string workspaceId)
         {
-            var decryptId = DecryptId(workspaceId, "Workspace inválido");
+            var decryptIdWorkspace = DecryptId(workspaceId, "Workspace inválido");
+            var decryptIdVeiculo = DecryptId(request.VeiculosId.ToString(), "Veiculo inválido");
+            var decryptIdEstabelecimento = DecryptId(request.EstabelecimentosId.ToString(), "Estabelecimento inválido");
             var usuarioLogado = await usuarioRepository.Buscar(x => x.Id == loggedUser.UserId) ?? throw new BussinessException("houve um erro na sua solicitação");
 
             var manutencao = new Manutencao
@@ -56,10 +58,10 @@ namespace Fleet.Service
                 Valor = request.Valor,
                 Servicos = request.Servicos,
                 Observacoes = request.Observacoes,
-                WorkspaceId = decryptId,
-                VeiculosId = request.VeiculosId,
+                WorkspaceId = decryptIdWorkspace,
+                VeiculosId = decryptIdVeiculo,
                 UsuarioId = usuarioLogado.Id,
-                EstabelecimentosId = request.EstabelecimentosId,
+                EstabelecimentosId = decryptIdEstabelecimento,
             };
 
             var tasks = request.Urls.Select(ConverteImagens).ToList();

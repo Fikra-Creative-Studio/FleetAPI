@@ -59,6 +59,7 @@ namespace Fleet.Service
         {
             var response = new VeiculoResponse
             {
+                Id = CriptografiaHelper.CriptografarAes(veiculo.Id.ToString(), Secret),
                 Marca = veiculo.Marca,
                 Modelo = veiculo.Modelo,
                 Ano = veiculo.Ano,

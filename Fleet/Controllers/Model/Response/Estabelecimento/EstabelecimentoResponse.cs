@@ -4,6 +4,7 @@ namespace Fleet.Controllers.Model.Response.Estabelecimento
 {
     public class EstabelecimentoResponse
     {
+        public string Id { get; set; } = string.Empty;
         public TipoEstabelecimentoEnum Tipo { get; set; }  //Tipos Posto , clientes ou oficinas
         public string Cnpj { get; set; } = string.Empty; //requisito
         public string Razao { get; set; } = string.Empty;
