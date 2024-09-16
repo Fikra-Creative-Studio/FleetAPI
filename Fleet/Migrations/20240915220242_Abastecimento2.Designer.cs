@@ -4,6 +4,7 @@ using Fleet.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Fleet.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240915220242_Abastecimento2")]
+    partial class Abastecimento2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -36,6 +39,9 @@ namespace Fleet.Migrations
                     b.Property<DateTime>("Data")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<int>("EstabelecimentoId")
+                        .HasColumnType("int");
+
                     b.Property<int>("EstabelecimentosId")
                         .HasColumnType("int");
 
@@ -55,6 +61,9 @@ namespace Fleet.Migrations
                     b.Property<double>("Valor")
                         .HasColumnType("double");
 
+                    b.Property<int>("VeiculoId")
+                        .HasColumnType("int");
+
                     b.Property<int>("VeiculosId")
                         .HasColumnType("int");
 
@@ -71,7 +80,7 @@ namespace Fleet.Migrations
 
                     b.HasIndex("WorkspaceId");
 
-                    b.ToTable("Abastecimentos");
+                    b.ToTable("Abastecimento");
                 });
 
             modelBuilder.Entity("Fleet.Models.AbastecimentoImagens", b =>
@@ -386,6 +395,9 @@ namespace Fleet.Migrations
                     b.Property<DateTime>("Data")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<int>("EstabelecimentoId")
+                        .HasColumnType("int");
+
                     b.Property<int>("EstabelecimentosId")
                         .HasColumnType("int");
 
@@ -409,6 +421,9 @@ namespace Fleet.Migrations
 
                     b.Property<double>("Valor")
                         .HasColumnType("double");
+
+                    b.Property<int>("VeiculoId")
+                        .HasColumnType("int");
 
                     b.Property<int>("VeiculosId")
                         .HasColumnType("int");
@@ -782,7 +797,7 @@ namespace Fleet.Migrations
             modelBuilder.Entity("Fleet.Models.AbastecimentoImagens", b =>
                 {
                     b.HasOne("Fleet.Models.Abastecimento", "Abastecimento")
-                        .WithMany("Imagens")
+                        .WithMany()
                         .HasForeignKey("AbastecimentoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1003,11 +1018,6 @@ namespace Fleet.Migrations
                     b.Navigation("Veiculos");
 
                     b.Navigation("Workspace");
-                });
-
-            modelBuilder.Entity("Fleet.Models.Abastecimento", b =>
-                {
-                    b.Navigation("Imagens");
                 });
 
             modelBuilder.Entity("Fleet.Models.Usuario", b =>

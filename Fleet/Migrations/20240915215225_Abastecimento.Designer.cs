@@ -4,6 +4,7 @@ using Fleet.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Fleet.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240915215225_Abastecimento")]
+    partial class Abastecimento
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,84 +24,6 @@ namespace Fleet.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
-
-            modelBuilder.Entity("Fleet.Models.Abastecimento", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("Ativo")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<DateTime>("Data")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<int>("EstabelecimentosId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Observacoes")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("varchar(1000)");
-
-                    b.Property<string>("Odometro")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<int>("UsuarioId")
-                        .HasColumnType("int");
-
-                    b.Property<double>("Valor")
-                        .HasColumnType("double");
-
-                    b.Property<int>("VeiculosId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("WorkspaceId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EstabelecimentosId");
-
-                    b.HasIndex("UsuarioId");
-
-                    b.HasIndex("VeiculosId");
-
-                    b.HasIndex("WorkspaceId");
-
-                    b.ToTable("Abastecimentos");
-                });
-
-            modelBuilder.Entity("Fleet.Models.AbastecimentoImagens", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AbastecimentoId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("Ativo")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<string>("Url")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AbastecimentoId");
-
-                    b.ToTable("AbastecimentoImagens");
-                });
 
             modelBuilder.Entity("Fleet.Models.Checklist", b =>
                 {
@@ -386,6 +311,9 @@ namespace Fleet.Migrations
                     b.Property<DateTime>("Data")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<int>("EstabelecimentoId")
+                        .HasColumnType("int");
+
                     b.Property<int>("EstabelecimentosId")
                         .HasColumnType("int");
 
@@ -409,6 +337,9 @@ namespace Fleet.Migrations
 
                     b.Property<double>("Valor")
                         .HasColumnType("double");
+
+                    b.Property<int>("VeiculoId")
+                        .HasColumnType("int");
 
                     b.Property<int>("VeiculosId")
                         .HasColumnType("int");
@@ -744,52 +675,6 @@ namespace Fleet.Migrations
                     b.ToTable("Workspaces");
                 });
 
-            modelBuilder.Entity("Fleet.Models.Abastecimento", b =>
-                {
-                    b.HasOne("Fleet.Models.Estabelecimentos", "Estabelecimentos")
-                        .WithMany()
-                        .HasForeignKey("EstabelecimentosId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Fleet.Models.Usuario", "Usuario")
-                        .WithMany()
-                        .HasForeignKey("UsuarioId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Fleet.Models.Veiculos", "Veiculos")
-                        .WithMany()
-                        .HasForeignKey("VeiculosId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Fleet.Models.Workspace", "Workspace")
-                        .WithMany()
-                        .HasForeignKey("WorkspaceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Estabelecimentos");
-
-                    b.Navigation("Usuario");
-
-                    b.Navigation("Veiculos");
-
-                    b.Navigation("Workspace");
-                });
-
-            modelBuilder.Entity("Fleet.Models.AbastecimentoImagens", b =>
-                {
-                    b.HasOne("Fleet.Models.Abastecimento", "Abastecimento")
-                        .WithMany("Imagens")
-                        .HasForeignKey("AbastecimentoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Abastecimento");
-                });
-
             modelBuilder.Entity("Fleet.Models.Checklist", b =>
                 {
                     b.HasOne("Fleet.Models.Usuario", "Usuario")
@@ -1003,11 +888,6 @@ namespace Fleet.Migrations
                     b.Navigation("Veiculos");
 
                     b.Navigation("Workspace");
-                });
-
-            modelBuilder.Entity("Fleet.Models.Abastecimento", b =>
-                {
-                    b.Navigation("Imagens");
                 });
 
             modelBuilder.Entity("Fleet.Models.Usuario", b =>
