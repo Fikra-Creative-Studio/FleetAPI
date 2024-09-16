@@ -55,6 +55,7 @@ namespace Fleet.Extensions
             services.AddScoped<IListaItemService, ListaItemService>();
             services.AddScoped<IAbastecimentoService, AbastecimentoService>();
             services.AddScoped<IManutencaoService, ManutencaoService>();
+            services.AddScoped<ICheckListService, CheckListService>();
         }
 
         /// <summary>

@@ -17,5 +17,8 @@
         public int UsuarioId { get; set; }
         public virtual Usuario Usuario { get; set; }
 
+        public virtual List<ChecklistOpcao> ChecklistOpcaos { get; set; } = new List<ChecklistOpcao>();
+        public virtual List<ChecklistImagens> ChecklistImagens { get; set; } = new List<ChecklistImagens>();
+
     }
 }
