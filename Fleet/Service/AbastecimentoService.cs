@@ -16,7 +16,7 @@ namespace Fleet.Service
         IUsuarioRepository usuarioRepository,
         ILoggedUser loggedUser) : IAbastecimentoService
     {
-        private string Secret { get => configuration.GetValue<string>("Crypto:Secret"); }
+        private string Secret { get => configuration.GetValue<string>("Crypto:Secret"); }  
         private int DecryptId(string encrypt, string errorMessage)
         {
             var decrypt = CriptografiaHelper.DescriptografarAes(encrypt, Secret) ?? throw new BussinessException(errorMessage);
