@@ -1,15 +1,9 @@
 ﻿using Fleet.Controllers.Model.Request.Checklist;
-using Fleet.Controllers.Model.Request.Lista;
 using Fleet.Helpers;
 using Fleet.Interfaces.Service;
 using Fleet.Models;
-using Fleet.Service;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using System.Diagnostics.Metrics;
 
 namespace Fleet.Controllers
 {
@@ -27,7 +21,7 @@ namespace Fleet.Controllers
                 DataRetirada = DateTime.Now,
                 ObsRetirada = request.Observacao,
                 OdometroRetirada = request.Odometro,
-                VeiculoId = int.Parse(CriptografiaHelper.DescriptografarAes(request.VeiculoId, Secret) ?? throw new BussinessException("houve uma falha na retirada do veiculo")),
+                VeiculosId = int.Parse(CriptografiaHelper.DescriptografarAes(request.VeiculoId, Secret) ?? throw new BussinessException("houve uma falha na retirada do veiculo")),
                 WorkspaceId = int.Parse(CriptografiaHelper.DescriptografarAes(WorkspaceId, Secret) ?? throw new BussinessException("houve uma falha na retirada do veiculo")),
                 UsuarioId = loggedUser.UserId,
                 ChecklistOpcaos = request.Opcoes.Select(x => new ChecklistOpcao
@@ -38,10 +32,9 @@ namespace Fleet.Controllers
                 }).ToList()
             };
 
-            var fotos = request.Images.Select(x => x.ImageBase64).ToList();
-            var extensao = request.Images.FirstOrDefault()?.extensao ?? string.Empty;
+            var fotos = request.Images.Select(x => new KeyValuePair<string, string>(x.ImageBase64, x.extensao)).ToDictionary();
 
-            checkListService.Retirar(checklist, fotos, extensao);
+            checkListService.Retirar(checklist, fotos);
             return Ok();
         }
 
@@ -50,13 +43,21 @@ namespace Fleet.Controllers
         [HttpPost("api/Workspace/{WorkspaceId}/Devolver")]
         public IActionResult Devolver([FromRoute] string WorkspaceId, [FromBody] CheckListDevolucaoRequest request)
         {
-            //var lista = new Listas
-            //{
-            //    Nome = request.Nome,
-            //    Tipo = request.Veiculo ? Enums.TipoListasEnum.Checklist : Enums.TipoListasEnum.Visita
-            //};
+            var checklist = new Checklist
+            {
+                DataDevolucao = DateTime.Now,
+                ObsDevolucao = request.Observacao,
+                OdometroDevolucao = request.Odometro,
+                VeiculosId = int.Parse(CriptografiaHelper.DescriptografarAes(request.VeiculoId, Secret) ?? throw new BussinessException("houve uma falha na retirada do veiculo")),
+                WorkspaceId = int.Parse(CriptografiaHelper.DescriptografarAes(WorkspaceId, Secret) ?? throw new BussinessException("houve uma falha na retirada do veiculo")),
+                UsuarioId = loggedUser.UserId,
+                Avaria = request.Avaria,
+                OsbAvaria = request.ObservacaoAvaria
+            };
 
-            //listaService.Inserir(WorkspaceId, lista);
+            var fotos = request.Images.Select(x => new KeyValuePair<string, string>(x.ImageBase64, x.extensao)).ToDictionary();
+
+            checkListService.Devolver(checklist, fotos);
             return Ok();
         }
     }

@@ -73,6 +73,7 @@ namespace Fleet.Extensions
             services.AddScoped<IListaItemRepository, ListaItemRepository>();
             services.AddScoped<IAbastecimentoRepository, AbastecimentoRepository>();
             services.AddScoped<IManutencaoRepository, ManutencaoRepository>();
+            services.AddScoped<ICheckListRepository, CheckListRepository>();
         }
 
         private static void AdicionarMySQL(this IServiceCollection services, IConfiguration configuration)
