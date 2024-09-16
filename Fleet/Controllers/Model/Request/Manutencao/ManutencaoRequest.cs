@@ -8,8 +8,8 @@ namespace Fleet.Controllers.Model.Request.Manutencao
         public double Valor { get; set; }
         public string Servicos { get; set; } = string.Empty;
         public string Observacoes { get; set; } = string.Empty;
-        public int VeiculosId { get; set; }
-        public int EstabelecimentosId { get; set; }
+        public string VeiculosId { get; set; } = string.Empty;
+        public string EstabelecimentosId { get; set; } = string.Empty;
         public List<ManutencaoIMagensRequest> Urls { get; set; }
     }
 }

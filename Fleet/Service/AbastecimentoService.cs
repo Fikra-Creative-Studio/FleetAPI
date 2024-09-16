@@ -49,8 +49,8 @@ namespace Fleet.Service
         public async Task Cadastrar(AbastecimentoRequest request, string workspaceId)
         {
             var decryptIdWorkspace = DecryptId(workspaceId, "Workspace inválido");
-            var decryptIdVeiculo = DecryptId(request.VeiculosId.ToString(), "Veiculo inválido");
-            var decryptIdEstabelecimento = DecryptId(request.EstabelecimentosId.ToString(), "Estabelecimento inválido");
+            var decryptIdVeiculo = DecryptId(request.VeiculosId, "Veiculo inválido");
+            var decryptIdEstabelecimento = DecryptId(request.EstabelecimentosId, "Estabelecimento inválido");
             var usuarioLogado = await usuarioRepository.Buscar(x => x.Id == loggedUser.UserId) ?? throw new BussinessException("houve um erro na sua solicitação");
 
             var abastecimento = new Abastecimento
