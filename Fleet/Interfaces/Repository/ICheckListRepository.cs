@@ -8,6 +8,6 @@ namespace Fleet.Interfaces.Repository
         void Inserir(Checklist objeto);
         void Atualizar(Checklist objeto);
         bool Existe(Expression<Func<Checklist,bool>> expression);
-        Checklist? Buscar(int workspaceId, int veiculoId, int usuarioId)
+        Checklist? Buscar(int workspaceId, int veiculoId, int usuarioId);
     }
 }
