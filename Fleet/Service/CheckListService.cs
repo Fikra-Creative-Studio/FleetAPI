@@ -1,10 +1,12 @@
 ﻿using Fleet.Interfaces.Repository;
 using Fleet.Interfaces.Service;
+using Fleet.Migrations;
 using Fleet.Models;
+using Fleet.Repository;
 
 namespace Fleet.Service
 {
-    public class CheckListService(IBucketService bucketService, ICheckListRepository checkListRepository, ILoggedUser loggedUser) : ICheckListService
+    public class CheckListService(IBucketService bucketService, ICheckListRepository checkListRepository, ILoggedUser loggedUser, IVeiculoRepository veiculoRepository) : ICheckListService
     {
         public void Retirar(Checklist objeto, Dictionary<string, string> fotos)
         {
@@ -55,6 +57,7 @@ namespace Fleet.Service
             checklist.OsbAvaria = objeto.OsbAvaria;
 
             checkListRepository.Atualizar(checklist);
+            veiculoRepository.AtualizaOdometro(checklist.VeiculosId, checklist.OdometroDevolucao);
         }
 
         private async Task<string> SalvarFotoAsync(string base64, string extensao, bool retirada)

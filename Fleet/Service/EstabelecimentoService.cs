@@ -16,6 +16,7 @@ namespace Fleet.Service
         {
             var response = new EstabelecimentoResponse
             {
+                Id = CriptografiaHelper.CriptografarAes(estabelecimento.Id.ToString(), Secret),
                 Cnpj = estabelecimento.Cnpj,
                 Razao = estabelecimento.Razao,
                 Fantasia = estabelecimento.Fantasia,
