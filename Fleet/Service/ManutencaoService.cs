@@ -1,29 +1,26 @@
-﻿using Azure.Core;
-using Fleet.Controllers.Model.Request.Abastecimento;
-using Fleet.Controllers.Model.Response.Veiculo;
+﻿using Fleet.Controllers.Model.Request.Manutencao;
 using Fleet.Helpers;
 using Fleet.Interfaces.Repository;
 using Fleet.Interfaces.Service;
 using Fleet.Models;
-using Fleet.Repository;
 
 namespace Fleet.Service
 {
-    public class AbastecimentoService(
-        IAbastecimentoRepository abastecimentoRepository,
+    public class ManutencaoService(
+        IManutencaoRepository manutencaoRepository,
         IBucketService bucketService,
         IConfiguration configuration,
         IUsuarioRepository usuarioRepository,
         ILoggedUser loggedUser,
-        IVeiculoRepository veiculoRepository) : IAbastecimentoService
+        IVeiculoRepository veiculoRepository) : IManutencaoService
     {
-        private string Secret { get => configuration.GetValue<string>("Crypto:Secret"); }  
+        private string Secret { get => configuration.GetValue<string>("Crypto:Secret"); }
         private int DecryptId(string encrypt, string errorMessage)
         {
             var decrypt = CriptografiaHelper.DescriptografarAes(encrypt, Secret) ?? throw new BussinessException(errorMessage);
             return int.Parse(decrypt);
         }
-        private async Task<AbastecimentoImagens> ConverteImagens(AbastecimentoImagensRequest foto)
+        private async Task<ManutencaoImagens> ConverteImagens(ManutencaoIMagensRequest foto)
         {
             string NomeFoto = string.Empty;
             if (!string.IsNullOrEmpty(foto.ImagemBase64))
@@ -31,32 +28,33 @@ namespace Fleet.Service
                 try
                 {
                     var bytes = Convert.FromBase64String(foto.ImagemBase64);
-                    NomeFoto = await bucketService.UploadAsync(new MemoryStream(bytes), foto.ExtensaoImagem, "supply") ?? throw new BussinessException("não foi possivel salvar a imagem");
+                    NomeFoto = await bucketService.UploadAsync(new MemoryStream(bytes), foto.ExtensaoImagem, "maintenance") ?? throw new BussinessException("não foi possivel salvar a imagem");
                 }
                 catch (Exception)
                 {
                     NomeFoto = string.Empty;
                 }
             }
-            var abastecimentoImagem = new AbastecimentoImagens
+            var manutencaoImagem = new ManutencaoImagens
             {
                 Url = NomeFoto
             };
-            return abastecimentoImagem;
+            return manutencaoImagem;
         }
 
 
-        public async Task Cadastrar(AbastecimentoRequest request, string workspaceId)
+        public async Task Cadastrar(ManutencaoRequest request, string workspaceId)
         {
             var decryptId = DecryptId(workspaceId, "Workspace inválido");
             var usuarioLogado = await usuarioRepository.Buscar(x => x.Id == loggedUser.UserId) ?? throw new BussinessException("houve um erro na sua solicitação");
 
-            var abastecimento = new Abastecimento
+            var manutencao = new Manutencao
             {
                 Ativo = true,
                 Data = DateTime.Now,
                 Odometro = request.Odometro,
                 Valor = request.Valor,
+                Servicos = request.Servicos,
                 Observacoes = request.Observacoes,
                 WorkspaceId = decryptId,
                 VeiculosId = request.VeiculosId,
@@ -66,10 +64,10 @@ namespace Fleet.Service
 
             var tasks = request.Urls.Select(ConverteImagens).ToList();
             var imagens = await Task.WhenAll(tasks);
-            abastecimento.Imagens = imagens.ToList();
+            manutencao.Imagens = imagens.ToList();
 
-            await abastecimentoRepository.Cadastrar(abastecimento);
-            await veiculoRepository.AtualizaOdometro(abastecimento.VeiculosId,abastecimento.Odometro);
+            await manutencaoRepository.Cadastrar(manutencao);
+            await veiculoRepository.AtualizaOdometro(manutencao.VeiculosId, manutencao.Odometro);
 
         }
     }
