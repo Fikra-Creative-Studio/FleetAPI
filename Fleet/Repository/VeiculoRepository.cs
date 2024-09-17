@@ -33,5 +33,15 @@ namespace Fleet.Repository
                 await context.SaveChangesAsync();
             }
         }
+
+        public async Task Deletar(int veiculoId)
+        {
+            var veiculo = await context.Veiculos.FirstOrDefaultAsync(x => x.Id == veiculoId);
+            if (veiculo != null)
+            {
+                veiculo.Ativo = false;
+                await context.SaveChangesAsync();
+            }
+        }
     }
 }

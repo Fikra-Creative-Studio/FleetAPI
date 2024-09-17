@@ -11,7 +11,7 @@ namespace Fleet.Service
 
         public override void Inserir(string workspaceId, Listas objeto)
         {
-            objeto.Padrao = baseRepository.Buscar(getCryptoId(workspaceId)).Count == 0;
+            objeto.Padrao = !baseRepository.Existe(getCryptoId(workspaceId), objeto.Tipo);
 
             base.Inserir(workspaceId, objeto);
         }

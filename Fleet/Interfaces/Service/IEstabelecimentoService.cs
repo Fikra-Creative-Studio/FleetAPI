@@ -7,5 +7,7 @@ namespace Fleet.Interfaces.Service
     {
         Task Cadastrar(EstabelecimentoRequest request, string workspaceId);
         Task<List<EstabelecimentoResponse>> Listar(string workspaceId);
+        Task Atualizar(EstabelecimentoRequest request, string estabelecimentoId);
+        Task Deletar(string estabelecimentoId);
     }
 }

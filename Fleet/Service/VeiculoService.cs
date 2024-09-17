@@ -4,16 +4,19 @@ using Fleet.Helpers;
 using Fleet.Interfaces.Repository;
 using Fleet.Interfaces.Service;
 using Fleet.Models;
+using Fleet.Repository;
 
 namespace Fleet.Service
 {
-    public class VeiculoService(IVeiculoRepository veiculoRepository, IBucketService bucketService,IConfiguration configuration) : IVeiculoService
+    public class VeiculoService(IVeiculoRepository veiculoRepository, IBucketService bucketService, IConfiguration configuration, ILoggedUser loggedUser, IUsuarioWorkspaceRepository usuarioWorkspaceRepository) : IVeiculoService
     {
         private string Secret { get => configuration.GetValue<string>("Crypto:Secret"); }
 
         public async Task Cadastrar(VeiculoRequest request, string workspaceId)
         {
             var decryptId = DecryptId(workspaceId, "Workspace inválido");
+            if(await usuarioWorkspaceRepository.Existe(x => x.WorkspaceId == decryptId && x.UsuarioId == loggedUser.UserId && x.Papel != Enums.PapelEnum.Administrador)) throw new BussinessException("Você não tem permissão para realizar esta ação");
+
             string NomeFoto = string.Empty;
             if (!string.IsNullOrEmpty(request.ImagemBase64))
             {
@@ -40,17 +43,29 @@ namespace Fleet.Service
                 Status = false,
                 Manutencao = false,
                 WorkspaceId = decryptId,
-                Foto = NomeFoto            
+                Foto = NomeFoto
             };
 
             await veiculoRepository.Cadastrar(veiculo);
         }
 
+        public async Task Deletar(string veiculoId)
+        {
+            var decryptId = DecryptId(veiculoId,"falha ao deletar veiculo");
+            var veiculo = await veiculoRepository.Buscar(x => x.Id == decryptId);
+            if(veiculo != null)
+            {
+                if (await usuarioWorkspaceRepository.Existe(x => x.WorkspaceId == veiculo.WorkspaceId && x.UsuarioId == loggedUser.UserId && x.Papel != Enums.PapelEnum.Administrador)) throw new BussinessException("Você não tem permissão para realizar esta ação");
+
+                await veiculoRepository.Deletar(veiculo.Id);
+            }
+        }
+
         public async Task<List<VeiculoResponse>> Listar(string workspaceId)
         {
             var decryptId = DecryptId(workspaceId, "Workspace inválido");
-            var veiculos =  await veiculoRepository.Listar(decryptId);
-           var veiculosresponse = veiculos.Select(ConverteVeiculoResponse).ToList();
+            var veiculos = await veiculoRepository.Listar(decryptId);
+            var veiculosresponse = veiculos.Select(ConverteVeiculoResponse).ToList();
 
             return veiculosresponse;
         }
@@ -67,9 +82,9 @@ namespace Fleet.Service
                 Combustivel = veiculo.Combustivel,
                 Odometro = veiculo.Odometro,
                 Status = veiculo.Status,
-                Manutencao= veiculo.Manutencao,
-                Foto= veiculo.Foto
-                
+                Manutencao = veiculo.Manutencao,
+                Foto = veiculo.Foto
+
             };
 
             return response;

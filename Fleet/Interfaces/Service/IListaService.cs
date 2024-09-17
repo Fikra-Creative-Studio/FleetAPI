@@ -1,4 +1,5 @@
-﻿using Fleet.Models;
+﻿using Fleet.Enums;
+using Fleet.Models;
 
 namespace Fleet.Interfaces.Service
 {

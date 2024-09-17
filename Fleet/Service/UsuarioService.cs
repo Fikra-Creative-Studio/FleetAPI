@@ -30,7 +30,7 @@ namespace Fleet.Service
             await Validar(usuario, UsuarioRequestEnum.Criar);
 
 
-            var novoUsuario = usuarioRepository.Listar(x => !x.Ativo && x.Email == user.Email)
+            var novoUsuario = usuarioRepository.Listar(x => x.Email == user.Email)
                                                .Include(x => x.UsuarioWorkspaces.Where(uw => uw.Workspace.Ativo))
                                                .ThenInclude(uw => uw.Workspace)
                                                .FirstOrDefault();
@@ -41,7 +41,7 @@ namespace Fleet.Service
             else
             {
                 //criando a conta de um usuário inativado.
-                novoUsuario.Ativo = true;
+                novoUsuario.Ativo = false;
                 novoUsuario.Nome = usuario.Nome;
                 novoUsuario.Email = usuario.Email;
                 novoUsuario.CPF = usuario.CPF;
@@ -49,7 +49,8 @@ namespace Fleet.Service
 
                 foreach (var item in novoUsuario.UsuarioWorkspaces)
                 {
-                    item.Papel = PapelEnum.Usuario;
+                    if(item.Papel ==  PapelEnum.Convidado)
+                        item.Papel = PapelEnum.Usuario;
                 }
 
                 await usuarioRepository.Atualizar(novoUsuario);
@@ -69,7 +70,6 @@ namespace Fleet.Service
             //Validar o objeto que vindo da request
 
             usuario.Nome = user.Nome;
-            usuario.Email = user.Email;
 
             await usuarioRepository.Atualizar(usuario);
         }

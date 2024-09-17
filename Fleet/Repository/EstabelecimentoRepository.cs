@@ -30,5 +30,25 @@ namespace Fleet.Repository
                 return await context.Estabelecimentos.AnyAsync(x => x.Cnpj == cnpj && x.Id != id);
             return await context.Estabelecimentos.AnyAsync(x => x.Cnpj == cnpj);
         }
+
+        public async Task Atualizar(Estabelecimentos estabelecimento)
+        {
+            var existingObj = await context.Estabelecimentos.FindAsync(estabelecimento.Id);
+            if (existingObj != null)
+            {
+                context.Entry(existingObj).CurrentValues.SetValues(estabelecimento);
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task Deletar(int id)
+        {
+            var obj = await context.Estabelecimentos.FindAsync(id);
+            if (obj != null)
+            {
+                obj.Ativo = false;
+                await context.SaveChangesAsync();
+            }
+        }
     }
 }
