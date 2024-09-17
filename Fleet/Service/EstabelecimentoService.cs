@@ -8,7 +8,7 @@ using Fleet.Models;
 
 namespace Fleet.Service
 {
-    public class EstabelecimentoService(IEstabelecimentoRepository estabelecimentoRepository, IConfiguration configuration) : IEstabelecimentoService
+    public class EstabelecimentoService(IEstabelecimentoRepository estabelecimentoRepository, IUsuarioWorkspaceRepository usuarioWorkspaceRepository, IConfiguration configuration, ILoggedUser loggedUser) : IEstabelecimentoService
     {
         private string Secret { get => configuration.GetValue<string>("Crypto:Secret"); }
 
@@ -41,9 +41,11 @@ namespace Fleet.Service
 
         public async Task Cadastrar(EstabelecimentoRequest request, string workspaceId)
         {
+            var decryptId = DecryptId(workspaceId, "Workspace inválido");
+            if (await usuarioWorkspaceRepository.Existe(x => x.WorkspaceId == decryptId && x.UsuarioId == loggedUser.UserId && x.Papel != Enums.PapelEnum.Administrador)) throw new BussinessException("Você não tem permissão para realizar esta ação");
+
             if (await estabelecimentoRepository.ExisteCnpj(request.Cnpj)) throw new BussinessException("CNPJ já cadastrado");
 
-            var decryptId = DecryptId(workspaceId, "Workspace inválido");
             var estabelecimento = new Estabelecimentos
             {
                 Ativo = true,
@@ -73,5 +75,45 @@ namespace Fleet.Service
             return veiculosresponse;
         }
 
+        public async Task Atualizar(EstabelecimentoRequest request, string estabelecimentoId)
+        {
+            var decryptId = DecryptId(estabelecimentoId, "falha ao deletar estabelecimento.");
+            var estabelecimento = await estabelecimentoRepository.Buscar(x => x.Id == decryptId);
+
+            if (await usuarioWorkspaceRepository.Existe(x => x.WorkspaceId == estabelecimento.WorkspaceId && x.UsuarioId == loggedUser.UserId && x.Papel != Enums.PapelEnum.Administrador)) throw new BussinessException("Você não tem permissão para realizar esta ação");
+
+            if (estabelecimento != null)
+            {
+                var obj = new Estabelecimentos
+                {
+                    Id = estabelecimento.Id,
+                    Ativo = true,
+                    Cnpj = request.Cnpj,
+                    Razao = request.Razao,
+                    Fantasia = request.Fantasia,
+                    Telefone = request.Telefone,
+                    Cep = request.Cep,
+                    Rua = request.Rua,
+                    Numero = request.Numero,
+                    Bairro = request.Bairro,
+                    Cidade = request.Cidade,
+                    Estado = request.Estado,
+                    Email = request.Email,
+                    WorkspaceId = decryptId
+                };
+                await estabelecimentoRepository.Atualizar(obj);
+            }
+        }
+
+        public async Task Deletar(string estabelecimentoId)
+        {
+            var decryptId = DecryptId(estabelecimentoId, "falha ao deletar estabelecimento.");
+            var estabelecimento = await estabelecimentoRepository.Buscar(x => x.Id == decryptId);
+
+            if (await usuarioWorkspaceRepository.Existe(x => x.WorkspaceId == estabelecimento.WorkspaceId && x.UsuarioId == loggedUser.UserId && x.Papel != Enums.PapelEnum.Administrador)) throw new BussinessException("Você não tem permissão para realizar esta ação");
+
+            if (estabelecimento != null)
+                await estabelecimentoRepository.Deletar(decryptId);
+        }
     }
 }

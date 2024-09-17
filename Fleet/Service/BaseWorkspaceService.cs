@@ -29,15 +29,21 @@ namespace Fleet.Service
         }
         public virtual void Deletar(string workspaceId, string id)
         {
+            if (!UsuarioAdministradorAsync(getCryptoId(workspaceId)).GetAwaiter().GetResult()) throw new BussinessException("Usuário sem permissão para realizar esta ação.");
+
             if (Buscar(workspaceId, id) != null)
                 baseRepository.Deletar(getCryptoId(workspaceId), getCryptoId(id));
         }
-        public virtual List<T> Buscar(string workspaceId) 
-            => baseRepository.Buscar(getCryptoId(workspaceId));
+        public virtual List<T> Buscar(string workspaceId)
+        {
+            if (!UsuarioAdministradorAsync(getCryptoId(workspaceId)).GetAwaiter().GetResult()) throw new BussinessException("Usuário sem permissão para realizar esta ação.");
+            return baseRepository.Buscar(getCryptoId(workspaceId));
+        }
 
 
         public virtual T? Buscar(string workspaceId, string id)
         {
+            if (!UsuarioAdministradorAsync(getCryptoId(workspaceId)).GetAwaiter().GetResult()) throw new BussinessException("Usuário sem permissão para realizar esta ação.");
             return baseRepository.Buscar(getCryptoId(workspaceId), getCryptoId(id));
         }
 
@@ -46,7 +52,7 @@ namespace Fleet.Service
 
         public async Task<bool> UsuarioAdministradorAsync(int workspaceId)
         {
-            return await usuarioWorkspaceRepository.Existe(x => x.UsuarioId == loggedUser.UserId && x.WorkspaceId == workspaceId && x.Ativo);
+            return await usuarioWorkspaceRepository.Existe(x => x.UsuarioId == loggedUser.UserId && x.WorkspaceId == workspaceId && x.Ativo && x.Papel == Enums.PapelEnum.Administrador);
         }
 
     }

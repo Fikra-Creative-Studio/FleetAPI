@@ -24,5 +24,21 @@ namespace Fleet.Controllers
 
              return Ok(estabelecimentos);
         }
+
+        [HttpPut("api/[Controller]/{EstabelecimentoId}")]
+        [Authorize]
+        public async Task<IActionResult> Atualizar([FromRoute] string EstabelecimentoId, [FromBody] EstabelecimentoRequest request)
+        {
+            await estabelecimentoService.Atualizar(request, EstabelecimentoId);
+            return Ok();
+        }
+
+        [HttpDelete("api/[Controller]/{EstabelecimentoId}")]
+        [Authorize]
+        public async Task<IActionResult> Deletar([FromRoute] string EstabelecimentoId)
+        {
+            await estabelecimentoService.Deletar(EstabelecimentoId);
+            return Ok();
+        }
     }
 }

@@ -9,5 +9,6 @@ namespace Fleet.Interfaces.Repository
         Task<List<Veiculos>> Listar(int workspaceId);
         Task<Veiculos?> Buscar(Expression<Func<Veiculos, bool>> exp);
         Task AtualizaOdometro(int veiculoId, string odometro);
+        Task Deletar(int veiculoId);
     }
 }

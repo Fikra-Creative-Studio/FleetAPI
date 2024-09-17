@@ -23,7 +23,7 @@ public class VisitaService (ILoggedUser loggedUser,
         var visitaImages = new List<VisitaImagens>();
         foreach (var foto in fotos)
         {
-            var filename = SalvarFotoAsync(foto.Item1, foto.Item2, false).GetAwaiter().GetResult();
+            var filename = SalvarFotoAsync(foto.Item1, foto.Item2, foto.Item3).GetAwaiter().GetResult();
             if (filename != null)
             {
                 visitaImages.Add(new VisitaImagens
@@ -54,7 +54,7 @@ public class VisitaService (ILoggedUser loggedUser,
     private async Task<bool> UsuarioPertenceWorkspace(int usuarioId, int workspaceId) 
         => await usuarioWorkspaceRepository.Existe(uw => uw.UsuarioId == usuarioId &&  uw.WorkspaceId == workspaceId);
 
-    private async Task<string> SalvarFotoAsync(string base64, string extensao, bool retirada)
+    private async Task<string> SalvarFotoAsync(string base64, string extensao, bool assinatura)
     {
         string NomeFoto = string.Empty;
         if (!string.IsNullOrEmpty(base64))
@@ -62,7 +62,7 @@ public class VisitaService (ILoggedUser loggedUser,
             try
             {
                 var bytes = Convert.FromBase64String(base64);
-                NomeFoto = await bucketService.UploadAsync(new MemoryStream(bytes), extensao, "maintenance") ?? throw new BussinessException("não foi possivel salvar a imagem");
+                NomeFoto = await bucketService.UploadAsync(new MemoryStream(bytes), extensao, assinatura ? "signature" : "visit") ?? throw new BussinessException("não foi possivel salvar a imagem");
             }
             catch (Exception)
             {

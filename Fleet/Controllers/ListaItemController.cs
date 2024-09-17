@@ -50,6 +50,7 @@ namespace Fleet.Controllers
             var itens = listaItemService.Buscar(workspace, Enums.TipoListasEnum.Visita);
             return Ok(itens.Select(x => new BuscarListaPadraoResponse
             {
+                Id = CriptografiaHelper.CriptografarAes(x.Id.ToString(), Secret),
                 Titulo = x.Titulo,
                 Descricao = x.Descrição
             }));
@@ -64,17 +65,19 @@ namespace Fleet.Controllers
 
             return Ok(itens.Select(x => new BuscarListaPadraoResponse
             {
+                Id = CriptografiaHelper.CriptografarAes(x.Id.ToString(), Secret),
                 Titulo = x.Titulo,
                 Descricao = x.Descrição
             }));
         }
 
         [Authorize]
-        [HttpPut("api/Lista/{listaId}/Item")]
-        public IActionResult Atualizar([FromRoute] string listaId, [FromBody] CriarListaItemRequest request)
+        [HttpPut("api/Lista/{listaId}/Item/{listaItemId}/")]
+        public IActionResult Atualizar([FromRoute] string listaId, [FromRoute] string listaItemId, [FromBody] CriarListaItemRequest request)
         {
             var item = new ListasItens
             {
+                Id = int.Parse(CriptografiaHelper.DescriptografarAes(listaItemId, Secret) ?? throw new BussinessException("houve uma falha na criação da listagem")),
                 ListasId = int.Parse(CriptografiaHelper.DescriptografarAes(listaId, Secret) ?? throw new BussinessException("houve uma falha na criação da listagem")),
                 Titulo = request.Titulo,
                 Descrição = request.Descricao,
@@ -85,10 +88,10 @@ namespace Fleet.Controllers
         }
 
         [Authorize]
-        [HttpDelete("api/Lista/{listaId}/Item/{itemId}")]
-        public IActionResult Deletar([FromRoute] string listaId, [FromRoute] string itemId)
+        [HttpDelete("api/Lista/[controller]/{listaItemId}")]
+        public IActionResult Deletar([FromRoute] string listaItemId)
         {
-            var id = int.Parse(CriptografiaHelper.DescriptografarAes(listaId, Secret) ?? throw new BussinessException("houve uma falha na criação da listagem"));
+            var id = int.Parse(CriptografiaHelper.DescriptografarAes(listaItemId, Secret) ?? throw new BussinessException("houve uma falha na criação da listagem"));
             listaItemService.Deletar(id);
             return Ok();
         }

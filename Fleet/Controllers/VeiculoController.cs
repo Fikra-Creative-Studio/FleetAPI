@@ -24,5 +24,13 @@ namespace Fleet.Controllers
 
             return Ok(veiculos);
         }
+
+        [HttpDelete("api/[Controller]/{VeiculoId}")]
+        [Authorize]
+        public async Task<IActionResult> Deletar([FromRoute] string VeiculoId)
+        {
+            await veiculoService.Deletar(VeiculoId);
+            return Ok();
+        }
     }
 }
