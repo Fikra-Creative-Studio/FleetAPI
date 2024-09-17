@@ -56,6 +56,7 @@ namespace Fleet.Extensions
             services.AddScoped<IAbastecimentoService, AbastecimentoService>();
             services.AddScoped<IManutencaoService, ManutencaoService>();
             services.AddScoped<ICheckListService, CheckListService>();
+            services.AddScoped<IVisitaService, VisitaService>();
         }
 
         /// <summary>
@@ -74,6 +75,7 @@ namespace Fleet.Extensions
             services.AddScoped<IAbastecimentoRepository, AbastecimentoRepository>();
             services.AddScoped<IManutencaoRepository, ManutencaoRepository>();
             services.AddScoped<ICheckListRepository, CheckListRepository>();
+            services.AddScoped<IVisitaRepository, VisitaRepository>();
         }
 
         private static void AdicionarMySQL(this IServiceCollection services, IConfiguration configuration)

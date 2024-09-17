@@ -10,6 +10,7 @@ namespace Fleet.Repository.Configuration
         {
             builder.Property(x => x.Observacao).HasColumnType("text");
             builder.Property(x => x.Supervior).HasMaxLength(255);
+            builder.Property(x => x.GPS).HasMaxLength(255);
         }
     }
 }
