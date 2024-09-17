@@ -14,5 +14,8 @@
         public virtual Usuario Usuario { get; set; }
         public int EstabelecimentoId { get; set; }
         public virtual Estabelecimentos Estabelecimentos { get; set; }
+        public string GPS {get; set;}
+        public List<VisitaImagens> Imagens { get; set; }
+        public List<VisitaOpcao> Opcoes { get; set; }
     }
 }
