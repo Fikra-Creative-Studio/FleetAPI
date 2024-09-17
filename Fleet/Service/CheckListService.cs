@@ -8,13 +8,13 @@ namespace Fleet.Service
 {
     public class CheckListService(IBucketService bucketService, ICheckListRepository checkListRepository, ILoggedUser loggedUser, IVeiculoRepository veiculoRepository) : ICheckListService
     {
-        public void Retirar(Checklist objeto, Dictionary<string, string> fotos)
+        public void Retirar(Checklist objeto, List<Tuple<string, string>> fotos)
         {
             if (checkListRepository.Existe(x => x.VeiculosId == objeto.VeiculosId && x.DataDevolucao == null)) throw new BussinessException("Este veiculo já esta em uso");
 
             var checklistImages = new List<ChecklistImagens>();
             foreach (var foto in fotos) { 
-                var filename = SalvarFotoAsync(foto.Key, foto.Value, true).GetAwaiter().GetResult();
+                var filename = SalvarFotoAsync(foto.Item1, foto.Item2, true).GetAwaiter().GetResult();
                 if (filename != null) {
                     checklistImages.Add(new ChecklistImagens
                     {
@@ -29,7 +29,7 @@ namespace Fleet.Service
             checkListRepository.Inserir(objeto);
         }
 
-        public void Devolver(Checklist objeto, Dictionary<string, string> fotos)
+        public void Devolver(Checklist objeto, List<Tuple<string, string>> fotos)
         {
             var checklist = checkListRepository.Buscar(objeto.WorkspaceId, objeto.VeiculosId, loggedUser.UserId);
             if (checklist == null) throw new BussinessException("Você não pode devolver este veiculo.");
@@ -37,7 +37,7 @@ namespace Fleet.Service
             var checklistImages = new List<ChecklistImagens>();
             foreach (var foto in fotos)
             {
-                var filename = SalvarFotoAsync(foto.Key, foto.Value, false).GetAwaiter().GetResult();
+                var filename = SalvarFotoAsync(foto.Item1, foto.Item2, false).GetAwaiter().GetResult();
                 if (filename != null)
                 {
                     checklistImages.Add(new ChecklistImagens
