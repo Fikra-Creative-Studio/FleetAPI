@@ -1,6 +1,5 @@
 ﻿using Fleet.Interfaces.Repository;
 using Fleet.Interfaces.Service;
-using Fleet.Migrations;
 using Fleet.Models;
 using Fleet.Repository;
 
