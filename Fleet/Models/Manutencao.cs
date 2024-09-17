@@ -16,6 +16,6 @@
         public virtual Usuario Usuario { get; set; }
         public int EstabelecimentosId { get; set; }
         public virtual Estabelecimentos Estabelecimentos { get; set; }
-        public List<ManutencaoImagens> Imagens { get; set; }
+        public virtual List<ManutencaoImagens> Imagens { get; set; }
     }
 }

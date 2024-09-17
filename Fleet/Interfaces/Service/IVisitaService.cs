@@ -1,12 +1,9 @@
-using System;
-using Fleet.Controllers.Model.Request.Visita;
-using Fleet.Controllers.Model.Request.VisitaOpcao;
-using Fleet.Controllers.Model.Response.Visita;
+using Fleet.Models;
 
 namespace Fleet.Interfaces.Service;
 
 public interface IVisitaService
 {
-    Task Criar(CriarVisitaRequest request);
-    List<ListarVisitasResponse> Buscar(string workspaceId);
+    Task Criar(Visitas visita, List<Tuple<string,string,bool>> fotos);
+    Task<List<Visitas>> Buscar(string workspaceId);
 }

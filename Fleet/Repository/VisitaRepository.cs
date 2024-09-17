@@ -26,9 +26,9 @@ public class VisitaRepository(ApplicationDbContext applicationDbContext) : BaseR
         visita.Data = atualizarVisita.Data;
         visita.Supervior = atualizarVisita.Supervior;
         visita.Observacao = atualizarVisita.Observacao;
-        visita.VeiculoId = atualizarVisita.VeiculoId;
+        visita.VeiculosId = atualizarVisita.VeiculosId;
         visita.Veiculos = atualizarVisita.Veiculos;
-        visita.EstabelecimentoId = atualizarVisita.EstabelecimentoId;
+        visita.EstabelecimentosId = atualizarVisita.EstabelecimentosId;
         visita.Estabelecimentos = atualizarVisita.Estabelecimentos;
 
         await applicationDbContext.SaveChangesAsync();
