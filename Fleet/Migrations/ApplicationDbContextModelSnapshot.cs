@@ -605,9 +605,6 @@ namespace Fleet.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
-                    b.Property<int>("VisitaId")
-                        .HasColumnType("int");
-
                     b.Property<int>("VisitasId")
                         .HasColumnType("int");
 
@@ -642,9 +639,6 @@ namespace Fleet.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
-                    b.Property<int>("VisitaId")
-                        .HasColumnType("int");
-
                     b.Property<int>("VisitasId")
                         .HasColumnType("int");
 
@@ -652,7 +646,7 @@ namespace Fleet.Migrations
 
                     b.HasIndex("VisitasId");
 
-                    b.ToTable("VisitaOpcao");
+                    b.ToTable("VisitaOpcoes");
                 });
 
             modelBuilder.Entity("Fleet.Models.Visitas", b =>
@@ -669,11 +663,13 @@ namespace Fleet.Migrations
                     b.Property<DateTime>("Data")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int>("EstabelecimentoId")
-                        .HasColumnType("int");
-
                     b.Property<int>("EstabelecimentosId")
                         .HasColumnType("int");
+
+                    b.Property<string>("GPS")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("Observacao")
                         .IsRequired()
@@ -685,9 +681,6 @@ namespace Fleet.Migrations
                         .HasColumnType("varchar(255)");
 
                     b.Property<int>("UsuarioId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("VeiculoId")
                         .HasColumnType("int");
 
                     b.Property<int>("VeiculosId")
@@ -947,7 +940,7 @@ namespace Fleet.Migrations
             modelBuilder.Entity("Fleet.Models.VisitaImagens", b =>
                 {
                     b.HasOne("Fleet.Models.Visitas", "Visitas")
-                        .WithMany()
+                        .WithMany("Imagens")
                         .HasForeignKey("VisitasId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -958,7 +951,7 @@ namespace Fleet.Migrations
             modelBuilder.Entity("Fleet.Models.VisitaOpcao", b =>
                 {
                     b.HasOne("Fleet.Models.Visitas", "Visitas")
-                        .WithMany()
+                        .WithMany("Opcoes")
                         .HasForeignKey("VisitasId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1021,6 +1014,13 @@ namespace Fleet.Migrations
             modelBuilder.Entity("Fleet.Models.Usuario", b =>
                 {
                     b.Navigation("UsuarioWorkspaces");
+                });
+
+            modelBuilder.Entity("Fleet.Models.Visitas", b =>
+                {
+                    b.Navigation("Imagens");
+
+                    b.Navigation("Opcoes");
                 });
 
             modelBuilder.Entity("Fleet.Models.Workspace", b =>

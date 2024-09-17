@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Fleet.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class zero : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -114,8 +114,9 @@ namespace Fleet.Migrations
                     Nome = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Tipo = table.Column<int>(type: "int", nullable: false),
-                    WorkspaceId = table.Column<int>(type: "int", nullable: false),
-                    Ativo = table.Column<bool>(type: "tinyint(1)", nullable: false)
+                    Padrao = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    Ativo = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    WorkspaceId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -176,7 +177,10 @@ namespace Fleet.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Odometro = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Situacao = table.Column<int>(type: "int", nullable: false),
+                    Foto = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Manutencao = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    Status = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     WorkspaceId = table.Column<int>(type: "int", nullable: false),
                     Ativo = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
@@ -218,13 +222,61 @@ namespace Fleet.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Checklist",
+                name: "Abastecimentos",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Data = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    Odometro = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Valor = table.Column<double>(type: "double", nullable: false),
+                    Observacoes = table.Column<string>(type: "varchar(1000)", maxLength: 1000, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    WorkspaceId = table.Column<int>(type: "int", nullable: false),
+                    VeiculosId = table.Column<int>(type: "int", nullable: false),
+                    UsuarioId = table.Column<int>(type: "int", nullable: false),
+                    EstabelecimentosId = table.Column<int>(type: "int", nullable: false),
+                    Ativo = table.Column<bool>(type: "tinyint(1)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Abastecimentos", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Abastecimentos_Estabelecimentos_EstabelecimentosId",
+                        column: x => x.EstabelecimentosId,
+                        principalTable: "Estabelecimentos",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Abastecimentos_Usuarios_UsuarioId",
+                        column: x => x.UsuarioId,
+                        principalTable: "Usuarios",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Abastecimentos_Veiculos_VeiculosId",
+                        column: x => x.VeiculosId,
+                        principalTable: "Veiculos",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Abastecimentos_Workspaces_WorkspaceId",
+                        column: x => x.WorkspaceId,
+                        principalTable: "Workspaces",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Checklists",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     DataRetirada = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    DataDevolucao = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    DataDevolucao = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     OdometroRetirada = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     OdometroDevolucao = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
@@ -233,33 +285,31 @@ namespace Fleet.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     ObsDevolucao = table.Column<string>(type: "text", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Avaria = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Avaria = table.Column<bool>(type: "tinyint(255)", maxLength: 255, nullable: false),
                     OsbAvaria = table.Column<string>(type: "text", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     WorkspaceId = table.Column<int>(type: "int", nullable: false),
-                    VeiculoId = table.Column<int>(type: "int", nullable: false),
                     VeiculosId = table.Column<int>(type: "int", nullable: false),
                     UsuarioId = table.Column<int>(type: "int", nullable: false),
                     Ativo = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Checklist", x => x.Id);
+                    table.PrimaryKey("PK_Checklists", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Checklist_Usuarios_UsuarioId",
+                        name: "FK_Checklists_Usuarios_UsuarioId",
                         column: x => x.UsuarioId,
                         principalTable: "Usuarios",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Checklist_Veiculos_VeiculosId",
+                        name: "FK_Checklists_Veiculos_VeiculosId",
                         column: x => x.VeiculosId,
                         principalTable: "Veiculos",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Checklist_Workspaces_WorkspaceId",
+                        name: "FK_Checklists_Workspaces_WorkspaceId",
                         column: x => x.WorkspaceId,
                         principalTable: "Workspaces",
                         principalColumn: "Id",
@@ -282,10 +332,8 @@ namespace Fleet.Migrations
                     Observacoes = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     WorkspaceId = table.Column<int>(type: "int", nullable: false),
-                    VeiculoId = table.Column<int>(type: "int", nullable: false),
                     VeiculosId = table.Column<int>(type: "int", nullable: false),
                     UsuarioId = table.Column<int>(type: "int", nullable: false),
-                    EstabelecimentoId = table.Column<int>(type: "int", nullable: false),
                     EstabelecimentosId = table.Column<int>(type: "int", nullable: false),
                     Ativo = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
@@ -331,11 +379,11 @@ namespace Fleet.Migrations
                     Supervior = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     WorkspaceId = table.Column<int>(type: "int", nullable: false),
-                    VeiculoId = table.Column<int>(type: "int", nullable: false),
                     VeiculosId = table.Column<int>(type: "int", nullable: false),
                     UsuarioId = table.Column<int>(type: "int", nullable: false),
-                    EstabelecimentoId = table.Column<int>(type: "int", nullable: false),
                     EstabelecimentosId = table.Column<int>(type: "int", nullable: false),
+                    GPS = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     Ativo = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
@@ -369,6 +417,29 @@ namespace Fleet.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "AbastecimentoImagens",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Url = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    AbastecimentoId = table.Column<int>(type: "int", nullable: false),
+                    Ativo = table.Column<bool>(type: "tinyint(1)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AbastecimentoImagens", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AbastecimentoImagens_Abastecimentos_AbastecimentoId",
+                        column: x => x.AbastecimentoId,
+                        principalTable: "Abastecimentos",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "ChecklistImagens",
                 columns: table => new
                 {
@@ -384,9 +455,9 @@ namespace Fleet.Migrations
                 {
                     table.PrimaryKey("PK_ChecklistImagens", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ChecklistImagens_Checklist_ChecklistId",
+                        name: "FK_ChecklistImagens_Checklists_ChecklistId",
                         column: x => x.ChecklistId,
-                        principalTable: "Checklist",
+                        principalTable: "Checklists",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -410,9 +481,9 @@ namespace Fleet.Migrations
                 {
                     table.PrimaryKey("PK_ChecklistOpcao", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ChecklistOpcao_Checklist_ChecklistId",
+                        name: "FK_ChecklistOpcao_Checklists_ChecklistId",
                         column: x => x.ChecklistId,
-                        principalTable: "Checklist",
+                        principalTable: "Checklists",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -450,7 +521,6 @@ namespace Fleet.Migrations
                     Url = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     FotoAssinatura = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    VisitaId = table.Column<int>(type: "int", nullable: false),
                     VisitasId = table.Column<int>(type: "int", nullable: false),
                     Ativo = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
@@ -467,7 +537,7 @@ namespace Fleet.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "VisitaOpcao",
+                name: "VisitaOpcoes",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -477,15 +547,14 @@ namespace Fleet.Migrations
                     Descricao = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Opcao = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    VisitaId = table.Column<int>(type: "int", nullable: false),
                     VisitasId = table.Column<int>(type: "int", nullable: false),
                     Ativo = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_VisitaOpcao", x => x.Id);
+                    table.PrimaryKey("PK_VisitaOpcoes", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_VisitaOpcao_Visitas_VisitasId",
+                        name: "FK_VisitaOpcoes_Visitas_VisitasId",
                         column: x => x.VisitasId,
                         principalTable: "Visitas",
                         principalColumn: "Id",
@@ -494,18 +563,28 @@ namespace Fleet.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Checklist_UsuarioId",
-                table: "Checklist",
+                name: "IX_AbastecimentoImagens_AbastecimentoId",
+                table: "AbastecimentoImagens",
+                column: "AbastecimentoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Abastecimentos_EstabelecimentosId",
+                table: "Abastecimentos",
+                column: "EstabelecimentosId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Abastecimentos_UsuarioId",
+                table: "Abastecimentos",
                 column: "UsuarioId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Checklist_VeiculosId",
-                table: "Checklist",
+                name: "IX_Abastecimentos_VeiculosId",
+                table: "Abastecimentos",
                 column: "VeiculosId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Checklist_WorkspaceId",
-                table: "Checklist",
+                name: "IX_Abastecimentos_WorkspaceId",
+                table: "Abastecimentos",
                 column: "WorkspaceId");
 
             migrationBuilder.CreateIndex(
@@ -517,6 +596,21 @@ namespace Fleet.Migrations
                 name: "IX_ChecklistOpcao_ChecklistId",
                 table: "ChecklistOpcao",
                 column: "ChecklistId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Checklists_UsuarioId",
+                table: "Checklists",
+                column: "UsuarioId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Checklists_VeiculosId",
+                table: "Checklists",
+                column: "VeiculosId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Checklists_WorkspaceId",
+                table: "Checklists",
+                column: "WorkspaceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Estabelecimentos_WorkspaceId",
@@ -579,8 +673,8 @@ namespace Fleet.Migrations
                 column: "VisitasId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_VisitaOpcao_VisitasId",
-                table: "VisitaOpcao",
+                name: "IX_VisitaOpcoes_VisitasId",
+                table: "VisitaOpcoes",
                 column: "VisitasId");
 
             migrationBuilder.CreateIndex(
@@ -608,6 +702,9 @@ namespace Fleet.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "AbastecimentoImagens");
+
+            migrationBuilder.DropTable(
                 name: "ChecklistImagens");
 
             migrationBuilder.DropTable(
@@ -626,10 +723,13 @@ namespace Fleet.Migrations
                 name: "VisitaImagens");
 
             migrationBuilder.DropTable(
-                name: "VisitaOpcao");
+                name: "VisitaOpcoes");
 
             migrationBuilder.DropTable(
-                name: "Checklist");
+                name: "Abastecimentos");
+
+            migrationBuilder.DropTable(
+                name: "Checklists");
 
             migrationBuilder.DropTable(
                 name: "Listas");

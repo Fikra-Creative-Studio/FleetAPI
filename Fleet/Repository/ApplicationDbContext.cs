@@ -20,6 +20,8 @@ namespace Fleet.Repository
         public DbSet<Abastecimento> Abastecimentos { get; set; }
         public DbSet<Manutencao> Manutencao { get; set; }
         public DbSet<Checklist> Checklists { get; set; }
+        public DbSet <Visitas> Visitas { get; set; }
+        public DbSet <VisitaOpcao> VisitaOpcoes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
