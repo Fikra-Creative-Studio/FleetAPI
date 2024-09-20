@@ -44,10 +44,10 @@ namespace Fleet.Service
         public async Task<string> Cadastrar(EstabelecimentoRequest request, string workspaceId)
         {
             var decryptId = DecryptId(workspaceId, "Workspace inválido");
+            if (await usuarioWorkspaceRepository.Existe(x => x.WorkspaceId == decryptId && x.UsuarioId == loggedUser.UserId && x.Papel != Enums.PapelEnum.Administrador)) throw new BussinessException("Você não tem permissão para realizar esta ação");
 
             if (!IsValidCnpj(request.Cnpj)) throw new BussinessException("CNPJ inválido");
-            if (!IsValidCEP(request.Cep)) throw new BussinessException("CEP inválido");
-            if (await usuarioWorkspaceRepository.Existe(x => x.WorkspaceId == decryptId && x.UsuarioId == loggedUser.UserId && x.Papel != Enums.PapelEnum.Administrador)) throw new BussinessException("Você não tem permissão para realizar esta ação");
+           
             if (await estabelecimentoRepository.ExisteCnpj(request.Cnpj)) throw new BussinessException("CNPJ já cadastrado");
 
             var estabelecimento = new Estabelecimentos
@@ -84,12 +84,11 @@ namespace Fleet.Service
         public async Task Atualizar(EstabelecimentoRequest request, string estabelecimentoId)
         {
             var decryptId = DecryptId(estabelecimentoId, "Id inválido");
-            if (!IsValidCnpj(request.Cnpj)) throw new BussinessException("CNPJ inválido");
-            if (!IsValidCEP(request.Cep)) throw new BussinessException("CEP inválido");
-            var estabelecimento = await estabelecimentoRepository.Buscar(x => x.Id == decryptId);
-            if (await estabelecimentoRepository.ExisteCnpj(request.Cnpj, decryptId)) throw new BussinessException("CNPJ já cadastrado");
 
+            var estabelecimento = await estabelecimentoRepository.Buscar(x => x.Id == decryptId);
             if (await usuarioWorkspaceRepository.Existe(x => x.WorkspaceId == estabelecimento.WorkspaceId && x.UsuarioId == loggedUser.UserId && x.Papel != Enums.PapelEnum.Administrador)) throw new BussinessException("Você não tem permissão para realizar esta ação");
+            if (!IsValidCnpj(request.Cnpj)) throw new BussinessException("CNPJ inválido");
+            if (await estabelecimentoRepository.ExisteCnpj(request.Cnpj, decryptId)) throw new BussinessException("CNPJ já cadastrado");
 
             if (estabelecimento != null)
             {
