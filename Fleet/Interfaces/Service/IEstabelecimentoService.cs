@@ -5,7 +5,7 @@ namespace Fleet.Interfaces.Service
 {
     public interface IEstabelecimentoService
     {
-        Task Cadastrar(EstabelecimentoRequest request, string workspaceId);
+        Task<string> Cadastrar(EstabelecimentoRequest request, string workspaceId);
         Task<List<EstabelecimentoResponse>> Listar(string workspaceId);
         Task Atualizar(EstabelecimentoRequest request, string estabelecimentoId);
         Task Deletar(string estabelecimentoId);

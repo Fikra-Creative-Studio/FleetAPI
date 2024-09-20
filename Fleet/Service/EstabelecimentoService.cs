@@ -39,7 +39,7 @@ namespace Fleet.Service
         }
 
 
-        public async Task Cadastrar(EstabelecimentoRequest request, string workspaceId)
+        public async Task<string> Cadastrar(EstabelecimentoRequest request, string workspaceId)
         {
             var decryptId = DecryptId(workspaceId, "Workspace inválido");
             if (await usuarioWorkspaceRepository.Existe(x => x.WorkspaceId == decryptId && x.UsuarioId == loggedUser.UserId && x.Papel != Enums.PapelEnum.Administrador)) throw new BussinessException("Você não tem permissão para realizar esta ação");
@@ -60,10 +60,12 @@ namespace Fleet.Service
                 Cidade = request.Cidade,
                 Estado = request.Estado,
                 Email = request.Email,
-                WorkspaceId = decryptId
+                WorkspaceId = decryptId,
+                Tipo = request.Tipo
             };
 
-            await estabelecimentoRepository.Cadastrar(estabelecimento);
+            var result = await estabelecimentoRepository.Cadastrar(estabelecimento);
+            return CriptografiaHelper.CriptografarAes(result.Id.ToString(), Secret) ?? throw new BussinessException("houve uma falha no cadastro do estabelecimento");
         }
 
         public async Task<List<EstabelecimentoResponse>> Listar(string workspaceId)

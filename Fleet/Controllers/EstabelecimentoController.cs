@@ -1,5 +1,6 @@
 ﻿using Fleet.Controllers.Model.Request.Estabelecimento;
 using Fleet.Interfaces.Service;
+using Fleet.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,8 +13,8 @@ namespace Fleet.Controllers
         [Authorize]
         public async Task<IActionResult> Cadastrar([FromRoute] string WorkspaceId, [FromBody] EstabelecimentoRequest request)
         {
-            await estabelecimentoService.Cadastrar(request, WorkspaceId);
-            return Created();
+            var id = await estabelecimentoService.Cadastrar(request, WorkspaceId);
+            return Ok(new { Id = id });
         }
 
         [HttpGet("api/Workspace/{WorkspaceId}/[Controller]")]

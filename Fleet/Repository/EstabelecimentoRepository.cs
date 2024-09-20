@@ -7,11 +7,11 @@ namespace Fleet.Repository
 {
     public class EstabelecimentoRepository(ApplicationDbContext context) : IEstabelecimentoRepository
     {
-        public async Task<bool> Cadastrar(Estabelecimentos estabelecimento)
+        public async Task<Estabelecimentos> Cadastrar(Estabelecimentos estabelecimento)
         {
             await context.Estabelecimentos.AddAsync(estabelecimento);
             await context.SaveChangesAsync();
-            return true;
+            return estabelecimento;
         }
 
         public async Task<List<Estabelecimentos>> Listar(int workspaceId)
