@@ -165,12 +165,5 @@ namespace Fleet.Service
 
             return true;
         }
-
-        private bool IsValidCEP(string cep)
-        {
-            string pattern = @"^\d{5}-\d{3}$";
-            return Regex.IsMatch(cep, pattern);
-        }
-
     }
 }
