@@ -1,4 +1,5 @@
-﻿using Fleet.Controllers.Model.Request.Estabelecimento;
+﻿using System.Text.RegularExpressions;
+using Fleet.Controllers.Model.Request.Estabelecimento;
 using Fleet.Controllers.Model.Response.Estabelecimento;
 using Fleet.Helpers;
 using Fleet.Interfaces.Repository;
@@ -27,7 +28,8 @@ namespace Fleet.Service
                 Bairro = estabelecimento.Bairro,
                 Cidade = estabelecimento.Cidade,
                 Estado = estabelecimento.Estado,
-                Email = estabelecimento.Email
+                Email = estabelecimento.Email,
+                Tipo = estabelecimento.Tipo
             };
 
             return response;
@@ -44,6 +46,8 @@ namespace Fleet.Service
             var decryptId = DecryptId(workspaceId, "Workspace inválido");
             if (await usuarioWorkspaceRepository.Existe(x => x.WorkspaceId == decryptId && x.UsuarioId == loggedUser.UserId && x.Papel != Enums.PapelEnum.Administrador)) throw new BussinessException("Você não tem permissão para realizar esta ação");
 
+            if (!IsValidCnpj(request.Cnpj)) throw new BussinessException("CNPJ inválido");
+           
             if (await estabelecimentoRepository.ExisteCnpj(request.Cnpj)) throw new BussinessException("CNPJ já cadastrado");
 
             var estabelecimento = new Estabelecimentos
@@ -79,10 +83,12 @@ namespace Fleet.Service
 
         public async Task Atualizar(EstabelecimentoRequest request, string estabelecimentoId)
         {
-            var decryptId = DecryptId(estabelecimentoId, "falha ao deletar estabelecimento.");
-            var estabelecimento = await estabelecimentoRepository.Buscar(x => x.Id == decryptId);
+            var decryptId = DecryptId(estabelecimentoId, "Id inválido");
 
+            var estabelecimento = await estabelecimentoRepository.Buscar(x => x.Id == decryptId);
             if (await usuarioWorkspaceRepository.Existe(x => x.WorkspaceId == estabelecimento.WorkspaceId && x.UsuarioId == loggedUser.UserId && x.Papel != Enums.PapelEnum.Administrador)) throw new BussinessException("Você não tem permissão para realizar esta ação");
+            if (!IsValidCnpj(request.Cnpj)) throw new BussinessException("CNPJ inválido");
+            if (await estabelecimentoRepository.ExisteCnpj(request.Cnpj, decryptId)) throw new BussinessException("CNPJ já cadastrado");
 
             if (estabelecimento != null)
             {
@@ -116,6 +122,48 @@ namespace Fleet.Service
 
             if (estabelecimento != null)
                 await estabelecimentoRepository.Deletar(decryptId);
+        }
+
+        private static bool IsValidCnpj(string cnpj)
+        {
+            // Remove non-numeric characters
+            cnpj = Regex.Replace(cnpj, "[^0-9]", "");
+
+            // Check if the CNPJ has 14 digits
+            if (cnpj.Length != 14)
+                return false;
+
+            // Validate the check digits
+            int[] multipliers1 = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+            int[] multipliers2 = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+
+            int sum = 0;
+            for (int i = 0; i < 12; i++)
+                sum += int.Parse(cnpj[i].ToString()) * multipliers1[i];
+
+            int remainder = sum % 11;
+            if (remainder < 2)
+                remainder = 0;
+            else
+                remainder = 11 - remainder;
+
+            if (int.Parse(cnpj[12].ToString()) != remainder)
+                return false;
+
+            sum = 0;
+            for (int i = 0; i < 13; i++)
+                sum += int.Parse(cnpj[i].ToString()) * multipliers2[i];
+
+            remainder = sum % 11;
+            if (remainder < 2)
+                remainder = 0;
+            else
+                remainder = 11 - remainder;
+
+            if (int.Parse(cnpj[13].ToString()) != remainder)
+                return false;
+
+            return true;
         }
     }
 }
