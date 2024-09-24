@@ -9,11 +9,11 @@ namespace Fleet.Service
         : BaseWorkspaceService<Listas>(baseRepository, loggedUser, usuarioWorkspaceRepository, configuration), IListaService
     {
 
-        public override void Inserir(string workspaceId, Listas objeto)
+        public override string Inserir(string workspaceId, Listas objeto)
         {
             objeto.Padrao = !baseRepository.Existe(getCryptoId(workspaceId), objeto.Tipo);
 
-            base.Inserir(workspaceId, objeto);
+            return base.Inserir(workspaceId, objeto);
         }
 
         public override bool Validar(Listas objeto)

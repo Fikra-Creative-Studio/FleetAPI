@@ -25,8 +25,8 @@ namespace Fleet.Controllers
                 Tipo = request.Veiculo ? Enums.TipoListasEnum.Checklist : Enums.TipoListasEnum.Visita
             };
 
-            listaService.Inserir(WorkspaceId, lista);
-            return Created();
+            var id = listaService.Inserir(WorkspaceId, lista);
+            return Ok(new { Id = id });
         }
 
         [Authorize]

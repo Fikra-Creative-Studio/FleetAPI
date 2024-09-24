@@ -14,19 +14,25 @@ namespace Fleet.Service
             return int.Parse(idWorkspace);
         }
 
-
-        public virtual void Inserir(string workspaceId, T objeto)
+        public virtual string Inserir(string workspaceId, T objeto)
         {
             objeto.WorkspaceId = getCryptoId(workspaceId);
 
             if (Validar(objeto))
+            {
                 baseRepository.Inserir(objeto);
+                return CriptografiaHelper.CriptografarAes(objeto.Id.ToString(), Secret) ?? throw new BussinessException("O Workspace apresentou uma falha.");
+            }
+
+            throw new BussinessException("");
         }
+
         public virtual void Atualizar(T objeto)
         {
             if (Validar(objeto))
                 baseRepository.Atualizar(objeto);
         }
+
         public virtual void Deletar(string workspaceId, string id)
         {
             if (!UsuarioAdministradorAsync(getCryptoId(workspaceId)).GetAwaiter().GetResult()) throw new BussinessException("Usuário sem permissão para realizar esta ação.");
