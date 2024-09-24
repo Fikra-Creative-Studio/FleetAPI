@@ -22,7 +22,7 @@ namespace Fleet.Repository
             var listaAtual = Buscar(workspaceId, listaId);
             if (listaAtual != null)
             {
-                var listaAntiga = applicationDbContext.Listas.First(x => x.Padrao == true && x.WorkspaceId == workspaceId);
+                var listaAntiga = applicationDbContext.Listas.First(x => x.Padrao == true && x.WorkspaceId == workspaceId && x.Tipo == listaAtual.Tipo);
 
                 listaAntiga.Padrao = false;
                 listaAtual.Padrao = true;
