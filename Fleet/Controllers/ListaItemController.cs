@@ -21,7 +21,7 @@ namespace Fleet.Controllers
             {
                 ListasId = int.Parse(CriptografiaHelper.DescriptografarAes(listaId, Secret) ?? throw new BussinessException("houve uma falha na criação da listagem")),
                 Titulo = request.Titulo,
-                Descrição = request.Descricao,
+                Descricao = request.Descricao,
             };
 
             listaItemService.Inserir(lista);
@@ -38,7 +38,7 @@ namespace Fleet.Controllers
             {
                 Id = CriptografiaHelper.CriptografarAes(x.Id.ToString(), Secret),
                 Titulo = x.Titulo,
-                Descricao = x.Descrição
+                Descricao = x.Descricao
             }));
         }
 
@@ -52,7 +52,7 @@ namespace Fleet.Controllers
             {
                 Id = CriptografiaHelper.CriptografarAes(x.Id.ToString(), Secret),
                 Titulo = x.Titulo,
-                Descricao = x.Descrição
+                Descricao = x.Descricao
             }));
         }
 
@@ -67,7 +67,7 @@ namespace Fleet.Controllers
             {
                 Id = CriptografiaHelper.CriptografarAes(x.Id.ToString(), Secret),
                 Titulo = x.Titulo,
-                Descricao = x.Descrição
+                Descricao = x.Descricao
             }));
         }
 
@@ -80,7 +80,7 @@ namespace Fleet.Controllers
                 Id = int.Parse(CriptografiaHelper.DescriptografarAes(listaItemId, Secret) ?? throw new BussinessException("houve uma falha na criação da listagem")),
                 ListasId = int.Parse(CriptografiaHelper.DescriptografarAes(listaId, Secret) ?? throw new BussinessException("houve uma falha na criação da listagem")),
                 Titulo = request.Titulo,
-                Descrição = request.Descricao,
+                Descricao = request.Descricao,
             };
 
             listaItemService.Atualizar(item);

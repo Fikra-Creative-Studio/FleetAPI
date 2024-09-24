@@ -1,5 +1,4 @@
-﻿using Fleet.Helpers;
-using Fleet.Interfaces.Repository;
+﻿using Fleet.Interfaces.Repository;
 using Fleet.Interfaces.Service;
 using Fleet.Models;
 
@@ -8,6 +7,11 @@ namespace Fleet.Service
     public class ListaService(IListaRepository baseRepository, ILoggedUser loggedUser, IUsuarioWorkspaceRepository usuarioWorkspaceRepository, IConfiguration configuration) 
         : BaseWorkspaceService<Listas>(baseRepository, loggedUser, usuarioWorkspaceRepository, configuration), IListaService
     {
+        public override List<Listas> Buscar(string workspaceId)
+        {
+            var idWorkspace = getCryptoId(workspaceId);
+            return baseRepository.BuscarComItems(idWorkspace);
+        }
 
         public override string Inserir(string workspaceId, Listas objeto)
         {

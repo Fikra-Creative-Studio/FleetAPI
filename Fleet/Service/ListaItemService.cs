@@ -19,7 +19,7 @@ namespace Fleet.Service
 
         public override bool Validar(ListasItens objeto)
         {
-            if (string.IsNullOrEmpty(objeto.Titulo) || string.IsNullOrEmpty(objeto.Descrição)) throw new BussinessException("O Campo titulo e descrição são obrigatorios.");
+            if (string.IsNullOrEmpty(objeto.Titulo) || string.IsNullOrEmpty(objeto.Descricao)) throw new BussinessException("O Campo titulo e descrição são obrigatorios.");
 
             return true;
         }

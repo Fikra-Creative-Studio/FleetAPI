@@ -1,6 +1,7 @@
 ﻿using Azure.Core;
 using Fleet.Controllers.Model.Request.Lista;
 using Fleet.Controllers.Model.Response.Lista;
+using Fleet.Controllers.Model.Response.ListaItem;
 using Fleet.Helpers;
 using Fleet.Interfaces.Service;
 using Fleet.Models;
@@ -40,7 +41,13 @@ namespace Fleet.Controllers
                 Id = CriptografiaHelper.CriptografarAes(x.Id.ToString(), Secret) ?? throw new BussinessException("houve uma falha na busca da listagem"),
                 Nome = x.Nome,
                 Padrao = x.Padrao,
-                Tipo = x.Tipo
+                Tipo = x.Tipo,
+                Items = x.ListasItens.Select(y => new BuscarListaItemResponse
+                {
+                    Id = CriptografiaHelper.CriptografarAes(y.Id.ToString(), Secret) ?? throw new BussinessException("houve uma falha na busca da listagem"),
+                    Descricao = y.Descricao,
+                    Titulo = y.Titulo
+                }).ToList()
             }));
         }
 
