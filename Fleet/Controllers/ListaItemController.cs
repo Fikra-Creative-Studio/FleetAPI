@@ -88,7 +88,7 @@ namespace Fleet.Controllers
         }
 
         [Authorize]
-        [HttpDelete("api/Lista/[controller]/{listaItemId}")]
+        [HttpDelete("api/Lista/Item/{listaItemId}")]
         public IActionResult Deletar([FromRoute] string listaItemId)
         {
             var id = int.Parse(CriptografiaHelper.DescriptografarAes(listaItemId, Secret) ?? throw new BussinessException("houve uma falha na criação da listagem"));
