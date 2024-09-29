@@ -42,7 +42,7 @@ namespace Fleet.Controllers
                 Nome = x.Nome,
                 Padrao = x.Padrao,
                 Tipo = x.Tipo,
-                Items = x.ListasItens.Select(y => new BuscarListaItemResponse
+                Items = x.ListasItens.Where(y => y.Ativo).Select(y => new BuscarListaItemResponse
                 {
                     Id = CriptografiaHelper.CriptografarAes(y.Id.ToString(), Secret) ?? throw new BussinessException("houve uma falha na busca da listagem"),
                     Descricao = y.Descricao,
