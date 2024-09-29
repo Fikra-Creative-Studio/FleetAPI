@@ -24,8 +24,8 @@ namespace Fleet.Controllers
                 Descricao = request.Descricao,
             };
 
-            listaItemService.Inserir(lista);
-            return Created();
+            var obj = listaItemService.Inserir(lista);
+            return Ok(new { Id = CriptografiaHelper.CriptografarAes(obj.Id.ToString(), Secret)});
         }
 
         [Authorize]

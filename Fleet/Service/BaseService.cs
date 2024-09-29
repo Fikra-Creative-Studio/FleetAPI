@@ -11,10 +11,12 @@ namespace Fleet.Service
             _baseRepository = baseRepository;
         }
 
-        public void Inserir(T objeto)
+        public T Inserir(T objeto)
         {
             if (Validar(objeto))
                 _baseRepository.Inserir(objeto);
+
+            return objeto;
         }
 
         public void Atualizar(T objeto)

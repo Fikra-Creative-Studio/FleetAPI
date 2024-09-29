@@ -2,7 +2,7 @@
 {
     public interface IBaseService<T> where T : class
     {
-        void Inserir(T objeto);
+        T Inserir(T objeto);
         void Atualizar(T objeto);
         void Deletar(int id);
         List<T> Buscar();
