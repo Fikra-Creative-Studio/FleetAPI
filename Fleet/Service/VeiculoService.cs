@@ -12,10 +12,10 @@ namespace Fleet.Service
     {
         private string Secret { get => configuration.GetValue<string>("Crypto:Secret"); }
 
-        public async Task Cadastrar(VeiculoRequest request, string workspaceId)
+        public async Task<string> Cadastrar(VeiculoRequest request, string workspaceId)
         {
             var decryptId = DecryptId(workspaceId, "Workspace inválido");
-            if(await usuarioWorkspaceRepository.Existe(x => x.WorkspaceId == decryptId && x.UsuarioId == loggedUser.UserId && x.Papel != Enums.PapelEnum.Administrador)) throw new BussinessException("Você não tem permissão para realizar esta ação");
+            if (await usuarioWorkspaceRepository.Existe(x => x.WorkspaceId == decryptId && x.UsuarioId == loggedUser.UserId && x.Papel != Enums.PapelEnum.Administrador)) throw new BussinessException("Você não tem permissão para realizar esta ação");
 
             string NomeFoto = string.Empty;
             if (!string.IsNullOrEmpty(request.ImagemBase64))
@@ -34,26 +34,34 @@ namespace Fleet.Service
             var veiculo = new Veiculos
             {
                 Ativo = true,
+                Tipo = request.Tipo,
                 Marca = request.Marca,
                 Modelo = request.Modelo,
                 Ano = request.Ano,
                 Placa = request.Placa,
+                Chassi = request.Chassi,
                 Combustivel = request.Combustivel,
+                Cor = request.Cor,
                 Odometro = request.Odometro,
-                Status = false,
+                Renavam = request.Renavam,
+                Seguradora = request.Seguradora,
+                VencimentoSeguro = request.VencimentoSeguro,
+                Observacao = request.Observacao,
+                EmUso = false,
                 Manutencao = false,
                 WorkspaceId = decryptId,
                 Foto = NomeFoto
             };
 
-            await veiculoRepository.Cadastrar(veiculo);
+            var result = await veiculoRepository.Cadastrar(veiculo);
+            return CriptografiaHelper.CriptografarAes(result.Id.ToString(), Secret);
         }
 
         public async Task Deletar(string veiculoId)
         {
-            var decryptId = DecryptId(veiculoId,"falha ao deletar veiculo");
+            var decryptId = DecryptId(veiculoId, "falha ao deletar veiculo");
             var veiculo = await veiculoRepository.Buscar(x => x.Id == decryptId);
-            if(veiculo != null)
+            if (veiculo != null)
             {
                 if (await usuarioWorkspaceRepository.Existe(x => x.WorkspaceId == veiculo.WorkspaceId && x.UsuarioId == loggedUser.UserId && x.Papel != Enums.PapelEnum.Administrador)) throw new BussinessException("Você não tem permissão para realizar esta ação");
 
@@ -75,13 +83,20 @@ namespace Fleet.Service
             var response = new VeiculoResponse
             {
                 Id = CriptografiaHelper.CriptografarAes(veiculo.Id.ToString(), Secret),
+                Tipo = veiculo.Tipo,
                 Marca = veiculo.Marca,
                 Modelo = veiculo.Modelo,
                 Ano = veiculo.Ano,
                 Placa = veiculo.Placa,
+                Chassi = veiculo.Chassi,
                 Combustivel = veiculo.Combustivel,
+                Cor = veiculo.Cor,
                 Odometro = veiculo.Odometro,
-                Status = veiculo.Status,
+                Observacao = veiculo.Observacao,
+                Renavam = veiculo.Renavam,
+                Seguradora = veiculo.Seguradora,
+                VencimentoSeguro = veiculo.VencimentoSeguro,
+                EmUso = veiculo.EmUso,
                 Manutencao = veiculo.Manutencao,
                 Foto = veiculo.Foto
 

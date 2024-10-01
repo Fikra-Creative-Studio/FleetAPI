@@ -7,7 +7,7 @@ namespace Fleet.Interfaces.Service
 {
     public interface IVeiculoService
     {
-        Task Cadastrar(VeiculoRequest request, string workspaceId);
+        Task<string> Cadastrar(VeiculoRequest request, string workspaceId);
         Task<List<VeiculoResponse>> Listar(string workspaceId);
         Task Deletar(string veiculoId);
 

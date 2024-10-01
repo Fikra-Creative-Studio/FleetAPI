@@ -8,11 +8,11 @@ namespace Fleet.Repository
     public class VeiculoRepository(ApplicationDbContext context) : IVeiculoRepository
     {
 
-        public async Task<bool> Cadastrar(Veiculos veiculo)
+        public async Task<Veiculos> Cadastrar(Veiculos veiculo)
         {
             await context.Veiculos.AddAsync(veiculo);                  
             await context.SaveChangesAsync();
-            return true;
+            return veiculo;
         }
 
         public async Task<List<Veiculos>> Listar(int workspaceId)
@@ -30,6 +30,16 @@ namespace Fleet.Repository
             if (veiculo != null)
             {
                 veiculo.Odometro = odometro;
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task AtualizaUso(int veiculoId, bool emUso)
+        {
+            var veiculo = await context.Veiculos.FirstOrDefaultAsync(x => x.Id == veiculoId);
+            if (veiculo != null)
+            {
+                veiculo.EmUso = emUso;
                 await context.SaveChangesAsync();
             }
         }

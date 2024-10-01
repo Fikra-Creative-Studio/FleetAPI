@@ -26,6 +26,7 @@ namespace Fleet.Service
             objeto.ChecklistImagens = checklistImages;
 
             checkListRepository.Inserir(objeto);
+            veiculoRepository.AtualizaUso(objeto.Id, true);
         }
 
         public void Devolver(Checklist objeto, List<Tuple<string, string>> fotos)
@@ -57,6 +58,7 @@ namespace Fleet.Service
 
             checkListRepository.Atualizar(checklist);
             veiculoRepository.AtualizaOdometro(checklist.VeiculosId, checklist.OdometroDevolucao);
+            veiculoRepository.AtualizaUso(checklist.VeiculosId, false);
         }
 
         private async Task<string> SalvarFotoAsync(string base64, string extensao, bool retirada)

@@ -12,8 +12,8 @@ namespace Fleet.Controllers
         [Authorize]
         public async Task<IActionResult> Cadastrar([FromRoute] string WorkspaceId, [FromBody] VeiculoRequest request)
         {
-            await veiculoService.Cadastrar(request, WorkspaceId);
-            return Created();
+            var id = await veiculoService.Cadastrar(request, WorkspaceId);
+            return Ok(new { Id = id });
         }
 
         [HttpGet("api/Workspace/{WorkspaceId}/[Controller]")]
