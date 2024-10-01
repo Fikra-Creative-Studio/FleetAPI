@@ -99,7 +99,8 @@ namespace Fleet.Service
                 EmUso = !string.IsNullOrEmpty(veiculo.EmUsoPor),
                 EmUsoPor = veiculo.EmUsoPor,
                 Manutencao = veiculo.Manutencao,
-                Foto = veiculo.Foto
+                Foto = veiculo.Foto,
+                Comigo = veiculo.UsuariosId == null ? false : veiculo.UsuariosId == loggedUser.UserId
             };
 
             return response;

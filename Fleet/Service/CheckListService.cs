@@ -26,7 +26,7 @@ namespace Fleet.Service
 
             checkListRepository.Inserir(objeto);
             var user = usuarioRepository.Listar(x => x.Id == loggedUser.UserId).First();
-            await veiculoRepository.AtualizaUso(objeto.VeiculosId, user.Nome);
+            await veiculoRepository.AtualizaUso(objeto.VeiculosId, user);
         }
 
         public async Task Devolver(Checklist objeto, List<Tuple<string, string>> fotos)
@@ -58,7 +58,7 @@ namespace Fleet.Service
 
             checkListRepository.Atualizar(checklist);
             await veiculoRepository.AtualizaOdometro(checklist.VeiculosId, checklist.OdometroDevolucao);
-            await veiculoRepository.AtualizaUso(checklist.VeiculosId, string.Empty);
+            await veiculoRepository.AtualizaUso(checklist.VeiculosId, null);
         }
 
         private async Task<string> SalvarFotoAsync(string base64, string extensao, bool retirada)

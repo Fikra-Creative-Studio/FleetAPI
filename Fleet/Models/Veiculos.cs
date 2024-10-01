@@ -22,6 +22,7 @@ namespace Fleet.Models
         public string EmUsoPor { get; set; } = string.Empty;
         public int WorkspaceId { get; set; }
         public virtual Workspace Workspace { get; set; }
+        public int? UsuariosId { get; set; }
     }
 }
     

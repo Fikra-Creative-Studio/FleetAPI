@@ -10,6 +10,6 @@ namespace Fleet.Interfaces.Repository
         Task<Veiculos?> Buscar(Expression<Func<Veiculos, bool>> exp);
         Task AtualizaOdometro(int veiculoId, string odometro);
         Task Deletar(int veiculoId);
-        Task AtualizaUso(int veiculoId, string emUso);
+        Task AtualizaUso(int veiculoId, Usuario? usuario);
     }
 }
