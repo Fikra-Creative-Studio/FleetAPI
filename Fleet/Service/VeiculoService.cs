@@ -47,7 +47,7 @@ namespace Fleet.Service
                 Seguradora = request.Seguradora,
                 VencimentoSeguro = request.VencimentoSeguro,
                 Observacao = request.Observacao,
-                EmUso = false,
+                EmUsoPor = string.Empty,
                 Manutencao = false,
                 WorkspaceId = decryptId,
                 Foto = NomeFoto
@@ -96,10 +96,10 @@ namespace Fleet.Service
                 Renavam = veiculo.Renavam,
                 Seguradora = veiculo.Seguradora,
                 VencimentoSeguro = veiculo.VencimentoSeguro,
-                EmUso = veiculo.EmUso,
+                EmUso = !string.IsNullOrEmpty(veiculo.EmUsoPor),
+                EmUsoPor = veiculo.EmUsoPor,
                 Manutencao = veiculo.Manutencao,
                 Foto = veiculo.Foto
-
             };
 
             return response;

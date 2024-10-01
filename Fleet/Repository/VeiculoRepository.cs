@@ -34,12 +34,12 @@ namespace Fleet.Repository
             }
         }
 
-        public async Task AtualizaUso(int veiculoId, bool emUso)
+        public async Task AtualizaUso(int veiculoId, string emUsoPor)
         {
             var veiculo = await context.Veiculos.FirstOrDefaultAsync(x => x.Id == veiculoId);
             if (veiculo != null)
             {
-                veiculo.EmUso = emUso;
+                veiculo.EmUsoPor = emUsoPor;
                 await context.SaveChangesAsync();
             }
         }

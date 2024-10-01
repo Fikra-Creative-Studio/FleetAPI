@@ -19,7 +19,7 @@ namespace Fleet.Models
         public string Observacao { get; set; } = string.Empty;
         public string Foto {  get; set; } = string.Empty;
         public bool Manutencao { get; set; }   
-        public bool EmUso { get; set; }
+        public string EmUsoPor { get; set; } = string.Empty;
         public int WorkspaceId { get; set; }
         public virtual Workspace Workspace { get; set; }
     }

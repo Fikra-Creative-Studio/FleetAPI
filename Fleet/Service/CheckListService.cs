@@ -5,9 +5,9 @@ using Fleet.Repository;
 
 namespace Fleet.Service
 {
-    public class CheckListService(IBucketService bucketService, ICheckListRepository checkListRepository, ILoggedUser loggedUser, IVeiculoRepository veiculoRepository) : ICheckListService
+    public class CheckListService(IBucketService bucketService, ICheckListRepository checkListRepository, ILoggedUser loggedUser, IVeiculoRepository veiculoRepository, IUsuarioRepository usuarioRepository) : ICheckListService
     {
-        public void Retirar(Checklist objeto, List<Tuple<string, string>> fotos)
+        public async void Retirar(Checklist objeto, List<Tuple<string, string>> fotos)
         {
             if (checkListRepository.Existe(x => x.VeiculosId == objeto.VeiculosId && x.DataDevolucao == null)) throw new BussinessException("Este veiculo já esta em uso");
 
@@ -26,7 +26,8 @@ namespace Fleet.Service
             objeto.ChecklistImagens = checklistImages;
 
             checkListRepository.Inserir(objeto);
-            veiculoRepository.AtualizaUso(objeto.Id, true);
+            var user = await usuarioRepository.Buscar(x => x.Id == loggedUser.UserId) ?? throw new BussinessException("falha para atualizar o uso.");
+            await veiculoRepository.AtualizaUso(objeto.Id, user.Nome);
         }
 
         public void Devolver(Checklist objeto, List<Tuple<string, string>> fotos)
@@ -58,7 +59,7 @@ namespace Fleet.Service
 
             checkListRepository.Atualizar(checklist);
             veiculoRepository.AtualizaOdometro(checklist.VeiculosId, checklist.OdometroDevolucao);
-            veiculoRepository.AtualizaUso(checklist.VeiculosId, false);
+            veiculoRepository.AtualizaUso(checklist.VeiculosId, string.Empty);
         }
 
         private async Task<string> SalvarFotoAsync(string base64, string extensao, bool retirada)
