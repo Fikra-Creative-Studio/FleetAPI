@@ -26,8 +26,8 @@ namespace Fleet.Service
             objeto.ChecklistImagens = checklistImages;
 
             checkListRepository.Inserir(objeto);
-            var user = await usuarioRepository.Buscar(x => x.Id == loggedUser.UserId) ?? throw new BussinessException("falha para atualizar o uso.");
-            await veiculoRepository.AtualizaUso(objeto.Id, user.Nome);
+            var user = usuarioRepository.Listar(x => x.Id == loggedUser.UserId).First();
+            await veiculoRepository.AtualizaUso(objeto.VeiculosId, user.Nome);
         }
 
         public void Devolver(Checklist objeto, List<Tuple<string, string>> fotos)
