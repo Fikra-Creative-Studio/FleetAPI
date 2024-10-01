@@ -4,7 +4,7 @@ namespace Fleet.Interfaces.Service
 {
     public interface ICheckListService
     {
-        void Retirar(Checklist objeto, List<Tuple<string, string>> fotos);
-        void Devolver(Checklist objeto, List<Tuple<string, string>> fotos);
+        Task Retirar(Checklist objeto, List<Tuple<string, string>> fotos);
+        Task Devolver(Checklist objeto, List<Tuple<string, string>> fotos);
     }
 }
