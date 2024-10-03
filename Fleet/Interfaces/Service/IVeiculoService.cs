@@ -1,6 +1,4 @@
-﻿
-
-using Fleet.Controllers.Model.Request.Veiculo;
+﻿using Fleet.Controllers.Model.Request.Veiculo;
 using Fleet.Controllers.Model.Response.Veiculo;
 
 namespace Fleet.Interfaces.Service
@@ -10,6 +8,6 @@ namespace Fleet.Interfaces.Service
         Task<string> Cadastrar(VeiculoRequest request, string workspaceId);
         Task<List<VeiculoResponse>> Listar(string workspaceId);
         Task Deletar(string veiculoId);
-
+        Task Atualizar(VeiculoPutRequest request, string veiculoId);
     }
 }

@@ -32,5 +32,13 @@ namespace Fleet.Controllers
             await veiculoService.Deletar(VeiculoId);
             return Ok();
         }
+
+        [HttpPut("api/[Controller]/{VeiculoId}")]
+        [Authorize]
+        public async Task<IActionResult> Atualizar([FromRoute] string VeiculoId, [FromBody] VeiculoPutRequest request)
+        {
+            await veiculoService.Atualizar(request, VeiculoId);
+            return Ok();
+        }
     }
 }

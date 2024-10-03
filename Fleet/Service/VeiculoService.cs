@@ -50,7 +50,7 @@ namespace Fleet.Service
                 EmUsoPor = string.Empty,
                 Manutencao = false,
                 WorkspaceId = decryptId,
-                Foto = NomeFoto
+                Foto = NomeFoto,
             };
 
             var result = await veiculoRepository.Cadastrar(veiculo);
@@ -109,6 +109,51 @@ namespace Fleet.Service
         {
             var decrypt = CriptografiaHelper.DescriptografarAes(encrypt, Secret) ?? throw new BussinessException(errorMessage);
             return int.Parse(decrypt);
+        }
+
+        public async Task Atualizar(VeiculoPutRequest request, string veiculoId)
+        {
+            var decryptId = DecryptId(veiculoId, "veículo inválido");
+      
+            string NomeFoto = string.Empty;
+            if (!string.IsNullOrEmpty(request.ImagemBase64))
+            {
+                try
+                {
+                    var bytes = Convert.FromBase64String(request.ImagemBase64);
+                    NomeFoto = await bucketService.UploadAsync(new MemoryStream(bytes), request.ExtensaoImagem, "car") ?? throw new BussinessException("não foi possivel salvar a imagem");
+                }
+                catch (Exception)
+                {
+                    NomeFoto = string.Empty;
+                }
+            }
+
+            var veiculo = new Veiculos
+            {
+                Id = decryptId,
+                Ativo = true,
+                Tipo = request.Tipo,
+                Marca = request.Marca,
+                Modelo = request.Modelo,
+                Ano = request.Ano,
+                Placa = request.Placa,
+                Chassi = request.Chassi,
+                Combustivel = request.Combustivel,
+                Cor = request.Cor,
+                Odometro = request.Odometro,
+                Renavam = request.Renavam,
+                Seguradora = request.Seguradora,
+                VencimentoSeguro = request.VencimentoSeguro,
+                Observacao = request.Observacao,
+                EmUsoPor = string.Empty,
+                Manutencao = false,
+                WorkspaceId = DecryptId(request.WorkspaceId, "Workspace inválido"),
+                Foto = NomeFoto,
+                UsuariosId = string.IsNullOrEmpty(request.UsuarioId) ? null : DecryptId(request.UsuarioId, "Usuario inválido"),
+            };
+
+            await veiculoRepository.Atualizar(veiculo);
         }
 
     }

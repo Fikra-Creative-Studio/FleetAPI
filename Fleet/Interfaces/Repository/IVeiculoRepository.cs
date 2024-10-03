@@ -11,5 +11,6 @@ namespace Fleet.Interfaces.Repository
         Task AtualizaOdometro(int veiculoId, string odometro);
         Task Deletar(int veiculoId);
         Task AtualizaUso(int veiculoId, Usuario? usuario);
+        Task Atualizar(Veiculos veiculo);
     }
 }

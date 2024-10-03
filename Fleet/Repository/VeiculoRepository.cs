@@ -54,5 +54,14 @@ namespace Fleet.Repository
                 await context.SaveChangesAsync();
             }
         }
+        public async Task Atualizar(Veiculos veiculo)
+        {
+            var existingObj = await context.Veiculos.FindAsync(veiculo.Id);
+            if (existingObj != null)
+            {
+                context.Entry(existingObj).CurrentValues.SetValues(veiculo);
+                context.SaveChanges();
+            }
+        }
     }
 }
