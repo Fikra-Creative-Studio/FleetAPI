@@ -20,6 +20,5 @@ namespace Fleet.Controllers.Model.Request.Veiculo
         public string ImagemBase64 { get; set; } = string.Empty;
         public string ExtensaoImagem { get; set; } = string.Empty;
         public string WorkspaceId { get; set; } = string.Empty;
-        public string UsuarioId { get; set; } = string.Empty;
     }
 }

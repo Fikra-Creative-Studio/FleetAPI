@@ -114,14 +114,25 @@ namespace Fleet.Service
         public async Task Atualizar(VeiculoPutRequest request, string veiculoId)
         {
             var decryptId = DecryptId(veiculoId, "veículo inválido");
+
+            var v = await veiculoRepository.Buscar(x => x.Id == decryptId) ?? throw new BussinessException("veiculo nao pode ser atualizado");
       
             string NomeFoto = string.Empty;
-            if (!string.IsNullOrEmpty(request.ImagemBase64))
+            if (string.IsNullOrEmpty(request.ImagemBase64))
+            {
+                if(!string.IsNullOrEmpty(v.Foto)) NomeFoto = v.Foto;
+            }
+            else
             {
                 try
                 {
                     var bytes = Convert.FromBase64String(request.ImagemBase64);
                     NomeFoto = await bucketService.UploadAsync(new MemoryStream(bytes), request.ExtensaoImagem, "car") ?? throw new BussinessException("não foi possivel salvar a imagem");
+                    
+                    if(!string.IsNullOrEmpty(v.Foto))
+                    {
+                        await bucketService.DeleteAsync(v.Foto, "car");
+                    }
                 }
                 catch (Exception)
                 {
@@ -150,7 +161,7 @@ namespace Fleet.Service
                 Manutencao = false,
                 WorkspaceId = DecryptId(request.WorkspaceId, "Workspace inválido"),
                 Foto = NomeFoto,
-                UsuariosId = string.IsNullOrEmpty(request.UsuarioId) ? null : DecryptId(request.UsuarioId, "Usuario inválido"),
+                UsuariosId = v.UsuariosId,
             };
 
             await veiculoRepository.Atualizar(veiculo);
