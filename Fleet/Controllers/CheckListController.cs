@@ -14,7 +14,7 @@ namespace Fleet.Controllers
 
         [Authorize]
         [HttpPost("api/Workspace/{WorkspaceId}/Retirar")]
-        public IActionResult Retirar([FromRoute] string WorkspaceId, [FromBody] ChecklistRetiradaRequest request)
+        public async Task<IActionResult> RetirarAsync([FromRoute] string WorkspaceId, [FromBody] ChecklistRetiradaRequest request)
         {
             var checklist = new Checklist
             {
@@ -34,14 +34,14 @@ namespace Fleet.Controllers
 
             var fotos = request.Images.Select(x => new Tuple<string, string>(x.ImageBase64, x.extensao)).ToList();
 
-            checkListService.Retirar(checklist, fotos);
+            await checkListService.Retirar(checklist, fotos);
             return Ok();
         }
 
 
         [Authorize]
         [HttpPost("api/Workspace/{WorkspaceId}/Devolver")]
-        public IActionResult Devolver([FromRoute] string WorkspaceId, [FromBody] CheckListDevolucaoRequest request)
+        public async Task<IActionResult> DevolverAsync([FromRoute] string WorkspaceId, [FromBody] CheckListDevolucaoRequest request)
         {
             var checklist = new Checklist
             {
@@ -57,7 +57,7 @@ namespace Fleet.Controllers
 
             var fotos = request.Images.Select(x => new Tuple<string, string>(x.ImageBase64, x.extensao)).ToList();
 
-            checkListService.Devolver(checklist, fotos);
+            await checkListService.Devolver(checklist, fotos);
             return Ok();
         }
     }
