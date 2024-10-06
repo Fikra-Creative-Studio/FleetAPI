@@ -104,7 +104,7 @@ public class WorkspaceService(ILoggedUser loggedUser,
         await usuarioWorkspaceRepository.AtualizarPapel(decryptUsuarioId, decryptWorkspaceId, request.Papel);
     }
 
-    public async Task ConvidarUsuario(string workspaceId, string email)
+    public async Task<string> ConvidarUsuario(string workspaceId, string email)
     {
         var decryptWorkspaceId = DecryptId(workspaceId, "Workspace inválido");
         var workspace = await workspaceRepository.Buscar(x => x.Id == decryptWorkspaceId) ?? throw new BussinessException("Id do Workspace não encontrado");
@@ -136,6 +136,8 @@ public class WorkspaceService(ILoggedUser loggedUser,
         fileContent = fileContent.Replace("{{name}}", usuarioLogado.Nome)
                                  .Replace("{{workspace}}", workspace.Fantasia);
         await emailService.EnviarEmail(email, usuario.Nome, "Convite MyFleet", fileContent);
+
+        return CriptografiaHelper.CriptografarAes(usuario.Id.ToString(), Secret);
     }
 
     public async Task RemoverUsuario(string workspaceId, string usuarioId)

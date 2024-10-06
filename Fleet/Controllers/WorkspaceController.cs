@@ -41,9 +41,9 @@ namespace Fleet.Controllers
         [Authorize]
         public async Task<IActionResult> ConvidarUsuario([FromRoute] string WorkspaceId ,[FromBody] WorkspaceConvidarRequest request)
         {
-            await worskpaceService.ConvidarUsuario(WorkspaceId ,request.Email);
+            var id = await worskpaceService.ConvidarUsuario(WorkspaceId ,request.Email);
 
-            return Ok();
+            return Ok(new { Id = id });
         }
 
         [HttpDelete("{WorkspaceId}/Remover/{UsuarioId}")]
