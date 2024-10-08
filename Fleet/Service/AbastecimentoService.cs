@@ -31,7 +31,7 @@ namespace Fleet.Service
                 try
                 {
                     var bytes = Convert.FromBase64String(foto.ImagemBase64);
-                    NomeFoto = await bucketService.UploadAsync(new MemoryStream(bytes), foto.ExtensaoImagem, "supply") ?? throw new BussinessException("não foi possivel salvar a imagem");
+                    NomeFoto = await bucketService.UploadAsync(new MemoryStream(bytes), foto.Extensao, "supply") ?? throw new BussinessException("não foi possivel salvar a imagem");
                 }
                 catch (Exception)
                 {
@@ -66,7 +66,7 @@ namespace Fleet.Service
                 EstabelecimentosId = decryptIdEstabelecimento,
             };
 
-            var tasks = request.Urls.Select(ConverteImagens).ToList();
+            var tasks = request.Imagens.Select(ConverteImagens).ToList();
             var imagens = await Task.WhenAll(tasks);
             abastecimento.Imagens = imagens.ToList();
 

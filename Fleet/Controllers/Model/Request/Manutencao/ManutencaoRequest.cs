@@ -10,6 +10,6 @@ namespace Fleet.Controllers.Model.Request.Manutencao
         public string Observacoes { get; set; } = string.Empty;
         public string VeiculosId { get; set; } = string.Empty;
         public string EstabelecimentosId { get; set; } = string.Empty;
-        public List<ManutencaoIMagensRequest> Urls { get; set; }
+        public List<ManutencaoIMagensRequest> Imagens { get; set; }
     }
 }

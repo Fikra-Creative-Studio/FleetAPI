@@ -2,7 +2,7 @@
 {
     public class CheckListImagemRequest
     {
-        public string ImageBase64 { get; set; } = string.Empty;
+        public string ImagemBase64 { get; set; } = string.Empty;
         public string extensao { get; set; } = string.Empty ;
     }
 }

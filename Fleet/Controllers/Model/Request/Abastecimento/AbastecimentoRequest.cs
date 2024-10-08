@@ -9,6 +9,6 @@ namespace Fleet.Controllers.Model.Request.Abastecimento
         public string Observacoes { get; set; } = string.Empty;
         public string VeiculosId { get; set; } = string.Empty;
         public string EstabelecimentosId { get; set; } = string.Empty;
-        public List<AbastecimentoImagensRequest> Urls { get; set; }
+        public List<AbastecimentoImagensRequest> Imagens { get; set; }
     }
 }

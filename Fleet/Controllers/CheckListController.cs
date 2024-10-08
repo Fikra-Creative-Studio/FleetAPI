@@ -32,7 +32,7 @@ namespace Fleet.Controllers
                 }).ToList()
             };
 
-            var fotos = request.Images.Select(x => new Tuple<string, string>(x.ImageBase64, x.extensao)).ToList();
+            var fotos = request.Images.Select(x => new Tuple<string, string>(x.ImagemBase64, x.extensao)).ToList();
 
             await checkListService.Retirar(checklist, fotos);
             return Ok();
@@ -55,7 +55,7 @@ namespace Fleet.Controllers
                 OsbAvaria = request.ObservacaoAvaria
             };
 
-            var fotos = request.Images.Select(x => new Tuple<string, string>(x.ImageBase64, x.extensao)).ToList();
+            var fotos = request.Images.Select(x => new Tuple<string, string>(x.ImagemBase64, x.extensao)).ToList();
 
             await checkListService.Devolver(checklist, fotos);
             return Ok();

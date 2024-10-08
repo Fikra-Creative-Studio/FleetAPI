@@ -64,7 +64,7 @@ namespace Fleet.Service
                 EstabelecimentosId = decryptIdEstabelecimento,
             };
 
-            var tasks = request.Urls.Select(ConverteImagens).ToList();
+            var tasks = request.Imagens.Select(ConverteImagens).ToList();
             var imagens = await Task.WhenAll(tasks);
             manutencao.Imagens = imagens.ToList();
 
