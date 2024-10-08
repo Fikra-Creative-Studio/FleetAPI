@@ -28,7 +28,7 @@ namespace Fleet.Service
                 try
                 {
                     var bytes = Convert.FromBase64String(foto.ImagemBase64);
-                    NomeFoto = await bucketService.UploadAsync(new MemoryStream(bytes), foto.ExtensaoImagem, "maintenance") ?? throw new BussinessException("não foi possivel salvar a imagem");
+                    NomeFoto = await bucketService.UploadAsync(new MemoryStream(bytes), foto.Extensao, "maintenance") ?? throw new BussinessException("não foi possivel salvar a imagem");
                 }
                 catch (Exception)
                 {
