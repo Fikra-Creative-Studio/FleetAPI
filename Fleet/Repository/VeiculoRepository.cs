@@ -1,4 +1,5 @@
 ﻿using Fleet.Interfaces.Repository;
+using Fleet.Migrations;
 using Fleet.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -53,6 +54,20 @@ namespace Fleet.Repository
                 veiculo.Ativo = false;
                 await context.SaveChangesAsync();
             }
+        }
+        public async Task<(DateTime? DataChecklist, DateTime? DataAbastecimento)> BuscarDataUltimoUso(Veiculos veiculo)
+        {
+            if (veiculo != null)
+            {
+                if (!string.IsNullOrEmpty(veiculo.EmUsoPor))
+                {
+                    var check = context.Checklists.FirstOrDefault(x => x.DataDevolucao == null && x.VeiculosId == veiculo.Id);
+                    var abastecimento = context.Abastecimentos.Where(x => x.VeiculosId == veiculo.Id).OrderByDescending(x => x.Id).FirstOrDefault();
+                    return (check?.DataRetirada, abastecimento?.Data);
+                }
+                return (null, null);
+            }
+            return (null, null);
         }
         public async Task Atualizar(Veiculos veiculo)
         {

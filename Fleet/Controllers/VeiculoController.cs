@@ -40,5 +40,12 @@ namespace Fleet.Controllers
             await veiculoService.Atualizar(request, VeiculoId);
             return Ok();
         }
+
+        [HttpGet("api/[Controller]/{VeiculoId}")]
+        [Authorize]
+        public async Task<IActionResult> DataUltimoUso([FromRoute] string VeiculoId)
+        {
+            return Ok();
+        }
     }
 }

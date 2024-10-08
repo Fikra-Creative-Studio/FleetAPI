@@ -8,6 +8,7 @@ namespace Fleet.Interfaces.Service
         Task<string> Cadastrar(VeiculoRequest request, string workspaceId);
         Task<List<VeiculoResponse>> Listar(string workspaceId);
         Task Deletar(string veiculoId);
-        Task Atualizar(VeiculoPutRequest request, string veiculoId);
+        Task Atualizar(VeiculoPutRequest request, string veiculoId); 
+        Task BuscarDataUltimoUso(string veiculoId);
     }
 }
