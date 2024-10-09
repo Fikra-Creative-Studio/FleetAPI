@@ -12,5 +12,7 @@ namespace Fleet.Interfaces.Repository
         Task Deletar(int veiculoId);
         Task AtualizaUso(int veiculoId, Usuario? usuario);
         Task Atualizar(Veiculos veiculo);
+        DateTime? BuscarDataUltimoCheck(Veiculos veiculo);
+        DateTime? BuscarDataUltimoAbastecimento(Veiculos veiculo);
     }
 }
