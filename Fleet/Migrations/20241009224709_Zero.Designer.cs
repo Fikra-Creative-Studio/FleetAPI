@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Fleet.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241001142904_campo-uso-veiculo")]
-    partial class campousoveiculo
+    [Migration("20241009224709_Zero")]
+    partial class Zero
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -600,6 +600,9 @@ namespace Fleet.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<int>("Tipo")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UsuariosId")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("VencimentoSeguro")

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Fleet.Migrations
 {
     /// <inheritdoc />
-    public partial class zero : Migration
+    public partial class Zero : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -165,6 +165,7 @@ namespace Fleet.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Tipo = table.Column<int>(type: "int", nullable: false),
                     Marca = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Modelo = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
@@ -173,15 +174,27 @@ namespace Fleet.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Placa = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Combustivel = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
+                    Chassi = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Combustivel = table.Column<int>(type: "int", maxLength: 255, nullable: false),
+                    Cor = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Odometro = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Renavam = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Seguradora = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    VencimentoSeguro = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    Observacao = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Foto = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Manutencao = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    Status = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    EmUsoPor = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     WorkspaceId = table.Column<int>(type: "int", nullable: false),
+                    UsuariosId = table.Column<int>(type: "int", nullable: true),
                     Ativo = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
@@ -204,7 +217,7 @@ namespace Fleet.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Titulo = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Descrição = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
+                    Descricao = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     ListasId = table.Column<int>(type: "int", nullable: false),
                     Ativo = table.Column<bool>(type: "tinyint(1)", nullable: false)
