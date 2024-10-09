@@ -2,7 +2,7 @@
 {
     public class VeiculoDatasResponse
     {
-        public DateTime DataInicioUso { get; set; }
-        public DateTime DataUltimoAbastecimento { get; set; }
+        public DateTime? DataInicioUso { get; set; }
+        public DateTime? DataUltimoAbastecimento { get; set; }
         }
 }

@@ -55,19 +55,26 @@ namespace Fleet.Repository
                 await context.SaveChangesAsync();
             }
         }
-        public async Task<(DateTime? DataChecklist, DateTime? DataAbastecimento)> BuscarDataUltimoUso(Veiculos veiculo)
+        public DateTime? BuscarDataUltimoCheck(Veiculos veiculo)
         {
             if (veiculo != null)
-            {
                 if (!string.IsNullOrEmpty(veiculo.EmUsoPor))
                 {
                     var check = context.Checklists.FirstOrDefault(x => x.DataDevolucao == null && x.VeiculosId == veiculo.Id);
-                    var abastecimento = context.Abastecimentos.Where(x => x.VeiculosId == veiculo.Id).OrderByDescending(x => x.Id).FirstOrDefault();
-                    return (check?.DataRetirada, abastecimento?.Data);
+                    if(check != null)
+                        return check.DataRetirada;
                 }
-                return (null, null);
+            return null;
+        }
+        public DateTime? BuscarDataUltimoAbastecimento(Veiculos veiculo)
+        {
+            if (veiculo != null)
+            {
+                var abastece = context.Abastecimentos.Where(x => x.VeiculosId == veiculo.Id).OrderByDescending(x => x.Id).FirstOrDefault();
+                if(abastece != null)
+                    return abastece.Data;
             }
-            return (null, null);
+            return null;
         }
         public async Task Atualizar(Veiculos veiculo)
         {

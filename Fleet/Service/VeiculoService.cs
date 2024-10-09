@@ -69,16 +69,20 @@ namespace Fleet.Service
             }
         }
 
-        public async Task BuscarDataUltimoUso(string veiculoId)
+        public async Task<VeiculoDatasResponse> BuscarDataUltimoUso(string veiculoId)
         {
             var decryptId = DecryptId(veiculoId, "falha ao Buscar Informações do uso do veiculo");
             var veiculo = await veiculoRepository.Buscar(x => x.Id == decryptId);
             if (veiculo != null)
             {
-                (DateTime? dataUltimoChecklist, DateTime? dataUltimoAbastecimento) = await veiculoRepository.BuscarDataUltimoUso(veiculo);
-
-
+                VeiculoDatasResponse response = new VeiculoDatasResponse
+                {
+                    DataInicioUso = veiculoRepository.BuscarDataUltimoCheck(veiculo),
+                    DataUltimoAbastecimento = veiculoRepository.BuscarDataUltimoAbastecimento(veiculo)
+                };
+                return response;
             }
+            return null;
         }
 
         public async Task<List<VeiculoResponse>> Listar(string workspaceId)

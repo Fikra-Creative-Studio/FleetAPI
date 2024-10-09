@@ -45,7 +45,8 @@ namespace Fleet.Controllers
         [Authorize]
         public async Task<IActionResult> DataUltimoUso([FromRoute] string VeiculoId)
         {
-            return Ok();
+           var resposta = await veiculoService.BuscarDataUltimoUso(VeiculoId);
+            return Ok(resposta);
         }
     }
 }
