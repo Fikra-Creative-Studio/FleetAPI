@@ -69,7 +69,7 @@ namespace Fleet.Service
             manutencao.Imagens = imagens.ToList();
 
             await manutencaoRepository.Cadastrar(manutencao);
-            await veiculoRepository.AtualizaOdometro(manutencao.VeiculosId, manutencao.Odometro);
+            await veiculoRepository.AtualizaOdometro(manutencao.VeiculosId, manutencao.Odometro, true);
 
         }
     }

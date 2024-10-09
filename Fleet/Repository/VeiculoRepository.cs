@@ -25,12 +25,13 @@ namespace Fleet.Repository
         {
             return await context.Veiculos.FirstOrDefaultAsync(exp);
         }
-        public async Task AtualizaOdometro(int veiculoId, string odometro)
+        public async Task AtualizaOdometro(int veiculoId, string odometro, bool manutencao = false)
         {
             var veiculo = await context.Veiculos.FirstOrDefaultAsync(x => x.Id == veiculoId);
             if (veiculo != null)
             {
                 veiculo.Odometro = odometro;
+                veiculo.Manutencao = manutencao;
                 await context.SaveChangesAsync();
             }
         }
