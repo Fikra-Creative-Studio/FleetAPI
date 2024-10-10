@@ -54,5 +54,14 @@ namespace Fleet.Controllers
 
             return Ok();
         }
+
+        [HttpPost("{WorkspaceId}/ReenviarConvite/{UsuarioId}")]
+        [Authorize]
+        public async Task<IActionResult> ReenviarConviteUsuario([FromRoute] string WorkspaceId , string UsuarioId)
+        {
+            await worskpaceService.ReenviarConviteUsuario(WorkspaceId , UsuarioId);
+
+            return Ok();
+        }
     }
 }

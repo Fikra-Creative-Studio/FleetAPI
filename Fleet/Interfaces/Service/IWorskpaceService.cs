@@ -12,5 +12,6 @@ public interface IWorskpaceService
     Task<List<UsuarioBuscarWorkspaceResponse>> BuscarUsuarios(string workspaceId);
     Task AtualizarPapel(string workspaceId,WorkspaceAtualizarPermissaoRequest request);
     Task<string> ConvidarUsuario(string workspaceId, string email);
+    Task ReenviarConviteUsuario(string workspaceId, string usuarioId);
     Task RemoverUsuario(string workspaceId, string usuarioId);
 }

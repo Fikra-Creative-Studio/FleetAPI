@@ -157,6 +157,28 @@ public class WorkspaceService(ILoggedUser loggedUser,
         await usuarioWorkspaceRepository.Remover(decryptUsuarioId, decryptWorkspaceId);
     }
 
+    public async Task ReenviarConviteUsuario(string workspaceId, string usuarioId)
+    {
+        var decryptWorkspaceId = DecryptId(workspaceId, "Workspace inválido");
+        var decryptUsuarioId = DecryptId(usuarioId, "Usuário inválido");
+
+        await ValidarWorkspaceAdmin(loggedUser.UserId, decryptWorkspaceId);
+        var workspace = await workspaceRepository.Buscar(x => x.Id == decryptWorkspaceId) ?? throw new BussinessException("Id do Workspace não encontrado");
+
+        
+        if (!await usuarioWorkspaceRepository.Existe(x => x.UsuarioId == decryptUsuarioId && x.WorkspaceId == decryptWorkspaceId))
+            throw new BussinessException("Usuario não está vinculado a esse workspace");
+
+        var usuario = await usuarioRepository.Buscar(x => x.Id == decryptUsuarioId);
+
+        var usuarioLogado = await usuarioRepository.Buscar(x => x.Id == loggedUser.UserId) ?? throw new BussinessException("houve um erro na sua solicitação");
+        string mailPath = $"{AppDomain.CurrentDomain.BaseDirectory}Service\\TemplateMail\\invited-workspace.html";
+        string fileContent = await File.ReadAllTextAsync(mailPath, Encoding.UTF8);
+        fileContent = fileContent.Replace("{{name}}", usuarioLogado.Nome)
+                                 .Replace("{{workspace}}", workspace.Fantasia);
+        await emailService.EnviarEmail(usuario.Email, usuario.Nome, "Convite MyFleet", fileContent);
+    }
+
     private async Task ValidarWorkspaceAdmin(int usuarioId, int workspaceId)
     {
         if (!await UsuarioAdmin(usuarioId, workspaceId)) 
@@ -194,6 +216,4 @@ public class WorkspaceService(ILoggedUser loggedUser,
             throw new BussinessException(errors);
         }
     }
-
-
 }
