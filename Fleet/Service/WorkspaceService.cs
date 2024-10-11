@@ -86,7 +86,7 @@ public class WorkspaceService(ILoggedUser loggedUser,
                 Nome = x.Nome,
                 UrlImagem = x.UrlImagem,
                 Papel = x.UsuarioWorkspaces.Where(uw => uw.WorkspaceId == decryptId)
-                                        .Select(uw => uw.Papel) // Seleciona o campo Papel
+                                        .Select(uw => uw.Papel)
                                         .FirstOrDefault()
             }
         ).ToList();
