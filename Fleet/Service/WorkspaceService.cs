@@ -112,14 +112,16 @@ public class WorkspaceService(ILoggedUser loggedUser,
         await ValidarWorkspaceAdmin(loggedUser.UserId, decryptWorkspaceId);
 
         var usuario = await usuarioRepository.Buscar(x => x.Email == email);
-        if (usuario != null && !await usuarioWorkspaceRepository.Existe(x => x.UsuarioId == usuario.Id && x.WorkspaceId == decryptWorkspaceId))
+        if (usuario == null || !await usuarioWorkspaceRepository.Existe(x => x.UsuarioId == usuario.Id && x.WorkspaceId == decryptWorkspaceId))
         {
             var papel = PapelEnum.Usuario;
             if (usuario == null)
             {
                 usuario = await usuarioRepository.Criar(new() { Email = email, Ativo = false });
                 papel = PapelEnum.Convidado;
-            }
+            } else {
+                papel = usuario.CPF == null || usuario.Nome  == null || usuario.Ativo == false ? PapelEnum.Convidado : papel;
+            }   
 
             UsuarioWorkspace usuarioWorkspace = new()
             {
