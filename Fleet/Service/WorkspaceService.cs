@@ -86,7 +86,7 @@ public class WorkspaceService(ILoggedUser loggedUser,
                 Nome = x.Nome,
                 UrlImagem = x.UrlImagem,
                 Papel = x.UsuarioWorkspaces.Where(uw => uw.WorkspaceId == decryptId)
-                                        .Select(uw => uw.Papel) // Seleciona o campo Papel
+                                        .Select(uw => uw.Papel)
                                         .FirstOrDefault()
             }
         ).ToList();
@@ -112,30 +112,36 @@ public class WorkspaceService(ILoggedUser loggedUser,
         await ValidarWorkspaceAdmin(loggedUser.UserId, decryptWorkspaceId);
 
         var usuario = await usuarioRepository.Buscar(x => x.Email == email);
-        var papel = PapelEnum.Usuario;
-        if (usuario == null)
+
+        if (usuario == null || !await usuarioWorkspaceRepository.Existe(x => x.UsuarioId == usuario.Id && x.WorkspaceId == decryptWorkspaceId))
         {
-            usuario = await usuarioRepository.Criar(new() { Email = email, Ativo = false });
-            papel = PapelEnum.Convidado;
+            var papel = PapelEnum.Usuario;
+            if (usuario == null)
+            {
+                usuario = await usuarioRepository.Criar(new() { Email = email, Ativo = false });
+                papel = PapelEnum.Convidado;
+            } else {
+                papel = usuario.CPF == null || usuario.Nome  == null ? PapelEnum.Convidado : papel;
+            }   
+
+            UsuarioWorkspace usuarioWorkspace = new()
+            {
+                UsuarioId = usuario.Id,
+                WorkspaceId = workspace.Id,
+                Ativo = true,
+                Papel = papel
+            };
+
+            await usuarioWorkspaceRepository.Criar(usuarioWorkspace);
+
+
+            var usuarioLogado = await usuarioRepository.Buscar(x => x.Id == loggedUser.UserId) ?? throw new BussinessException("houve um erro na sua solicitação");
+            string mailPath = $"{AppDomain.CurrentDomain.BaseDirectory}Service\\TemplateMail\\invited-workspace.html";
+            string fileContent = await File.ReadAllTextAsync(mailPath, Encoding.UTF8);
+            fileContent = fileContent.Replace("{{name}}", usuarioLogado.Nome)
+                                    .Replace("{{workspace}}", workspace.Fantasia);
+            await emailService.EnviarEmail(email, usuario.Nome, "Convite MyFleet", fileContent);
         }
-
-        UsuarioWorkspace usuarioWorkspace = new()
-        {
-            UsuarioId = usuario.Id,
-            WorkspaceId = workspace.Id,
-            Ativo = true,
-            Papel = papel
-        };
-
-        await usuarioWorkspaceRepository.Criar(usuarioWorkspace);
-
-
-        var usuarioLogado = await usuarioRepository.Buscar(x => x.Id == loggedUser.UserId) ?? throw new BussinessException("houve um erro na sua solicitação");
-        string mailPath = $"{AppDomain.CurrentDomain.BaseDirectory}Service\\TemplateMail\\invited-workspace.html";
-        string fileContent = await File.ReadAllTextAsync(mailPath, Encoding.UTF8);
-        fileContent = fileContent.Replace("{{name}}", usuarioLogado.Nome)
-                                 .Replace("{{workspace}}", workspace.Fantasia);
-        await emailService.EnviarEmail(email, usuario.Nome, "Convite MyFleet", fileContent);
 
         return CriptografiaHelper.CriptografarAes(usuario.Id.ToString(), Secret);
     }
