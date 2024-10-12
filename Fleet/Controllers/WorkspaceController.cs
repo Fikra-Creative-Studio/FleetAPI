@@ -10,14 +10,18 @@ namespace Fleet.Controllers
     [ApiController]
     public class WorkspaceController(IConfiguration configuration, IWorskpaceService worskpaceService) : ControllerBase
     {
-        private string Secret { get => configuration.GetValue<string>("Crypto:Secret") ?? string.Empty; }
-
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> Criar([FromBody] WorkspaceRequest request)
         {
             var workspace = await worskpaceService.Criar(request);
-            return Ok(new { Id = CriptografiaHelper.CriptografarAes(workspace.Id.ToString(), Secret) });
+            return Ok(new
+            {
+                workspace.Id,
+                workspace.Fantasia,
+                workspace.Cnpj,
+                workspace.UrlImagem
+            });
         }
 
         [HttpGet("{WorkspaceId}/Usuarios")]
