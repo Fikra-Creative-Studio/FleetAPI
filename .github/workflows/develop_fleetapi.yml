@@ -85,7 +85,7 @@ jobs:
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASSWORD }}
           port: ${{ secrets.FTP_PORT }}
-          server-dir: "wwwroot/"
+          server-dir: ${{ secrets.SERVER_DIR_DEV }}  
      
   start_api:
     runs-on: windows-latest
