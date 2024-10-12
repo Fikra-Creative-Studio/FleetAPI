@@ -23,7 +23,7 @@ jobs:
         with:
           pathtosettingsfile: './Fleet/appsettings.json'
           name: "DB_MySQL"
-          connectionstring: ${{ secrets.BANCO_HOST_H }};${{ secrets.BANCO_DATABASE_H }};${{ secrets.BANCO_USER_H }};${{ secrets.BANCO_SENHA_H }}
+          connectionstring: ${{ secrets.BANCO_HOST }};${{ secrets.BANCO_DATABASE_H }};${{ secrets.BANCO_USER_H }};${{ secrets.BANCO_SENHA_H }}
         
       - name: Edit appsettings.json
         run: |
