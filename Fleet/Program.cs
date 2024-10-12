@@ -58,7 +58,7 @@ var app = builder.Build();
 
 app.UseMiddleware(typeof(ErrorHandlingMiddleware));
 
-if (app.Environment.IsDevelopment())
+//if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
