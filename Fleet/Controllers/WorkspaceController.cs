@@ -1,22 +1,23 @@
 using Fleet.Controllers.Model.Request.Workspace;
-using Fleet.Filters;
+using Fleet.Helpers;
 using Fleet.Interfaces.Service;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Fleet.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class WorkspaceController(IWorskpaceService worskpaceService) : ControllerBase
+    public class WorkspaceController(IConfiguration configuration, IWorskpaceService worskpaceService) : ControllerBase
     {
+        private string Secret { get => configuration.GetValue<string>("Crypto:Secret") ?? string.Empty; }
+
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> Criar([FromBody] WorkspaceRequest request)
         {
-            await worskpaceService.Criar(request);
-            return Created();
+            var workspace = await worskpaceService.Criar(request);
+            return Ok(new { Id = CriptografiaHelper.CriptografarAes(workspace.Id.ToString(), Secret) });
         }
 
         [HttpGet("{WorkspaceId}/Usuarios")]
