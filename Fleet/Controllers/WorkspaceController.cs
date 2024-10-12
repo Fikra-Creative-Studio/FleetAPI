@@ -1,6 +1,7 @@
 using Fleet.Controllers.Model.Request.Workspace;
 using Fleet.Helpers;
 using Fleet.Interfaces.Service;
+using Fleet.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,6 +11,8 @@ namespace Fleet.Controllers
     [ApiController]
     public class WorkspaceController(IConfiguration configuration, IWorskpaceService worskpaceService) : ControllerBase
     {
+        private string Secret { get => configuration.GetValue<string>("Crypto:Secret") ?? string.Empty; }
+
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> Criar([FromBody] WorkspaceRequest request)
@@ -17,7 +20,7 @@ namespace Fleet.Controllers
             var workspace = await worskpaceService.Criar(request);
             return Ok(new
             {
-                workspace.Id,
+                Id = CriptografiaHelper.CriptografarAes(workspace.Id.ToString(), Secret) ?? throw new BussinessException("houve uma falha na busca da listagem"),
                 workspace.Fantasia,
                 workspace.Cnpj,
                 workspace.UrlImagem
