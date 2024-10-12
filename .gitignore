@@ -362,3 +362,5 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 
 /Fleet/appsettings.development.json
+/Fleet/appsettings.Homolog
+
