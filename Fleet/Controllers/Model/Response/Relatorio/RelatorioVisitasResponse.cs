@@ -4,6 +4,7 @@ namespace Fleet.Controllers.Model.Response.Relatorio
 {
     public class RelatorioVisitasResponse
     {
+        public int Id;
         public DateTime Data { get; set; }
         public string Observacao { get; set; } = string.Empty;
         public string Supervior { get; set; } = string.Empty;

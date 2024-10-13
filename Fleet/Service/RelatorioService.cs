@@ -37,51 +37,49 @@ namespace Fleet.Service
             //verificar se foi passado algum estabelecimento ou usuario, caso não, listar tudo no período
             var estabelecimentos = request.EstabelecimentosId.Select(DecryptIdEstabelecimento).ToList();
             var usuarios = request.UsuariosId.Select(DecryptIdUsuarios).ToList();
-            var visita = relatorioRepository.Listar(v => v.WorkspaceId == decryptIdWorkspace).ToList();
+            var visita = relatorioRepository.Listar(v => v.WorkspaceId == decryptIdWorkspace)
+                .Where(x => x.Data >= request.DataInicial && x.Data <= request.DataFinal)
+                .ToList();
+
+
             var respostaFull = visita.Select(ConvertVisitasToResponse).ToList();
-            
-            
-            var RespostaData = respostaFull
-                .Where(x => x.Data >= request.DataInicial && x.Data <= request.DataFinal).ToList();
 
+            List<RelatorioVisitasResponse> respostaUsuario = new List<RelatorioVisitasResponse>();
 
-            var RespostaUsuario = respostaFull
-                 .Where(x => x.Usuario.Id.ToString().Contains(workspaceId.ToString())); //Não funciona
-            //Where(x => x.Usuario.Id.Equals(usuarios));
+            foreach (var u in usuarios)
+            {
+                var lista = respostaFull.
+                Where(x => x.Usuario.Id == u).ToList();
+                respostaUsuario.AddRange(lista);
+            }
+            respostaUsuario = respostaUsuario.Distinct().ToList();
 
-            //foreach (var u in usuarios)
-            //{
-            //    RespostaUsuario = respostaFull.
-            //    Where(x => x.Usuario.Id.Equals(u));
-            //}
+            List<RelatorioVisitasResponse> respostaEstabelecimento = new List<RelatorioVisitasResponse>();
 
-
-            var RespostaEstabelecimento = respostaFull
-                .Where(x => request.EstabelecimentosId.Contains(x.Estabelecimentos.Id.ToString())).ToList();
-
-
-            var respostaFiltro = respostaFull
-                .Where(x => x.Data >= request.DataInicial && x.Data <= request.DataFinal 
-                 && request.EstabelecimentosId.Contains(x.Estabelecimentos.Id.ToString())   
-                 && request.UsuariosId.Contains(x.Usuario.Id.ToString()))                   
-                .ToList(); 
+            foreach (var u in estabelecimentos)
+            {
+                var lista = respostaFull.
+                Where(x => x.Estabelecimentos.Id == u).ToList();
+                respostaEstabelecimento.AddRange(lista);
+            }
+            respostaEstabelecimento = respostaEstabelecimento.Distinct().ToList();
 
 
 
 
             var NomeArquivo = string.Empty;
-            if (respostaFiltro != null)
-            {
-                try
-                {
-                    var bytes = Convert.FromBase64String(respostaFiltro.First().Observacao);
-                    NomeArquivo = await bucketService.UploadAsync(new MemoryStream(bytes), "pdf", "report") ?? throw new BussinessException("não foi possivel salvar o relatório");
-                }
-                catch (Exception)
-                {
-                    NomeArquivo = string.Empty;
-                }
-            }
+            //if (respostaFiltro != null)
+            //{
+            //    try
+            //    {
+            //        var bytes = Convert.FromBase64String(respostaFiltro.First().Observacao);
+            //        NomeArquivo = await bucketService.UploadAsync(new MemoryStream(bytes), "pdf", "report") ?? throw new BussinessException("não foi possivel salvar o relatório");
+            //    }
+            //    catch (Exception)
+            //    {
+            //        NomeArquivo = string.Empty;
+            //    }
+            //}
 
             return "Nome do Relatório .pdf";
         }
@@ -92,6 +90,7 @@ namespace Fleet.Service
             {
                 RelatorioVisitasResponse response = new RelatorioVisitasResponse
                 {
+                    Id = visitas.Id,
                     Data = visitas.Data,
                     Observacao = visitas.Observacao,
                     Supervior = visitas.Supervior,
