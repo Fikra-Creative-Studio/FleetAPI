@@ -2,9 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Fleet.Interfaces.Service;
 using Fleet.Controllers.Model.Request.Usuario;
-using Fleet.Service;
-using Fleet.Filters;
-using System.IO;
 
 namespace Fleet.Controllers
 {
