@@ -4,11 +4,8 @@ using Fleet.Helpers;
 using Fleet.Interfaces.Repository;
 using Fleet.Interfaces.Service;
 using Fleet.Models;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.IdentityModel.Tokens;
-using System.Linq;
-using System.Security.Cryptography;
+
 
 namespace Fleet.Service
 {
@@ -39,6 +36,7 @@ namespace Fleet.Service
               .Where(x => x.Data >= request.DataInicial && x.Data <= request.DataFinal)
               .ToList();
             var respostaFull = visita.Select(ConvertVisitasToResponse).ToList();
+
             List<RelatorioVisitasResponse> resposta = new List<RelatorioVisitasResponse>();
             List<RelatorioVisitasResponse> respostaUsuario = new List<RelatorioVisitasResponse>();
 
@@ -92,20 +90,16 @@ namespace Fleet.Service
 
 
 
+            string relpath = $"{AppDomain.CurrentDomain.BaseDirectory}Service\\TemplateRelatorio\\visita.html";
+            var htmlTemplate = File.ReadAllText(relpath);
+            var htmlContent = htmlTemplate.Replace("{Data}", resposta[0].Data.ToString())
+                                          .Replace("{Usuario.Nome}", resposta[0].Usuario.Nome)
+                                          .Replace("{Veiculos.Modelo}", resposta[0].Veiculos.Modelo)
+                                          .Replace("{Veiculos.Placa}", resposta[0].Veiculos.Placa);
 
-            var NomeArquivo = string.Empty;
-            //if (respostaFiltro != null)
-            //{
-            //    try
-            //    {
-            //        var bytes = Convert.FromBase64String(respostaFiltro.First().Observacao);
-            //        NomeArquivo = await bucketService.UploadAsync(new MemoryStream(bytes), "pdf", "report") ?? throw new BussinessException("não foi possivel salvar o relatório");
-            //    }
-            //    catch (Exception)
-            //    {
-            //        NomeArquivo = string.Empty;
-            //    }
-            //}
+
+
+
 
             return "Nome do Relatório .pdf";
         }
