@@ -6,6 +6,7 @@ using Fleet.Interfaces.Service;
 using Fleet.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.IdentityModel.Tokens;
 using System.Linq;
 using System.Security.Cryptography;
 
@@ -33,36 +34,61 @@ namespace Fleet.Service
         {
             var decryptIdWorkspace = DecryptId(workspaceId, "Workspace inválido");
             //var usuarioLogado = usuarioRepository.Buscar(x => x.Id == loggedUser.UserId) ?? throw new BussinessException("houve um erro na sua solicitação");
-            
-            //verificar se foi passado algum estabelecimento ou usuario, caso não, listar tudo no período
-            var estabelecimentos = request.EstabelecimentosId.Select(DecryptIdEstabelecimento).ToList();
-            var usuarios = request.UsuariosId.Select(DecryptIdUsuarios).ToList();
+
             var visita = relatorioRepository.Listar(v => v.WorkspaceId == decryptIdWorkspace)
-                .Where(x => x.Data >= request.DataInicial && x.Data <= request.DataFinal)
-                .ToList();
-
-
+              .Where(x => x.Data >= request.DataInicial && x.Data <= request.DataFinal)
+              .ToList();
             var respostaFull = visita.Select(ConvertVisitasToResponse).ToList();
-
+            List<RelatorioVisitasResponse> resposta = new List<RelatorioVisitasResponse>();
             List<RelatorioVisitasResponse> respostaUsuario = new List<RelatorioVisitasResponse>();
 
-            foreach (var u in usuarios)
+            if (request.EstabelecimentosId.Count == 1 && request.EstabelecimentosId[0].IsNullOrEmpty()
+                && request.UsuariosId.Count == 1 && request.UsuariosId[0].IsNullOrEmpty())
             {
-                var lista = respostaFull.
-                Where(x => x.Usuario.Id == u).ToList();
-                respostaUsuario.AddRange(lista);
+                resposta = respostaFull;
             }
-            respostaUsuario = respostaUsuario.Distinct().ToList();
-
-            List<RelatorioVisitasResponse> respostaEstabelecimento = new List<RelatorioVisitasResponse>();
-
-            foreach (var u in estabelecimentos)
+            else if (request.EstabelecimentosId.Count == 1 && request.EstabelecimentosId[0].IsNullOrEmpty())
             {
-                var lista = respostaFull.
-                Where(x => x.Estabelecimentos.Id == u).ToList();
-                respostaEstabelecimento.AddRange(lista);
+                var usuarios = request.UsuariosId.Select(DecryptIdUsuarios).ToList();
+                foreach (var u in usuarios)
+                {
+                    var lista = respostaFull.
+                    Where(x => x.Usuario.Id == u).ToList();
+                    resposta.AddRange(lista);
+                }
+                resposta = resposta.Distinct().ToList();
             }
-            respostaEstabelecimento = respostaEstabelecimento.Distinct().ToList();
+            else if(request.UsuariosId.Count == 1 && request.UsuariosId[0].IsNullOrEmpty())
+            {
+                var estabelecimentos = request.EstabelecimentosId.Select(DecryptIdEstabelecimento).ToList();
+                foreach (var u in estabelecimentos)
+                {
+                    var lista = respostaFull.
+                    Where(x => x.Estabelecimentos.Id == u).ToList();
+                    resposta.AddRange(lista);
+                }
+                resposta = resposta.Distinct().ToList();
+            }
+            else
+            {
+                var usuarios = request.UsuariosId.Select(DecryptIdUsuarios).ToList();
+                foreach (var u in usuarios)
+                {
+                    var lista = respostaFull.
+                    Where(x => x.Usuario.Id == u).ToList();
+                    respostaUsuario.AddRange(lista);
+                }
+
+                var estabelecimentos = request.EstabelecimentosId.Select(DecryptIdEstabelecimento).ToList();
+                foreach (var u in estabelecimentos)
+                {
+                    var lista = respostaUsuario.
+                    Where(x => x.Estabelecimentos.Id == u).ToList();
+                    resposta.AddRange(lista);
+                }
+                resposta = resposta.Distinct().ToList();
+
+            }
 
 
 
