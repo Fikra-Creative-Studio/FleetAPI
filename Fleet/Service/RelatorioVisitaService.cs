@@ -9,28 +9,17 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Fleet.Service
 {
-    public class RelatorioService(IRelatorioRepository relatorioRepository, IConfiguration configuration, IUsuarioRepository usuarioRepository, ILoggedUser loggedUser, IBucketService bucketService) : IRelatorioService
+    public class RelatorioVisitaService(IRelatorioVisitaRepository relatorioRepository, IConfiguration configuration) : IRelatorioVisitaService
     {
         private string Secret { get => configuration.GetValue<string>("Crypto:Secret"); }
-        private int DecryptId(string encrypt, string errorMessage)
+        private int DecryptId(string encrypt)
         {
-            var decrypt = CriptografiaHelper.DescriptografarAes(encrypt, Secret) ?? throw new BussinessException(errorMessage);
-            return int.Parse(decrypt);
-        }
-        private int DecryptIdEstabelecimento(string encrypt)
-        {
-            var decrypt = CriptografiaHelper.DescriptografarAes(encrypt, Secret) ?? throw new BussinessException("Estabelecimento selecionado inválido para esse relatório");
-            return int.Parse(decrypt);
-        }
-        private int DecryptIdUsuarios(string encrypt)
-        {
-            var decrypt = CriptografiaHelper.DescriptografarAes(encrypt, Secret) ?? throw new BussinessException("Usuário selecionado inválido para esse relatório");
+            var decrypt = CriptografiaHelper.DescriptografarAes(encrypt, Secret) ?? throw new BussinessException("Erro no filtro do relatório de visitas");
             return int.Parse(decrypt);
         }
         public async Task<string> Visitas(string workspaceId, RelatorioVisitasRequest request)
         {
-            var decryptIdWorkspace = DecryptId(workspaceId, "Workspace inválido");
-            //var usuarioLogado = usuarioRepository.Buscar(x => x.Id == loggedUser.UserId) ?? throw new BussinessException("houve um erro na sua solicitação");
+            var decryptIdWorkspace = DecryptId(workspaceId);
 
             var visita = relatorioRepository.Listar(v => v.WorkspaceId == decryptIdWorkspace)
               .Where(x => x.Data >= request.DataInicial && x.Data <= request.DataFinal)
@@ -47,7 +36,7 @@ namespace Fleet.Service
             }
             else if (request.EstabelecimentosId.Count == 1 && request.EstabelecimentosId[0].IsNullOrEmpty())
             {
-                var usuarios = request.UsuariosId.Select(DecryptIdUsuarios).ToList();
+                var usuarios = request.UsuariosId.Select(DecryptId).ToList();
                 foreach (var u in usuarios)
                 {
                     var lista = respostaFull.
@@ -58,7 +47,7 @@ namespace Fleet.Service
             }
             else if(request.UsuariosId.Count == 1 && request.UsuariosId[0].IsNullOrEmpty())
             {
-                var estabelecimentos = request.EstabelecimentosId.Select(DecryptIdEstabelecimento).ToList();
+                var estabelecimentos = request.EstabelecimentosId.Select(DecryptId).ToList();
                 foreach (var u in estabelecimentos)
                 {
                     var lista = respostaFull.
@@ -69,7 +58,7 @@ namespace Fleet.Service
             }
             else
             {
-                var usuarios = request.UsuariosId.Select(DecryptIdUsuarios).ToList();
+                var usuarios = request.UsuariosId.Select(DecryptId).ToList();
                 foreach (var u in usuarios)
                 {
                     var lista = respostaFull.
@@ -77,7 +66,7 @@ namespace Fleet.Service
                     respostaUsuario.AddRange(lista);
                 }
 
-                var estabelecimentos = request.EstabelecimentosId.Select(DecryptIdEstabelecimento).ToList();
+                var estabelecimentos = request.EstabelecimentosId.Select(DecryptId).ToList();
                 foreach (var u in estabelecimentos)
                 {
                     var lista = respostaUsuario.
@@ -90,18 +79,18 @@ namespace Fleet.Service
 
 
 
-            string relpath = $"{AppDomain.CurrentDomain.BaseDirectory}Service\\TemplateRelatorio\\visita.html";
-            var htmlTemplate = File.ReadAllText(relpath);
-            var htmlContent = htmlTemplate.Replace("{Data}", resposta[0].Data.ToString())
-                                          .Replace("{Usuario.Nome}", resposta[0].Usuario.Nome)
-                                          .Replace("{Veiculos.Modelo}", resposta[0].Veiculos.Modelo)
-                                          .Replace("{Veiculos.Placa}", resposta[0].Veiculos.Placa);
+            //string relpath = $"{AppDomain.CurrentDomain.BaseDirectory}Service\\TemplateRelatorio\\visita.html";   //Aqui o HTML se popula
+            //var htmlTemplate = File.ReadAllText(relpath);
+            //var htmlContent = htmlTemplate.Replace("{Data}", resposta[0].Data.ToString())
+            //                              .Replace("{Usuario.Nome}", resposta[0].Usuario.Nome)
+            //                              .Replace("{Veiculos.Modelo}", resposta[0].Veiculos.Modelo)
+            //                              .Replace("{Veiculos.Placa}", resposta[0].Veiculos.Placa);
 
 
 
 
 
-            return "Nome do Relatório .pdf";
+            return "Nome do Relatório .pdf";  //Gerar O PDF
         }
 
         private RelatorioVisitasResponse ConvertVisitasToResponse(Visitas visitas)

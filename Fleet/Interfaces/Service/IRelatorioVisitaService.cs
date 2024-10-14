@@ -2,7 +2,7 @@
 
 namespace Fleet.Interfaces.Service
 {
-    public interface IRelatorioService
+    public interface IRelatorioVisitaService
     {
         Task<string> Visitas(string workspaceId,RelatorioVisitasRequest request);
     }
