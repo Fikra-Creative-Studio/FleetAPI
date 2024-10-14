@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 
 namespace Fleet.Repository
 {
-    public class RelatorioRepository(ApplicationDbContext context) : IRelatorioRepository
+    public class RelatorioVisitaRepository(ApplicationDbContext context) : IRelatorioVisitaRepository
     {
         public async Task<Visitas?> Buscar(Expression<Func<Visitas, bool>> exp)
         {
