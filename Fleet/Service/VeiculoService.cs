@@ -173,7 +173,7 @@ namespace Fleet.Service
                 Seguradora = request.Seguradora,
                 VencimentoSeguro = request.VencimentoSeguro,
                 Observacao = request.Observacao,
-                EmUsoPor = string.Empty,
+                EmUsoPor = v.EmUsoPor,
                 Manutencao = false,
                 WorkspaceId = DecryptId(request.WorkspaceId, "Workspace inválido"),
                 Foto = NomeFoto,
