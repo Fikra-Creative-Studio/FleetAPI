@@ -1,0 +1,106 @@
+﻿<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório de Visitas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .section {
+            margin-bottom: 15px;
+        }
+
+            .section h2 {
+                font-size: 18px;
+                margin-bottom: 5px;
+            }
+
+            .section p {
+                font-size: 14px;
+                margin: 0;
+            }
+
+        .observacoes {
+            margin-top: 20px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Relatório de Visitas</h1>
+        <p><strong>Período:</strong> {DataInicial} - {DataFinal}</p>
+    </div>
+
+    <div class="section">
+        <h2>Data da Visita</h2>
+        <p>{Data}</p>
+    </div>
+
+    <div class="section">
+        <h2>Visitante</h2>
+        <p><strong>Nome:</strong> {Usuario.Nome}</p>
+        <p><strong>CPF:</strong> {Usuario.Cpf}</p>
+    </div>
+
+    <div class="section">
+        <h2>Veículo</h2>
+        <p><strong>Modelo:</strong> {Veiculos.Modelo}, {Veiculos.Tipo}</p>
+        <p><strong>Placa:</strong> {Veiculos.Placa}, {Veiculos.Quilometragem} KM</p>
+    </div>
+
+    <div class="section">
+        <h2>Estabelecimento</h2>
+        <p><strong>Nome:</strong> {Estabelecimentos.Nome}</p>
+        <p><strong>Endereço:</strong> {Estabelecimentos.Endereco}</p>
+    </div>
+
+    <div class="section">
+        <h2>GPS</h2>
+        <p>{GPS}</p>
+    </div>
+
+    <div class="section">
+        <h2>Observações</h2>
+        <p>{Observacao}</p>
+    </div>
+
+    <div class="section">
+        <h2>Supervisor</h2>
+        <p>{Supervior}</p>
+    </div>
+
+    <div class="section">
+        <h2>Imagens</h2>
+        <!-- Exemplo de como imagens podem ser renderizadas -->
+        {#Imagens}
+        <div>
+            <img src="{Imagem.Url}" alt="Imagem da visita" width="200px" />
+        </div>
+        {/Imagens}
+    </div>
+
+    <div class="section">
+        <h2>Opções</h2>
+        <ul>
+            {#Opcoes}
+            <li>{Opcao.Nome}: {Opcao.Valor}</li>
+            {/Opcoes}
+        </ul>
+    </div>
+
+    <div class="observacoes">
+        <p>Relatório gerado automaticamente.</p>
+    </div>
+</body>
+</html>

@@ -47,7 +47,8 @@ namespace Fleet.Service
             if (!await usuarioWorkspaceRepository.Existe(x => x.WorkspaceId == decryptId && x.UsuarioId == loggedUser.UserId && x.Papel == Enums.PapelEnum.Administrador && x.Ativo)) throw new BussinessException("Você não tem permissão para realizar esta ação");
 
             if (!IsValidCnpj(request.Cnpj)) throw new BussinessException("CNPJ inválido");
-           
+            try { request.Cnpj = Regex.Replace(request.Cnpj, "[^0-9]", ""); } catch { }
+
             if (await estabelecimentoRepository.ExisteCnpj(request.Cnpj)) throw new BussinessException("CNPJ já cadastrado");
 
             var estabelecimento = new Estabelecimentos

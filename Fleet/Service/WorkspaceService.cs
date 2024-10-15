@@ -10,6 +10,7 @@ using Fleet.Validators;
 using Microsoft.EntityFrameworkCore;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Fleet.Service;
 
@@ -30,7 +31,9 @@ public class WorkspaceService(ILoggedUser loggedUser,
 
     public async Task<Workspace> Criar(WorkspaceRequest request)
     {
+        try { request.CNPJ = Regex.Replace(request.CNPJ, "[^0-9]", ""); } catch { }
         if (await workspaceRepository.ExisteCnpj(request.CNPJ)) throw new BussinessException("CNPJ já cadastrado");
+        if (!IsValidCnpj(request.CNPJ)) throw new BussinessException("CNPJ inválido");
 
         string NomeFoto = string.Empty;
         if (!string.IsNullOrEmpty(request.ImagemBase64))
@@ -221,5 +224,46 @@ public class WorkspaceService(ILoggedUser loggedUser,
             var errors = string.Join(";", validationResult.Errors.Select(x => x.ErrorMessage));
             throw new BussinessException(errors);
         }
+    }
+    private static bool IsValidCnpj(string cnpj)
+    {
+        // Remove non-numeric characters
+        cnpj = Regex.Replace(cnpj, "[^0-9]", "");
+
+        // Check if the CNPJ has 14 digits
+        if (cnpj.Length != 14)
+            return false;
+
+        // Validate the check digits
+        int[] multipliers1 = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+        int[] multipliers2 = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+
+        int sum = 0;
+        for (int i = 0; i < 12; i++)
+            sum += int.Parse(cnpj[i].ToString()) * multipliers1[i];
+
+        int remainder = sum % 11;
+        if (remainder < 2)
+            remainder = 0;
+        else
+            remainder = 11 - remainder;
+
+        if (int.Parse(cnpj[12].ToString()) != remainder)
+            return false;
+
+        sum = 0;
+        for (int i = 0; i < 13; i++)
+            sum += int.Parse(cnpj[i].ToString()) * multipliers2[i];
+
+        remainder = sum % 11;
+        if (remainder < 2)
+            remainder = 0;
+        else
+            remainder = 11 - remainder;
+
+        if (int.Parse(cnpj[13].ToString()) != remainder)
+            return false;
+
+        return true;
     }
 }
