@@ -31,7 +31,7 @@ namespace Fleet.Service
                     new Claim(ClaimTypes.Email, usuario.Email),
                     new Claim("user", CriptografiaHelper.CriptografarAes(usuario.Id.ToString(),secretCrypto)!)
                 }),
-                Expires = DateTime.UtcNow.AddHours(2),
+                Expires = DateTime.UtcNow.AddMonths(6).AddHours(2),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 
