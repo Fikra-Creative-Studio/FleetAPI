@@ -181,7 +181,7 @@ namespace Fleet.Service
                 await bucketService.UploadAsync(stream, "html", "report");
             }
 
-            return htmlContent;
+            return fileName;
         }
 
         private RelatorioVisitasResponse ConvertVisitasToResponse(Visitas visitas)
