@@ -118,6 +118,10 @@
       line-height: 1.4em;
     }
     
+    .visit table {
+      width: 100%;
+    }
+    
     .visit table td:not(:first-child),
     .visit table th:not(:first-child) {
       text-align: center;
@@ -205,6 +209,11 @@
       display: block;
       font-size: 14px;
     }
+    
+    .map-sign__wrapper img {
+      max-height: 50px;
+      filter: grayscale(1) brightness(0);
+    }
     .map iframe {
       height: 150px;
     }
@@ -245,13 +254,18 @@
       }
       .visit table {
         page-break-inside: avoid;
+        width: 100%;
       }
       .visit table tr:nth-child(even) {
         background: #e5fdf6;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
       }
-    }
+      .map-sign__wrapper img {
+        max-height: 50px;
+        filter: grayscale(1) brightness(0);
+      }
+    }    
   </style>
 </head>
   
