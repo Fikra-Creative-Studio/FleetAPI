@@ -129,7 +129,7 @@ namespace Fleet.Service
                 }
 
                 string endereco = $"Endereço: {relatorioVisita.Estabelecimentos.Rua}, {relatorioVisita.Estabelecimentos.Numero} - {relatorioVisita.Estabelecimentos.Bairro}, {relatorioVisita.Estabelecimentos.Cidade}, {relatorioVisita.Estabelecimentos.Cep}";
-                string veiculo = $"{relatorioVisita.Veiculos.Marca} {relatorioVisita.Veiculos.Modelo}, {relatorioVisita.Veiculos.Combustivel}, {relatorioVisita.Veiculos.Placa}, ${relatorioVisita.Veiculos.Odometro} KM";
+                string veiculo = $"{relatorioVisita.Veiculos.Marca} {relatorioVisita.Veiculos.Modelo}, {relatorioVisita.Veiculos.Combustivel}, {relatorioVisita.Veiculos.Placa}, {relatorioVisita.Veiculos.Odometro} KM";
                 string maps = $"https://www.google.com/maps?q={relatorioVisita.GPS.Replace(" ", "")}&z=13&output=embed";
                 var bodyHtml = File.ReadAllText(visitapath);
                 if (data == "" || data != relatorioVisita.Data.ToString("dd.MM.yyyy")) {
