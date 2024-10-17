@@ -110,7 +110,7 @@ namespace Fleet.Service
                     opcoesHtml += $@"
                         <tr>
                             <td>
-                                <p><strong>{opcao.Titulo.Replace("$", "")}</strong> {opcao.Descricao.Replace("$", "")}</p>
+                                <p><strong>{opcao.Titulo}</strong> {opcao.Descricao}</p>
                             </td>
                             <td><img src='{pessimoIcone}' alt='' class='{classes[0]}'></td>
                             <td><img src='{ruimIcone}' alt='' class='{classes[1]}'></td>
