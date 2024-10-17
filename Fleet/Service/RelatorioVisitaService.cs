@@ -110,7 +110,7 @@ namespace Fleet.Service
                     opcoesHtml += $@"
                         <tr>
                             <td>
-                                <p><strong>{opcao.Titulo}</strong> {opcao.Descricao}</p>
+                                <p><strong>{opcao.Titulo.Replace("$", "")}</strong> {opcao.Descricao.Replace("$", "")}</p>
                             </td>
                             <td><img src='{pessimoIcone}' alt='' class='{classes[0]}'></td>
                             <td><img src='{ruimIcone}' alt='' class='{classes[1]}'></td>
@@ -122,14 +122,14 @@ namespace Fleet.Service
                 }
                 foreach (var imagem in relatorioVisita.Imagens) {
                     if (!imagem.FotoAssinatura)
-                        imagesHtml += $@"<img src='../visit/{imagem}'>";
+                        imagesHtml += $@"<img src='../visit/{imagem.Url}'>";
                     else
-                        imagemAssinatura = $"../signature/{imagem}";
+                        imagemAssinatura = $"../signature/{imagem.Url}";
                 }
 
                 string endereco = $"Endereço: {relatorioVisita.Estabelecimentos.Rua}, {relatorioVisita.Estabelecimentos.Numero} - {relatorioVisita.Estabelecimentos.Bairro}, {relatorioVisita.Estabelecimentos.Cidade}, {relatorioVisita.Estabelecimentos.Cep}";
-                string veiculo = $"${relatorioVisita.Veiculos.Marca} ${relatorioVisita.Veiculos.Modelo}, ${relatorioVisita.Veiculos.Combustivel}, ${relatorioVisita.Veiculos.Placa}, ${relatorioVisita.Veiculos.Odometro} KM";
-                string maps = $"https://www.google.com/maps?q=${relatorioVisita.GPS.Replace(" ", "")}=13&output=embed";
+                string veiculo = $"{relatorioVisita.Veiculos.Marca} {relatorioVisita.Veiculos.Modelo}, {relatorioVisita.Veiculos.Combustivel}, {relatorioVisita.Veiculos.Placa}, ${relatorioVisita.Veiculos.Odometro} KM";
+                string maps = $"https://www.google.com/maps?q={relatorioVisita.GPS.Replace(" ", "")}=13&output=embed";
                 var bodyHtml = File.ReadAllText(visitapath);
                 templaterelatorio += bodyHtml.Replace("{{data_visita}}", relatorioVisita.Data.ToString("dd.MM.yyyy"))
                                         .Replace("{{empresa_visita}}", relatorioVisita.Estabelecimentos.Fantasia)
