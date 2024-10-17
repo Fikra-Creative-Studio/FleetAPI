@@ -98,7 +98,8 @@ namespace Fleet.Service
             string visitapath = $"{AppDomain.CurrentDomain.BaseDirectory}Service/TemplateRelatorio/visita.html";
             string relpath = $"{AppDomain.CurrentDomain.BaseDirectory}Service/TemplateRelatorio/capa.html";
             string html = File.ReadAllText(relpath);
-
+            string data = "";
+            bool inserirData;
           
             foreach(var relatorioVisita in relatorioVisitas) {
                 foreach (var opcao in relatorioVisita.Opcoes) {
@@ -129,9 +130,17 @@ namespace Fleet.Service
 
                 string endereco = $"Endereço: {relatorioVisita.Estabelecimentos.Rua}, {relatorioVisita.Estabelecimentos.Numero} - {relatorioVisita.Estabelecimentos.Bairro}, {relatorioVisita.Estabelecimentos.Cidade}, {relatorioVisita.Estabelecimentos.Cep}";
                 string veiculo = $"{relatorioVisita.Veiculos.Marca} {relatorioVisita.Veiculos.Modelo}, {relatorioVisita.Veiculos.Combustivel}, {relatorioVisita.Veiculos.Placa}, ${relatorioVisita.Veiculos.Odometro} KM";
-                string maps = $"https://www.google.com/maps?q={relatorioVisita.GPS.Replace(" ", "")}z=13&output=embed";
+                string maps = $"https://www.google.com/maps?q={relatorioVisita.GPS.Replace(" ", "")}&z=13&output=embed";
                 var bodyHtml = File.ReadAllText(visitapath);
-                templaterelatorio += bodyHtml.Replace("{{data_visita}}", relatorioVisita.Data.ToString("dd.MM.yyyy"))
+                if (data == "" || data != relatorioVisita.Data.ToString("dd.MM.yyyy")) {
+                    data = relatorioVisita.Data.ToString("dd.MM.yyyy");
+                    inserirData = true;
+                } else {
+                    inserirData = false;
+                }
+                    
+
+                templaterelatorio += bodyHtml.Replace("{{data_visita}}", inserirData ? data : "")
                                         .Replace("{{empresa_visita}}", relatorioVisita.Estabelecimentos.Fantasia)
                                         .Replace("{{endereco_visita}}", endereco)
                                         .Replace("{{visitante}}", relatorioVisita.Usuario.Nome)
