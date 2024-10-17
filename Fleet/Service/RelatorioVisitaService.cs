@@ -122,14 +122,14 @@ namespace Fleet.Service
                 }
                 foreach (var imagem in relatorioVisita.Imagens) {
                     if (!imagem.FotoAssinatura)
-                        imagesHtml += $@"<img src='https://juriseg.ddns.net:3308/visit/{imagem}'>";
+                        imagesHtml += $@"<img src='../visit/{imagem}'>";
                     else
-                        imagemAssinatura = $"https://juriseg.ddns.net:3308/signature/{imagem}";
+                        imagemAssinatura = $"../signature/{imagem}";
                 }
 
                 string endereco = $"Endereço: {relatorioVisita.Estabelecimentos.Rua}, {relatorioVisita.Estabelecimentos.Numero} - {relatorioVisita.Estabelecimentos.Bairro}, {relatorioVisita.Estabelecimentos.Cidade}, {relatorioVisita.Estabelecimentos.Cep}";
                 string veiculo = $"${relatorioVisita.Veiculos.Marca} ${relatorioVisita.Veiculos.Modelo}, ${relatorioVisita.Veiculos.Combustivel}, ${relatorioVisita.Veiculos.Placa}, ${relatorioVisita.Veiculos.Odometro} KM";
-                string maps = $"https://www.google.com/maps?q=${relatorioVisita.GPS}=13&output=embed";
+                string maps = $"https://www.google.com/maps?q=${relatorioVisita.GPS.Replace(" ", "")}=13&output=embed";
                 var bodyHtml = File.ReadAllText(visitapath);
                 templaterelatorio += bodyHtml.Replace("{{data_visita}}", relatorioVisita.Data.ToString("dd.MM.yyyy"))
                                         .Replace("{{empresa_visita}}", relatorioVisita.Estabelecimentos.Fantasia)
@@ -139,7 +139,9 @@ namespace Fleet.Service
                                         .Replace("{{tabela_relatorio}}", opcoesHtml)
                                         .Replace("{{tabela_relatorio}}", relatorioVisita.Observacao)
                                         .Replace("{{sing_image}}", imagemAssinatura)
+                                        .Replace("{{images}}", imagesHtml)
                                         .Replace("{{responsavel}}", relatorioVisita.Supervior)
+                                        .Replace("{{observacao}}", relatorioVisita.Observacao)
                                         .Replace("{{maps}}", maps);
                
                 imagesHtml = "";
