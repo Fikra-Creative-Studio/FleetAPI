@@ -108,6 +108,7 @@ namespace Fleet.Service
                     Cidade = request.Cidade,
                     Estado = request.Estado,
                     Email = request.Email,
+                    Tipo = request.Tipo,
                     WorkspaceId = estabelecimento.WorkspaceId
                 };
                 await estabelecimentoRepository.Atualizar(obj);
