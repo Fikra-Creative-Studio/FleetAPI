@@ -19,7 +19,7 @@ namespace Fleet.Service
             var decrypt = CriptografiaHelper.DescriptografarAes(encrypt, Secret) ?? throw new BussinessException("Erro no filtro do relatório de visitas");
             return int.Parse(decrypt);
         }
-        public async Task<string> Visitas(string workspaceId, RelatorioVisitasRequest request)
+        public async Task<string> GeraRelatorio(string workspaceId, RelatorioVisitasRequest request)
         {
             var decryptIdWorkspace = DecryptId(workspaceId);
 

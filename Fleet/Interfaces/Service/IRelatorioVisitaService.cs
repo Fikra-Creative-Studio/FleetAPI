@@ -4,6 +4,6 @@ namespace Fleet.Interfaces.Service
 {
     public interface IRelatorioVisitaService
     {
-        Task<string> Visitas(string workspaceId,RelatorioVisitasRequest request);
+        Task<string> GeraRelatorio(string workspaceId,RelatorioVisitasRequest request);
     }
 }
