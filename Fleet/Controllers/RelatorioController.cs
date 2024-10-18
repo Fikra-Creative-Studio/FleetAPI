@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Fleet.Controllers
 {
     [ApiController]
-    public class RelatorioController(IRelatorioService service) : ControllerBase
+    public class RelatorioController(IRelatorioVisitaService service) : ControllerBase
     {
         [Authorize]
         [HttpPost("api/Workspace/{WorkspaceId}/[Controller]")]
