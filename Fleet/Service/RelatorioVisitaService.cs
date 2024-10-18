@@ -4,6 +4,7 @@ using Fleet.Helpers;
 using Fleet.Interfaces.Repository;
 using Fleet.Interfaces.Service;
 using Fleet.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -24,6 +25,12 @@ namespace Fleet.Service
 
             var visita = relatorioRepository.Listar(v => v.WorkspaceId == decryptIdWorkspace)
               .Where(x => x.Data >= request.DataInicial && x.Data <= request.DataFinal)
+              .Include(v => v.Workspace)
+              .Include(v => v.Veiculos)
+              .Include(v => v.Usuario)
+              .Include(v => v.Estabelecimentos)
+              .Include(v => v.Imagens)
+              .Include(v => v.Opcoes)
               .ToList();
             var respostaFull = visita.Select(ConvertVisitasToResponse).ToList();
 
@@ -192,13 +199,13 @@ namespace Fleet.Service
                     Data = visitas.Data,
                     Observacao = visitas.Observacao,
                     Supervior = visitas.Supervior,
-                    Workspace = relatorioRepository.BuscaWorkspace(x => x.Id == visitas.WorkspaceId).FirstOrDefault(),
-                    Veiculos = relatorioRepository.BuscaVeiculo(x => x.Id == visitas.VeiculosId).FirstOrDefault(),
-                    Usuario = relatorioRepository.BuscaUsuario(x => x.Id == visitas.UsuarioId).FirstOrDefault(),
-                    Estabelecimentos = relatorioRepository.BuscaEstabelecimento(x => x.Id == visitas.EstabelecimentosId).FirstOrDefault(),
+                    Workspace = visitas.Workspace,
+                    Veiculos = visitas.Veiculos,
+                    Usuario = visitas.Usuario,
+                    Estabelecimentos = visitas.Estabelecimentos,
                     GPS = visitas.GPS,
-                    Imagens = relatorioRepository.ListarImagens(x => x.VisitasId == visitas.Id).ToList(),
-                    Opcoes = relatorioRepository.ListarOpcoes(x => x.VisitasId == visitas.Id).ToList()
+                    Imagens = visitas.Imagens,
+                    Opcoes = visitas.Opcoes
                 };
                 return response;
             }
